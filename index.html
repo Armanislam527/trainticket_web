@@ -177,6 +177,25 @@
       color: #53647a;
     }
 
+    .api-trace {
+      margin-top: 20px;
+    }
+
+    .api-trace h3 {
+      margin-bottom: 8px;
+    }
+
+    .api-trace pre {
+      overflow: auto;
+      max-height: 280px;
+      padding: 12px;
+      border-radius: 6px;
+      background: #f3f6fa;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 20px 10px;
@@ -204,7 +223,11 @@
       </div>
       <p id="status" role="status" aria-live="polite">Start typing a train name or number.</p>
       <p class="note">Typing only filters the local index; it does not call an API. Details are requested only after selecting a result. You can add entries to <code>TRAIN_INDEX</code> in this file.</p>
-      <p class="note">Detail request: <code>POST https://railspaapi.shohoz.com/v1.0/web/train-routes</code> with JSON body <code>{"model":"701"}</code>.</p>
+      <p class="note">Selecting a result sends <code>POST https://railspaapi.shohoz.com/v1.0/web/train-routes</code> with the selected train number as the <code>model</code>.</p>
+      <section class="api-trace" aria-labelledby="request-heading">
+        <h3 id="request-heading">Latest API request</h3>
+        <pre id="request-trace" aria-live="polite">No request sent yet.</pre>
+      </section>
     </section>
 
     <section id="details-card" class="card" aria-labelledby="details-title" hidden>
@@ -313,6 +336,7 @@
     const status = document.getElementById("status");
     const detailsCard = document.getElementById("details-card");
     const routeRows = document.getElementById("route-rows");
+    const requestTrace = document.getElementById("request-trace");
     let selectedTrain = null;
     let requestId = 0;
 
@@ -339,6 +363,7 @@
 
     function renderSuggestions() {
       const query = searchInput.value.trim().toLocaleLowerCase();
+      requestId += 1;
       selectedTrain = null;
       lookupButton.disabled = true;
       lookupButton.textContent = "Select a train to load details";
@@ -434,9 +459,23 @@
 
       const train = selectedTrain;
       const currentRequestId = ++requestId;
+      const requestBody = { model: train.number };
       lookupButton.disabled = true;
+      lookupButton.textContent = "Loading schedule…";
       setStatus(`Loading details for ${train.name} (${train.number})…`);
+      requestTrace.textContent = JSON.stringify({
+        method: "POST",
+        url: API_URL,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: requestBody,
+        status: "pending"
+      }, null, 2);
 
+      let responseStatus = null;
+      let responsePayload = null;
       try {
         const response = await fetch(API_URL, {
           method: "POST",
@@ -444,14 +483,31 @@
             Accept: "application/json",
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ model: train.number })
+          body: JSON.stringify(requestBody)
         });
 
+        const responseText = await response.text();
+        let payload;
+        try {
+          payload = JSON.parse(responseText);
+        } catch {
+          throw new Error(`API returned HTTP ${response.status} with a non-JSON response: ${responseText.slice(0, 300)}`);
+        }
+        responseStatus = response.status;
+        responsePayload = payload;
+        requestTrace.textContent = JSON.stringify({
+          method: "POST",
+          url: API_URL,
+          body: requestBody,
+          status: response.status,
+          response: payload
+        }, null, 2);
+
         if (!response.ok) {
-          throw new Error(`API returned HTTP ${response.status}`);
+          const apiMessage = payload?.error?.messages?.join("; ");
+          throw new Error(apiMessage || `API returned HTTP ${response.status}`);
         }
 
-        const payload = await response.json();
         if (!payload || !payload.data || !Array.isArray(payload.data.routes)) {
           throw new Error("Unexpected API response: expected train details at data.");
         }
@@ -463,6 +519,7 @@
         }
 
         renderDetails(payload.data, train);
+        lookupButton.textContent = "Refresh train details";
         setStatus(`Loaded schedule details for ${payload.data.train_name}.`, "success");
       } catch (error) {
         if (currentRequestId !== requestId) {
@@ -470,6 +527,15 @@
         }
         console.error("Could not load train details:", error);
         const detail = error instanceof Error ? error.message : String(error);
+        requestTrace.textContent = JSON.stringify({
+          method: "POST",
+          url: API_URL,
+          body: requestBody,
+          status: responseStatus,
+          response: responsePayload,
+          error: detail
+        }, null, 2);
+        lookupButton.textContent = "Retry train details";
         setStatus(
           `${detail} If opened locally, browser CORS may block the request; serve this page from https://eticket.railway.gov.bd.`,
           "error"
