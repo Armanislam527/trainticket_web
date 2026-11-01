@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Train Schedule API Tester</title>
+  <title>Bangladesh Train Schedule Search</title>
   <style>
     :root {
-      color-scheme: light;
       font-family: Arial, sans-serif;
       color: #172b4d;
       background: #f3f6fa;
@@ -22,7 +21,7 @@
     }
 
     main {
-      width: min(1050px, 100%);
+      width: min(850px, 100%);
       margin: 0 auto;
     }
 
@@ -44,36 +43,14 @@
       box-shadow: 0 3px 12px rgb(23 43 77 / 5%);
     }
 
-    .request-info {
-      overflow-wrap: anywhere;
-      padding: 12px;
-      border-radius: 6px;
-      background: #f3f6fa;
-      font-family: monospace;
-    }
-
-    .toolbar,
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: end;
-      gap: 12px;
-    }
-
-    .filters {
-      margin-top: 18px;
-    }
-
     label {
-      display: grid;
-      flex: 1 1 180px;
-      gap: 6px;
+      display: block;
+      margin-bottom: 7px;
       font-size: 0.9rem;
       font-weight: 600;
     }
 
     input,
-    select,
     button {
       min-height: 42px;
       padding: 9px 11px;
@@ -82,17 +59,58 @@
       font: inherit;
     }
 
+    input {
+      width: 100%;
+    }
+
     button {
-      border-color: #145da0;
-      background: #145da0;
-      color: #fff;
-      font-weight: 600;
       cursor: pointer;
     }
 
     button:disabled {
       cursor: wait;
       opacity: 0.65;
+    }
+
+    .primary {
+      border-color: #145da0;
+      background: #145da0;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    #suggestions {
+      display: grid;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .suggestion {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      background: #fff;
+    }
+
+    .suggestion:hover,
+    .suggestion:focus-visible {
+      border-color: #145da0;
+      background: #f3f8fd;
+    }
+
+    .suggestion-number,
+    .suggestion-hint {
+      color: #53647a;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
     }
 
     #status {
@@ -109,17 +127,27 @@
       color: #176b3a;
     }
 
-    .summary {
+    .details-heading {
       display: flex;
       flex-wrap: wrap;
-      gap: 18px;
-      margin: 18px 0 0;
-      color: #43536a;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .details-heading h2 {
+      margin: 0;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 12px 0 18px;
     }
 
     .table-wrap {
       overflow-x: auto;
-      margin-top: 18px;
     }
 
     table {
@@ -145,6 +173,10 @@
       font-size: 0.9rem;
     }
 
+    .empty {
+      color: #53647a;
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 20px 10px;
@@ -158,160 +190,261 @@
 </head>
 <body>
   <main>
-    <h1>Train Schedule API Tester</h1>
-    <p>Loads train schedule records from the same API used by the train information page. Station choices are derived from station names in the API response.</p>
+    <h1>Train schedule search</h1>
+    <p>Search the local train name/number index as you type. Selecting a train requests its full route and schedule details from the server.</p>
 
-    <section class="card" aria-labelledby="api-heading">
-      <h2 id="api-heading">API request</h2>
-      <div class="request-info"><strong>GET</strong> https://railspaapi.shohoz.com/v1.0/web/all-trains/info</div>
-      <p class="note">No query parameters or login token are required for this request. The response is read from <code>data.trains</code>.</p>
-      <div class="toolbar">
-        <button id="load-button" type="button">Load train and station data</button>
+    <section class="card" aria-labelledby="search-heading">
+      <h2 id="search-heading">Find a train</h2>
+      <label for="train-search">Train name or number</label>
+      <input id="train-search" type="search" placeholder="For example, Suborno or 701" autocomplete="off" aria-controls="suggestions" aria-autocomplete="list">
+      <div id="suggestions" role="listbox" aria-label="Matching trains"></div>
+      <div class="actions">
+        <button id="lookup-button" class="primary" type="button" disabled>Select a train to load details</button>
+        <span id="selection" class="note">No train selected</span>
       </div>
-      <p id="status" role="status" aria-live="polite">Data has not been loaded yet.</p>
+      <p id="status" role="status" aria-live="polite">Start typing a train name or number.</p>
+      <p class="note">Typing only filters the local index; it does not call an API. Details are requested only after selecting a result. You can add entries to <code>TRAIN_INDEX</code> in this file.</p>
+      <p class="note">Detail request: <code>POST https://railspaapi.shohoz.com/v1.0/web/train-routes</code> with JSON body <code>{"model":"701"}</code>.</p>
     </section>
 
-    <section class="card" aria-labelledby="schedule-heading">
-      <h2 id="schedule-heading">Search schedule data</h2>
-      <div class="filters">
-        <label for="train-filter">Train number
-          <input id="train-filter" type="search" placeholder="Search train number" autocomplete="off">
-        </label>
-        <label for="origin-filter">Origin station
-          <select id="origin-filter">
-            <option value="">All origins</option>
-          </select>
-        </label>
-        <label for="destination-filter">Destination station
-          <select id="destination-filter">
-            <option value="">All destinations</option>
-          </select>
-        </label>
-        <label for="zone-filter">Zone
-          <select id="zone-filter">
-            <option value="">All zones</option>
-            <option value="EAST">East</option>
-            <option value="WEST">West</option>
-          </select>
-        </label>
+    <section id="details-card" class="card" aria-labelledby="details-title" hidden>
+      <div class="details-heading">
+        <h2 id="details-title">Train details</h2>
+        <span id="details-number"></span>
       </div>
-      <div class="summary" aria-live="polite">
-        <span id="train-count">Trains: 0</span>
-        <span id="station-count">Stations: 0</span>
-        <span id="result-count">Matching schedules: 0</span>
+      <div class="meta">
+        <span><strong>Operating days:</strong> <span id="details-days"></span></span>
+        <span><strong>Total duration:</strong> <span id="details-duration"></span></span>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th scope="col">Train number</th>
-              <th scope="col">Origin</th>
-              <th scope="col">Destination</th>
-              <th scope="col">Zone</th>
-              <th scope="col">Opening time</th>
+              <th scope="col">Station</th>
+              <th scope="col">Arrival</th>
+              <th scope="col">Departure</th>
+              <th scope="col">Halt</th>
+              <th scope="col">Duration</th>
             </tr>
           </thead>
-          <tbody id="schedule-results">
-            <tr><td colspan="5">Load data to search schedules.</td></tr>
-          </tbody>
+          <tbody id="route-rows"></tbody>
         </table>
       </div>
-      <p class="note">The API currently returns train numbers, not a separate <code>train_name</code> field. Its schedule records contain origin, destination, zone, and opening time.</p>
     </section>
   </main>
 
   <script>
     "use strict";
 
-    const API_URL = "https://railspaapi.shohoz.com/v1.0/web/all-trains/info";
-    const loadButton = document.getElementById("load-button");
-    const status = document.getElementById("status");
-    const trainFilter = document.getElementById("train-filter");
-    const originFilter = document.getElementById("origin-filter");
-    const destinationFilter = document.getElementById("destination-filter");
-    const zoneFilter = document.getElementById("zone-filter");
-    const results = document.getElementById("schedule-results");
+    const API_URL = "https://railspaapi.shohoz.com/v1.0/web/train-routes";
 
-    let trains = [];
-    let stations = [];
+    // Keep this small client-side index aligned with the train numbers supported by the app.
+    const TRAIN_INDEX = [
+      { name: "Suborno Express", number: "701" },
+      { name: "Suborno Express", number: "702" },
+      { name: "Mahanagar Godhuli", number: "703" },
+      { name: "Mahanagar Godhuli", number: "704" },
+      { name: "Ekota Express", number: "705" },
+      { name: "Ekota Express", number: "706" },
+      { name: "Tista Express", number: "707" },
+      { name: "Tista Express", number: "708" },
+      { name: "Parabat Express", number: "709" },
+      { name: "Parabat Express", number: "710" },
+      { name: "Karatoya Express", number: "713" },
+      { name: "Karatoya Express", number: "714" },
+      { name: "Kapotaksha Express", number: "715" },
+      { name: "Kapotaksha Express", number: "716" },
+      { name: "Joyantika Express", number: "717" },
+      { name: "Joyantika Express", number: "718" },
+      { name: "Paharika Express", number: "719" },
+      { name: "Paharika Express", number: "720" },
+      { name: "Mahanagar Express", number: "721" },
+      { name: "Mahanagar Express", number: "722" },
+      { name: "Sundarban Express", number: "725" },
+      { name: "Sundarban Express", number: "726" },
+      { name: "Rupsha Express", number: "727" },
+      { name: "Rupsha Express", number: "728" },
+      { name: "Agnibina Express", number: "735" },
+      { name: "Agnibina Express", number: "736" },
+      { name: "Upaban Express", number: "739" },
+      { name: "Upaban Express", number: "740" },
+      { name: "Turna Express", number: "741" },
+      { name: "Turna Express", number: "742" },
+      { name: "Brahmaputra Express", number: "743" },
+      { name: "Brahmaputra Express", number: "744" },
+      { name: "Jamuna Express", number: "745" },
+      { name: "Jamuna Express", number: "746" },
+      { name: "Lalmoni Express", number: "751" },
+      { name: "Lalmoni Express", number: "752" },
+      { name: "Silk City Express", number: "753" },
+      { name: "Silk City Express", number: "754" },
+      { name: "Drutojan Express", number: "757" },
+      { name: "Drutojan Express", number: "758" },
+      { name: "Padma Express", number: "759" },
+      { name: "Padma Express", number: "760" },
+      { name: "Sagardari Express", number: "761" },
+      { name: "Sagardari Express", number: "762" },
+      { name: "Chitra Express", number: "763" },
+      { name: "Chitra Express", number: "764" },
+      { name: "Nil Sagar Express", number: "765" },
+      { name: "Nil Sagar Express", number: "766" },
+      { name: "Dhumketu Express", number: "769" },
+      { name: "Dhumketu Express", number: "770" },
+      { name: "Rangpur Express", number: "771" },
+      { name: "Rangpur Express", number: "772" },
+      { name: "Kalni Express", number: "773" },
+      { name: "Kalni Express", number: "774" },
+      { name: "Sonar Bangla Express", number: "787" },
+      { name: "Sonar Bangla Express", number: "788" },
+      { name: "Banalata Express", number: "791" },
+      { name: "Banalata Express", number: "792" },
+      { name: "Panchagarh Express", number: "793" },
+      { name: "Panchagarh Express", number: "794" },
+      { name: "Benapole Express", number: "795" },
+      { name: "Benapole Express", number: "796" },
+      { name: "Kurigram Express", number: "797" },
+      { name: "Kurigram Express", number: "798" }
+    ];
+
+    const searchInput = document.getElementById("train-search");
+    const suggestions = document.getElementById("suggestions");
+    const lookupButton = document.getElementById("lookup-button");
+    const selectionLabel = document.getElementById("selection");
+    const status = document.getElementById("status");
+    const detailsCard = document.getElementById("details-card");
+    const routeRows = document.getElementById("route-rows");
+    let selectedTrain = null;
+    let requestId = 0;
 
     function setStatus(message, kind = "") {
       status.textContent = message;
       status.className = kind;
     }
 
-    function fillStationOptions(select, label, values) {
-      select.replaceChildren(new Option(label, ""));
-      for (const value of values) {
-        select.add(new Option(value, value));
-      }
+    function clearDetails() {
+      detailsCard.hidden = true;
+      routeRows.replaceChildren();
     }
 
-    function formatTime(value) {
-      if (typeof value !== "string") {
-        return "N/A";
-      }
-
-      const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(value);
-      if (!match) {
-        return value;
-      }
-
-      const hour = Number(match[1]);
-      const suffix = hour >= 12 ? "PM" : "AM";
-      return `${String(hour % 12 || 12).padStart(2, "0")}:${match[2]} ${suffix}`;
+    function chooseTrain(train) {
+      selectedTrain = train;
+      searchInput.value = `${train.name} (${train.number})`;
+      selectionLabel.textContent = `${train.name} (${train.number}) selected`;
+      lookupButton.textContent = "Load train details";
+      lookupButton.disabled = false;
+      suggestions.replaceChildren();
+      clearDetails();
+      loadSelectedTrain();
     }
 
-    function addCell(row, value) {
-      const cell = document.createElement("td");
-      cell.textContent = value == null || value === "" ? "N/A" : String(value);
-      row.append(cell);
-    }
+    function renderSuggestions() {
+      const query = searchInput.value.trim().toLocaleLowerCase();
+      selectedTrain = null;
+      lookupButton.disabled = true;
+      lookupButton.textContent = "Select a train to load details";
+      selectionLabel.textContent = "No train selected";
+      clearDetails();
+      suggestions.replaceChildren();
 
-    function renderSchedules() {
-      const trainQuery = trainFilter.value.trim().toLowerCase();
-      const origin = originFilter.value;
-      const destination = destinationFilter.value;
-      const zone = zoneFilter.value;
-      const matches = trains.filter((train) =>
-        String(train.train_number ?? "").toLowerCase().includes(trainQuery) &&
-        (!origin || train.origin_city === origin) &&
-        (!destination || train.destination_city === destination) &&
-        (!zone || train.zone === zone)
-      );
+      if (!query) {
+        setStatus("Start typing a train name or number.");
+        return;
+      }
 
-      document.getElementById("result-count").textContent = `Matching schedules: ${matches.length}`;
-      results.replaceChildren();
+      const matches = TRAIN_INDEX.filter((train) =>
+        train.name.toLocaleLowerCase().includes(query) || train.number.includes(query)
+      ).slice(0, 12);
 
       if (matches.length === 0) {
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-        cell.colSpan = 5;
-        cell.textContent = trains.length ? "No schedules match these filters." : "Load data to search schedules.";
-        row.append(cell);
-        results.append(row);
+        if (/^\d{1,4}$/.test(query)) {
+          const option = document.createElement("button");
+          option.type = "button";
+          option.className = "suggestion";
+          option.setAttribute("role", "option");
+          option.textContent = `Look up train number ${query} on the server`;
+          option.addEventListener("click", () => chooseTrain({ name: "Train", number: query }));
+          suggestions.append(option);
+          setStatus(`No local name match. Select to look up train number ${query} directly.`);
+        } else {
+          setStatus("No local name matches. Add the train to TRAIN_INDEX to make it searchable.");
+        }
         return;
       }
 
       for (const train of matches) {
-        const row = document.createElement("tr");
-        addCell(row, train.train_number);
-        addCell(row, train.origin_city);
-        addCell(row, train.destination_city);
-        addCell(row, train.zone);
-        addCell(row, formatTime(train.opening_time));
-        results.append(row);
+        const option = document.createElement("button");
+        option.type = "button";
+        option.className = "suggestion";
+        option.setAttribute("role", "option");
+
+        const name = document.createElement("span");
+        name.textContent = train.name;
+        const number = document.createElement("span");
+        number.className = "suggestion-number";
+        number.textContent = train.number;
+        option.append(name, number);
+        option.addEventListener("click", () => chooseTrain(train));
+        suggestions.append(option);
       }
+
+      setStatus(`${matches.length} matching train${matches.length === 1 ? "" : "s"}. Select one to continue.`);
     }
 
-    async function loadSchedules() {
-      loadButton.disabled = true;
-      setStatus("Requesting train schedule data…");
+    function addCell(row, value) {
+      const cell = document.createElement("td");
+      cell.textContent = value == null || value === "" ? "—" : String(value);
+      row.append(cell);
+    }
+
+    function renderDetails(data, train) {
+      document.getElementById("details-title").textContent = data.train_name || train.name;
+      document.getElementById("details-number").textContent = `Train ${train.number}`;
+      document.getElementById("details-days").textContent = Array.isArray(data.days) && data.days.length
+        ? data.days.join(", ")
+        : "Not provided";
+      document.getElementById("details-duration").textContent = data.total_duration || "Not provided";
+      routeRows.replaceChildren();
+
+      if (!Array.isArray(data.routes) || data.routes.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 5;
+        cell.textContent = "No route stops were returned for this train.";
+        row.append(cell);
+        routeRows.append(row);
+      } else {
+        for (const stop of data.routes) {
+          const row = document.createElement("tr");
+          addCell(row, stop.city);
+          addCell(row, stop.arrival_time);
+          addCell(row, stop.departure_time);
+          addCell(row, stop.halt);
+          addCell(row, stop.duration);
+          routeRows.append(row);
+        }
+      }
+
+      detailsCard.hidden = false;
+    }
+
+    async function loadSelectedTrain() {
+      if (!selectedTrain) {
+        return;
+      }
+
+      const train = selectedTrain;
+      const currentRequestId = ++requestId;
+      lookupButton.disabled = true;
+      setStatus(`Loading details for ${train.name} (${train.number})…`);
 
       try {
         const response = await fetch(API_URL, {
-          method: "GET",
-          headers: { Accept: "application/json" }
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ model: train.number })
         });
 
         if (!response.ok) {
@@ -319,38 +452,37 @@
         }
 
         const payload = await response.json();
-        if (!payload || !payload.data || !Array.isArray(payload.data.trains)) {
-          throw new Error("Unexpected API response: expected an array at data.trains.");
+        if (!payload || !payload.data || !Array.isArray(payload.data.routes)) {
+          throw new Error("Unexpected API response: expected train details at data.");
+        }
+        if (currentRequestId !== requestId) {
+          return;
+        }
+        if (!payload.data.train_name) {
+          throw new Error(`The API did not find train ${train.number}. Check the local TRAIN_INDEX entry.`);
         }
 
-        trains = payload.data.trains;
-        stations = [...new Set(trains.flatMap((train) =>
-          [train.origin_city, train.destination_city].filter((station) => typeof station === "string" && station.trim())
-        ))].sort((a, b) => a.localeCompare(b));
-
-        fillStationOptions(originFilter, "All origins", stations);
-        fillStationOptions(destinationFilter, "All destinations", stations);
-        document.getElementById("train-count").textContent = `Trains: ${trains.length}`;
-        document.getElementById("station-count").textContent = `Stations: ${stations.length}`;
-        renderSchedules();
-        setStatus(`Loaded ${trains.length} train records and ${stations.length} station names from the server.`, "success");
+        renderDetails(payload.data, train);
+        setStatus(`Loaded schedule details for ${payload.data.train_name}.`, "success");
       } catch (error) {
-        console.error("Could not load train schedule data:", error);
+        if (currentRequestId !== requestId) {
+          return;
+        }
+        console.error("Could not load train details:", error);
         const detail = error instanceof Error ? error.message : String(error);
         setStatus(
-          `${detail} If this page is opened locally, the API may block its origin; the API allows browser requests from https://eticket.railway.gov.bd.`,
+          `${detail} If opened locally, browser CORS may block the request; serve this page from https://eticket.railway.gov.bd.`,
           "error"
         );
       } finally {
-        loadButton.disabled = false;
+        if (currentRequestId === requestId) {
+          lookupButton.disabled = false;
+        }
       }
     }
 
-    loadButton.addEventListener("click", loadSchedules);
-    trainFilter.addEventListener("input", renderSchedules);
-    originFilter.addEventListener("change", renderSchedules);
-    destinationFilter.addEventListener("change", renderSchedules);
-    zoneFilter.addEventListener("change", renderSchedules);
+    searchInput.addEventListener("input", renderSuggestions);
+    lookupButton.addEventListener("click", loadSelectedTrain);
   </script>
 </body>
 </html>
