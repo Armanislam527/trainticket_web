@@ -212,10 +212,8 @@
     <h1>Train schedule search</h1>
     <p>Search the local train name/number index as you type. Selecting a train requests its full route and schedule details from the server.</p>
     <section class="card" aria-labelledby="run-heading">
-      <h2 id="run-heading">Run locally</h2>
-      <p>Browsers block direct calls to the railway API from localhost. Start the included same-origin proxy and open this page from it (do not use file preview or the VS Code Live Server for this page):</p>
-      <pre>python3 dev_server.py
-http://127.0.0.1:8000/</pre>
+      <h2 id="run-heading">Frontend-only API access</h2>
+      <p>This page sends the schedule request directly from the browser to the railway API; no local proxy or backend is used. The railway API currently allows browser requests only from <code>https://eticket.railway.gov.bd</code>. Browser CORS rules prevent frontend JavaScript from bypassing that restriction, so localhost, file previews, and other deployment domains will be blocked until the API owner allows those origins.</p>
     </section>
 
     <section class="card" aria-labelledby="search-heading">
@@ -229,7 +227,7 @@ http://127.0.0.1:8000/</pre>
       </div>
       <p id="status" role="status" aria-live="polite">Start typing a train name or number.</p>
       <p class="note">Typing only filters the local index; it does not call an API. Details are requested only after selecting a result. You can add entries to <code>TRAIN_INDEX</code> in this file.</p>
-      <p class="note">Selecting a result sends a same-origin POST to <code>/api/train-routes</code>. The local proxy forwards it to the railway API with the selected train number as the <code>model</code>.</p>
+      <p class="note">Selecting a result sends a direct browser POST to <code>https://railspaapi.shohoz.com/v1.0/web/train-routes</code> with the selected train number as the <code>model</code>.</p>
       <section class="api-trace" aria-labelledby="request-heading">
         <h3 id="request-heading">Latest API request</h3>
         <pre id="request-trace" aria-live="polite">No request sent yet.</pre>
@@ -265,8 +263,7 @@ http://127.0.0.1:8000/</pre>
   <script>
     "use strict";
 
-    const API_URL = "/api/train-routes";
-    const UPSTREAM_API_URL = "https://railspaapi.shohoz.com/v1.0/web/train-routes";
+    const API_URL = "https://railspaapi.shohoz.com/v1.0/web/train-routes";
 
     // Keep this small client-side index aligned with the train numbers supported by the app.
     const TRAIN_INDEX = [
@@ -472,8 +469,7 @@ http://127.0.0.1:8000/</pre>
       setStatus(`Loading details for ${train.name} (${train.number})…`);
       requestTrace.textContent = JSON.stringify({
         method: "POST",
-        url: `${location.origin}${API_URL}`,
-        upstream: UPSTREAM_API_URL,
+        url: API_URL,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
@@ -505,8 +501,7 @@ http://127.0.0.1:8000/</pre>
         responsePayload = payload;
         requestTrace.textContent = JSON.stringify({
           method: "POST",
-          url: `${location.origin}${API_URL}`,
-          upstream: UPSTREAM_API_URL,
+          url: API_URL,
           body: requestBody,
           status: response.status,
           response: payload
@@ -538,19 +533,16 @@ http://127.0.0.1:8000/</pre>
         const detail = error instanceof Error ? error.message : String(error);
         requestTrace.textContent = JSON.stringify({
           method: "POST",
-          url: `${location.origin}${API_URL}`,
-          upstream: UPSTREAM_API_URL,
+          url: API_URL,
           body: requestBody,
           status: responseStatus,
           response: responsePayload,
           error: detail
         }, null, 2);
         lookupButton.textContent = "Retry train details";
-        const runHint = location.protocol === "file:"
-          ? "Open this page at http://127.0.0.1:8000/ after running python3 dev_server.py."
-          : location.port !== "8000"
-            ? "Run python3 dev_server.py and open http://127.0.0.1:8000/; a static preview server cannot proxy the API."
-            : "Check that python3 dev_server.py is still running.";
+        const runHint = detail === "Failed to fetch"
+          ? "This is commonly caused by the railway API rejecting this page's origin via CORS. Frontend-only code cannot override that policy; deploy on an allowed origin or ask the API owner to allow your production domain."
+          : "";
         setStatus(`${detail} ${runHint}`, "error");
       } finally {
         if (currentRequestId === requestId) {
