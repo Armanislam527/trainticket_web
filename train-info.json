@@ -1,0 +1,806 @@
+[
+  {
+    "no": "01",
+    "name": null,
+    "origin": "Chattogram",
+    "destination": "Chandpur"
+  },
+  {
+    "no": "02",
+    "name": null,
+    "origin": "Chandpur",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "03",
+    "name": null,
+    "origin": "Dhaka",
+    "destination": "Dewanganj_Bazar"
+  },
+  {
+    "no": "04",
+    "name": null,
+    "origin": "Dewanganj_Bazar",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "701",
+    "name": "SUBORNO EXPRESS (701)",
+    "origin": "Chattogram",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "702",
+    "name": "SUBORNO EXPRESS (702)",
+    "origin": "Dhaka",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "703",
+    "name": "MAHANAGAR GODHULI (703)",
+    "origin": "Chattogram",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "704",
+    "name": "MAHANAGAR PROVATI (704)",
+    "origin": "Dhaka",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "707",
+    "name": "TISTA EXPRESS (707)",
+    "origin": "Dhaka",
+    "destination": "Dewanganj_Bazar"
+  },
+  {
+    "no": "708",
+    "name": "TISTA EXPRESS (708)",
+    "origin": "Dewanganj_Bazar",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "709",
+    "name": "PARABAT EXPRESS (709)",
+    "origin": "Dhaka",
+    "destination": "Sylhet"
+  },
+  {
+    "no": "710",
+    "name": "PARABAT EXPRESS (710)",
+    "origin": "Sylhet",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "711",
+    "name": "UPAKUL EXPRESS (711)",
+    "origin": "Noakhali",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "712",
+    "name": "UPAKUL EXPRESS (712)",
+    "origin": "Dhaka",
+    "destination": "Noakhali"
+  },
+  {
+    "no": "717",
+    "name": "JAYENTIKA EXPRESS (717)",
+    "origin": "Dhaka",
+    "destination": "Sylhet"
+  },
+  {
+    "no": "718",
+    "name": "JAYENTIKA EXPRESS (718)",
+    "origin": "Sylhet",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "719",
+    "name": "PAHARIKA EXPRESS (719)",
+    "origin": "Chattogram",
+    "destination": "Sylhet"
+  },
+  {
+    "no": "720",
+    "name": "PAHARIKA EXPRESS (720)",
+    "origin": "Sylhet",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "721",
+    "name": "MOHANAGAR EXPRESS (721)",
+    "origin": "Chattogram",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "722",
+    "name": "MOHANAGAR EXPRESS (722)",
+    "origin": "Dhaka",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "723",
+    "name": "UDAYAN EXPRESS (723)",
+    "origin": "Chattogram",
+    "destination": "Sylhet"
+  },
+  {
+    "no": "724",
+    "name": "UDAYAN EXPRESS (724)",
+    "origin": "Sylhet",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "729",
+    "name": "MEGHNA EXPRESS (729)",
+    "origin": "Chattogram",
+    "destination": "Chandpur"
+  },
+  {
+    "no": "730",
+    "name": "MEGHNA EXPRESS (730)",
+    "origin": "Chandpur",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "735",
+    "name": "AGHNIBINA EXPRESS (735)",
+    "origin": "Dhaka",
+    "destination": "Tarakandi"
+  },
+  {
+    "no": "736",
+    "name": "AGHNIBINA EXPRESS (736)",
+    "origin": "Tarakandi",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "737",
+    "name": "EGAROSINDHUR PROVATI (737)",
+    "origin": "Dhaka",
+    "destination": "Kishorganj"
+  },
+  {
+    "no": "738",
+    "name": "EGAROSINDHUR PROVATI (738)",
+    "origin": "Kishorganj",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "739",
+    "name": "UPABAN EXPRESS (739)",
+    "origin": "Dhaka",
+    "destination": "Sylhet"
+  },
+  {
+    "no": "740",
+    "name": "UPABAN EXPRESS (740)",
+    "origin": "Sylhet",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "741",
+    "name": "TURNA (741)",
+    "origin": "Chattogram",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "742",
+    "name": "TURNA (742)",
+    "origin": "Dhaka",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "743",
+    "name": "BHRAMMAPUTRA EXPRESS (743)",
+    "origin": "Dhaka",
+    "destination": "Dewanganj_Bazar"
+  },
+  {
+    "no": "744",
+    "name": "BHRAMMAPUTRA EXPRESS (744)",
+    "origin": "Dewanganj_Bazar",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "745",
+    "name": "JAMUNA EXPRESS (745)",
+    "origin": "Dhaka",
+    "destination": "Tarakandi"
+  },
+  {
+    "no": "746",
+    "name": "JAMUNA EXPRESS (746)",
+    "origin": "Tarakandi",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "749",
+    "name": "EGAROSINDHUR GODHULI (749)",
+    "origin": "Dhaka",
+    "destination": "Kishorganj"
+  },
+  {
+    "no": "750",
+    "name": "EGAROSINDHUR GODHULI (750)",
+    "origin": "Kishorganj",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "773",
+    "name": "KALNI EXPRESS (773)",
+    "origin": "Dhaka",
+    "destination": "Sylhet"
+  },
+  {
+    "no": "774",
+    "name": "KALNI EXPRESS (774)",
+    "origin": "Sylhet",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "777",
+    "name": "HAWR EXPRESS (777)",
+    "origin": "Dhaka",
+    "destination": "Mohanganj"
+  },
+  {
+    "no": "778",
+    "name": "HAWR EXPRESS (778)",
+    "origin": "Mohanganj",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "781",
+    "name": "KISHORGANJ EXPRESS (781)",
+    "origin": "Dhaka",
+    "destination": "Kishorganj"
+  },
+  {
+    "no": "782",
+    "name": "KISHORGANJ EXPRESS (782)",
+    "origin": "Kishorganj",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "785",
+    "name": "BIJOY EXPRESS (785)",
+    "origin": "Chattogram",
+    "destination": "Jamalpur_Town"
+  },
+  {
+    "no": "786",
+    "name": "BIJOY EXPRESS (786)",
+    "origin": "Jamalpur_Town",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "787",
+    "name": "SONAR BANGLA EXPRESS (787)",
+    "origin": "Chattogram",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "788",
+    "name": "SONAR BANGLA EXPRESS (788)",
+    "origin": "Dhaka",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "789",
+    "name": "MOHONGANJ EXPRESS (789)",
+    "origin": "Dhaka",
+    "destination": "Mohanganj"
+  },
+  {
+    "no": "790",
+    "name": "MOHONGANJ EXPRESS (790)",
+    "origin": "Mohanganj",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "799",
+    "name": "JAMALPUR EXPRESS (799)",
+    "origin": "Dhaka",
+    "destination": "Bhuapur"
+  },
+  {
+    "no": "800",
+    "name": "JAMALPUR EXPRESS (800)",
+    "origin": "Bhuapur",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "801",
+    "name": "CHATTALA EXPRESS (801)",
+    "origin": "Chattogram",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "802",
+    "name": "CHATTALA EXPRESS (802)",
+    "origin": "Dhaka",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "813",
+    "name": "COXS BAZAR EXPRESS (813)",
+    "origin": "Cox's Bazar",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "814",
+    "name": "COXS BAZAR EXPRESS (814)",
+    "origin": "Dhaka",
+    "destination": "Cox's Bazar"
+  },
+  {
+    "no": "815",
+    "name": "PARJOTAK EXPRESS (815)",
+    "origin": "Cox's Bazar",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "816",
+    "name": "PARJOTAK EXPRESS (816)",
+    "origin": "Dhaka",
+    "destination": "Cox's Bazar"
+  },
+  {
+    "no": "821",
+    "name": "SHAIKAT EXPRESS (821)",
+    "origin": "Chattogram",
+    "destination": "Cox's Bazar"
+  },
+  {
+    "no": "822",
+    "name": "PROBAL EXPRESS (822)",
+    "origin": "Cox's Bazar",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "823",
+    "name": "PROBAL EXPRESS (823)",
+    "origin": "Chattogram",
+    "destination": "Cox's Bazar"
+  },
+  {
+    "no": "824",
+    "name": "SHAIKAT EXPRESS (824)",
+    "origin": "Cox's Bazar",
+    "destination": "Chattogram"
+  },
+  {
+    "no": "09",
+    "name": null,
+    "origin": "Joydebpur",
+    "destination": "Parbatipur"
+  },
+  {
+    "no": "10",
+    "name": null,
+    "origin": "Parbatipur",
+    "destination": "Joydebpur"
+  },
+  {
+    "no": "705",
+    "name": "EKOTA EXPRESS (705)",
+    "origin": "Dhaka",
+    "destination": "Panchagarh"
+  },
+  {
+    "no": "706",
+    "name": "EKOTA EXPRESS (706)",
+    "origin": "Panchagarh",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "713",
+    "name": "KOROTOA EXPRESS (713)",
+    "origin": "Santahar",
+    "destination": "Burimari"
+  },
+  {
+    "no": "714",
+    "name": "KOROTOA EXPRESS (714)",
+    "origin": "Burimari",
+    "destination": "Santahar"
+  },
+  {
+    "no": "715",
+    "name": "KAPOTAKSHA EXPRESS (715)",
+    "origin": "Khulna",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "716",
+    "name": "KAPOTAKSHA EXPRESS (716)",
+    "origin": "Rajshahi",
+    "destination": "Khulna"
+  },
+  {
+    "no": "725",
+    "name": "SUNDARBAN EXPRESS (725)",
+    "origin": "Khulna",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "726",
+    "name": "SUNDARBAN EXPRESS (726)",
+    "origin": "Dhaka",
+    "destination": "Khulna"
+  },
+  {
+    "no": "727",
+    "name": "RUPSHA EXPRESS (727)",
+    "origin": "Khulna",
+    "destination": "Chilahati"
+  },
+  {
+    "no": "728",
+    "name": "RUPSHA EXPRESS (728)",
+    "origin": "Chilahati",
+    "destination": "Khulna"
+  },
+  {
+    "no": "731",
+    "name": "BARENDRA EXPRESS (731)",
+    "origin": "Rajshahi",
+    "destination": "Chilahati"
+  },
+  {
+    "no": "732",
+    "name": "BARENDRA EXPRESS (732)",
+    "origin": "Chilahati",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "733",
+    "name": "TITUMIR EXPRESS (733)",
+    "origin": "Rajshahi",
+    "destination": "Chilahati"
+  },
+  {
+    "no": "734",
+    "name": "TITUMIR EXPRESS (734)",
+    "origin": "Chilahati",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "747",
+    "name": "SIMANTA EXPRESS (747)",
+    "origin": "Khulna",
+    "destination": "Chilahati"
+  },
+  {
+    "no": "748",
+    "name": "SIMANTA EXPRESS (748)",
+    "origin": "Chilahati",
+    "destination": "Khulna"
+  },
+  {
+    "no": "751",
+    "name": "LALMONI EXPRESS (751)",
+    "origin": "Dhaka",
+    "destination": "Lalmonirhat"
+  },
+  {
+    "no": "752",
+    "name": "LALMONI EXPRESS (752)",
+    "origin": "Lalmonirhat",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "753",
+    "name": "SILKCITY EXPRESS (753)",
+    "origin": "Dhaka",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "754",
+    "name": "SILKCITY EXPRESS (754)",
+    "origin": "Rajshahi",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "755",
+    "name": "MADHUMATI EXPRESS (755)",
+    "origin": "Dhaka",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "756",
+    "name": "MADHUMATI EXPRESS (756)",
+    "origin": "Rajshahi",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "757",
+    "name": "DRUTOJAN EXPRESS (757)",
+    "origin": "Dhaka",
+    "destination": "Panchagarh"
+  },
+  {
+    "no": "758",
+    "name": "DRUTOJAN EXPRESS (758)",
+    "origin": "Panchagarh",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "759",
+    "name": "PADMA EXPRESS (759)",
+    "origin": "Dhaka",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "760",
+    "name": "PADMA EXPRESS (760)",
+    "origin": "Rajshahi",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "761",
+    "name": "SAGARDARI EXPRESS (761)",
+    "origin": "Khulna",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "762",
+    "name": "SAGARDARI EXPRESS (762)",
+    "origin": "Rajshahi",
+    "destination": "Khulna"
+  },
+  {
+    "no": "763",
+    "name": "CHITRA EXPRESS (763)",
+    "origin": "Khulna",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "764",
+    "name": "CHITRA EXPRESS (764)",
+    "origin": "Dhaka",
+    "destination": "Khulna"
+  },
+  {
+    "no": "765",
+    "name": "NILSAGAR EXPRESS (765)",
+    "origin": "Dhaka",
+    "destination": "Chilahati"
+  },
+  {
+    "no": "766",
+    "name": "NILSAGAR EXPRESS (766)",
+    "origin": "Chilahati",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "767",
+    "name": "DOLONCHAPA EXPRESS (767)",
+    "origin": "Santahar",
+    "destination": "Panchagarh"
+  },
+  {
+    "no": "768",
+    "name": "DOLONCHAPA EXPRESS (768)",
+    "origin": "Panchagarh",
+    "destination": "Santahar"
+  },
+  {
+    "no": "769",
+    "name": "DHUMKETU EXPRESS (769)",
+    "origin": "Dhaka",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "770",
+    "name": "DHUMKETU EXPRESS (770)",
+    "origin": "Rajshahi",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "771",
+    "name": "RANGPUR EXPRESS (771)",
+    "origin": "Dhaka",
+    "destination": "Rangpur"
+  },
+  {
+    "no": "772",
+    "name": "RANGPUR EXPRESS (772)",
+    "origin": "Rangpur",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "775",
+    "name": "SIRAJGANJ EXPRESS (775)",
+    "origin": "Sirajganj_Bazar",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "776",
+    "name": "SIRAJGANJ EXPRESS (776)",
+    "origin": "Dhaka",
+    "destination": "Sirajganj_Bazar"
+  },
+  {
+    "no": "779",
+    "name": "DHALARCHAR EXPRESS (779)",
+    "origin": "Dhalarchar",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "780",
+    "name": "DHALARCHAR EXPRESS (780)",
+    "origin": "Rajshahi",
+    "destination": "Dhalarchar"
+  },
+  {
+    "no": "783",
+    "name": "TUNGIPARA EXPRESS (783)",
+    "origin": "Gobra",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "784",
+    "name": "TUNGIPARA EXPRESS (784)",
+    "origin": "Rajshahi",
+    "destination": "Gobra"
+  },
+  {
+    "no": "791",
+    "name": "BANALATA EXPRESS (791)",
+    "origin": "Dhaka",
+    "destination": "Chapainawabganj"
+  },
+  {
+    "no": "792",
+    "name": "BANALATA EXPRESS (792)",
+    "origin": "Chapainawabganj",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "793",
+    "name": "PANCHAGARH EXPRESS (793)",
+    "origin": "Dhaka",
+    "destination": "Panchagarh"
+  },
+  {
+    "no": "794",
+    "name": "PANCHAGARH EXPRESS (794)",
+    "origin": "Panchagarh",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "795",
+    "name": "BENAPOLE EXPRESS (795)",
+    "origin": "Benapole",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "796",
+    "name": "BENAPOLE EXPRESS (796)",
+    "origin": "Dhaka",
+    "destination": "Benapole"
+  },
+  {
+    "no": "797",
+    "name": "KURIGRAM EXPRESS (797)",
+    "origin": "Dhaka",
+    "destination": "Kurigram"
+  },
+  {
+    "no": "798",
+    "name": "KURIGRAM EXPRESS (798)",
+    "origin": "Kurigram",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "803",
+    "name": "BANGLABANDHA EXPRESS (803)",
+    "origin": "Rajshahi",
+    "destination": "Panchagarh"
+  },
+  {
+    "no": "804",
+    "name": "BANGLABANDHA EXPRESS (804)",
+    "origin": "Panchagarh",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "805",
+    "name": "CHILAHATI EXPRESS (805)",
+    "origin": "Dhaka",
+    "destination": "Chilahati"
+  },
+  {
+    "no": "806",
+    "name": "CHILAHATI EXPRESS (806)",
+    "origin": "Chilahati",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "809",
+    "name": "BURIMARI EXPRESS (809)",
+    "origin": "Dhaka",
+    "destination": "Lalmonirhat"
+  },
+  {
+    "no": "810",
+    "name": "BURIMARI EXPRESS (810)",
+    "origin": "Lalmonirhat",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "825",
+    "name": "JAHANABAD EXPRESS (825)",
+    "origin": "Khulna",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "826",
+    "name": "JAHANABAD EXPRESS (826)",
+    "origin": "Dhaka",
+    "destination": "Khulna"
+  },
+  {
+    "no": "827",
+    "name": "RUPOSHI BANGLA EXPRESS (827)",
+    "origin": "Benapole",
+    "destination": "Dhaka"
+  },
+  {
+    "no": "828",
+    "name": "RUPOSHI BANGLA EXPRESS (828)",
+    "origin": "Dhaka",
+    "destination": "Benapole"
+  },
+  {
+    "no": "109",
+    "name": null,
+    "origin": "Rajshahi",
+    "destination": "Chapainawabganj"
+  },
+  {
+    "no": "110",
+    "name": "CHAPAINAWABGANJ SHUTTLE (110)",
+    "origin": "Chapainawabganj",
+    "destination": "Rajshahi"
+  },
+  {
+    "no": "41",
+    "name": "KANCHON INTERCITY COMMUTER (41)",
+    "origin": "Parbatipur",
+    "destination": "Panchagarh"
+  },
+  {
+    "no": "42",
+    "name": "KANCHON INTERCITY COMMUTER (42)",
+    "origin": "Panchagarh",
+    "destination": "Parbatipur"
+  },
+  {
+    "no": "57",
+    "name": "RAJSHAHI COMMUTER (57)",
+    "origin": "Ishwardi",
+    "destination": "Rohanpur"
+  },
+  {
+    "no": "58",
+    "name": "RAJSHAHI COMMUTER (58)",
+    "origin": "Rohanpur",
+    "destination": "Ishwardi"
+  },
+  {
+    "no": "77",
+    "name": "RAJSHAHI COMMUTER (77)",
+    "origin": "Rajshahi",
+    "destination": "Rohanpur"
+  },
+  {
+    "no": "78",
+    "name": "RAJSHAHI COMMUTER (78)",
+    "origin": "Rohanpur",
+    "destination": "Rajshahi"
+  }
+]
