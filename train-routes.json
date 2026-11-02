@@ -1,0 +1,2481 @@
+[
+  {
+    "train_number": "701",
+    "train_name": "SUBORNO EXPRESS (701)",
+    "cities": [
+      "Chattogram",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "702",
+    "train_name": "SUBORNO EXPRESS (702)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "703",
+    "train_name": "MAHANAGAR GODHULI (703)",
+    "cities": [
+      "Chattogram",
+      "Feni",
+      "Gunabati",
+      "Laksam",
+      "Cumilla",
+      "Akhaura",
+      "Brahmanbaria",
+      "Bhairab_Bazar",
+      "Narsingdi",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "704",
+    "train_name": "MAHANAGAR PROVATI (704)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Bhairab_Bazar",
+      "Brahmanbaria",
+      "Akhaura",
+      "Quasba",
+      "Cumilla",
+      "Laksam",
+      "Gunabati",
+      "Feni",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "707",
+    "train_name": "TISTA EXPRESS (707)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Gafargaon",
+      "Mymensingh",
+      "Piyarpur",
+      "Jamalpur_Town",
+      "Melandah_Bazar",
+      "Islampur_Bazar",
+      "Dewanganj_Bazar"
+    ]
+  },
+  {
+    "train_number": "708",
+    "train_name": "TISTA EXPRESS (708)",
+    "cities": [
+      "Dewanganj_Bazar",
+      "Islampur_Bazar",
+      "Melandah_Bazar",
+      "Jamalpur_Town",
+      "Piyarpur",
+      "Mymensingh",
+      "Gafargaon",
+      "Joydebpur",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "709",
+    "train_name": "PARABAT EXPRESS (709)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Bhairab_Bazar",
+      "Brahmanbaria",
+      "Azampur",
+      "Nayapara",
+      "Shaistaganj",
+      "Sreemangal",
+      "Bhanugach",
+      "Kulaura",
+      "Maijgaon",
+      "Sylhet"
+    ]
+  },
+  {
+    "train_number": "710",
+    "train_name": "PARABAT EXPRESS (710)",
+    "cities": [
+      "Sylhet",
+      "Maijgaon",
+      "Kulaura",
+      "Bhanugach",
+      "Sreemangal",
+      "Shaistaganj",
+      "Nayapara",
+      "Azampur",
+      "Brahmanbaria",
+      "Bhairab_Bazar",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "711",
+    "train_name": "UPAKUL EXPRESS (711)",
+    "cities": [
+      "Noakhali",
+      "Maijdi Court",
+      "Choumuhani",
+      "Bajra",
+      "Sonaimuri",
+      "Natherpetua",
+      "Laksam",
+      "Cumilla",
+      "Quasba",
+      "Akhaura",
+      "Brahmanbaria",
+      "Ashuganj",
+      "Narsingdi",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "712",
+    "train_name": "UPAKUL EXPRESS (712)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Bhairab_Bazar",
+      "Ashuganj",
+      "Brahmanbaria",
+      "Akhaura",
+      "Quasba",
+      "Cumilla",
+      "Laksam",
+      "Natherpetua",
+      "Sonaimuri",
+      "Bajra",
+      "Choumuhani",
+      "Maijdi Court",
+      "Noakhali"
+    ]
+  },
+  {
+    "train_number": "717",
+    "train_name": "JAYENTIKA EXPRESS (717)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Ashuganj",
+      "Brahmanbaria",
+      "Azampur",
+      "Mukundapur",
+      "Harashpur",
+      "Montola",
+      "Nayapara",
+      "Shahaji_Bazar",
+      "Shaistaganj",
+      "Sreemangal",
+      "Bhanugach",
+      "Kulaura",
+      "Maijgaon",
+      "Sylhet"
+    ]
+  },
+  {
+    "train_number": "718",
+    "train_name": "JAYENTIKA EXPRESS (718)",
+    "cities": [
+      "Sylhet",
+      "Maijgaon",
+      "Kulaura",
+      "Bhanugach",
+      "Sreemangal",
+      "Shaistaganj",
+      "Shahaji_Bazar",
+      "Nayapara",
+      "Montola",
+      "Harashpur",
+      "Mukundapur",
+      "Azampur",
+      "Brahmanbaria",
+      "Ashuganj",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "719",
+    "train_name": "PAHARIKA EXPRESS (719)",
+    "cities": [
+      "Chattogram",
+      "Feni",
+      "Nangolkot",
+      "Laksam",
+      "Cumilla",
+      "Quasba",
+      "Akhaura",
+      "Harashpur",
+      "Nayapara",
+      "Shaistaganj",
+      "Sreemangal",
+      "Bhanugach",
+      "Shamshernagar",
+      "Kulaura",
+      "Baramchal",
+      "Maijgaon",
+      "Sylhet"
+    ]
+  },
+  {
+    "train_number": "720",
+    "train_name": "PAHARIKA EXPRESS (720)",
+    "cities": [
+      "Sylhet",
+      "Maijgaon",
+      "Kulaura",
+      "Shamshernagar",
+      "Bhanugach",
+      "Sreemangal",
+      "Shaistaganj",
+      "Nayapara",
+      "Harashpur",
+      "Akhaura",
+      "Quasba",
+      "Cumilla",
+      "Laksam",
+      "Nangolkot",
+      "Feni",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "721",
+    "train_name": "MOHANAGAR EXPRESS (721)",
+    "cities": [
+      "Chattogram",
+      "Feni",
+      "Nangolkot",
+      "Laksam",
+      "Cumilla",
+      "Quasba",
+      "Akhaura",
+      "Brahmanbaria",
+      "Ashuganj",
+      "Bhairab_Bazar",
+      "Narsingdi",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "722",
+    "train_name": "MOHANAGAR EXPRESS (722)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Bhairab_Bazar",
+      "Ashuganj",
+      "Brahmanbaria",
+      "Akhaura",
+      "Quasba",
+      "Cumilla",
+      "Laksam",
+      "Nangolkot",
+      "Feni",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "723",
+    "train_name": "UDAYAN EXPRESS (723)",
+    "cities": [
+      "Chattogram",
+      "Feni",
+      "Laksam",
+      "Cumilla",
+      "Akhaura",
+      "Shaistaganj",
+      "Sreemangal",
+      "Shamshernagar",
+      "Kulaura",
+      "Maijgaon",
+      "Sylhet"
+    ]
+  },
+  {
+    "train_number": "724",
+    "train_name": "UDAYAN EXPRESS (724)",
+    "cities": [
+      "Sylhet",
+      "Maijgaon",
+      "Baramchal",
+      "Kulaura",
+      "Shamshernagar",
+      "Sreemangal",
+      "Shaistaganj",
+      "Akhaura",
+      "Cumilla",
+      "Laksam",
+      "Feni",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "729",
+    "train_name": "MEGHNA EXPRESS (729)",
+    "cities": [
+      "Chattogram",
+      "Kumira",
+      "Feni",
+      "Hasanpur",
+      "Nangolkot",
+      "Laksam",
+      "Chitoshi_Road",
+      "Meher",
+      "Hajiganj",
+      "Modhu_Road",
+      "Chandpur_Court",
+      "Chandpur"
+    ]
+  },
+  {
+    "train_number": "730",
+    "train_name": "MEGHNA EXPRESS (730)",
+    "cities": [
+      "Chandpur",
+      "Chandpur_Court",
+      "Modhu_Road",
+      "Hajiganj",
+      "Meher",
+      "Chitoshi_Road",
+      "Laksam",
+      "Nangolkot",
+      "Hasanpur",
+      "Feni",
+      "Kumira",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "735",
+    "train_name": "AGHNIBINA EXPRESS (735)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Gafargaon",
+      "Mymensingh",
+      "Narundi",
+      "Jamalpur_Town",
+      "Kendua_Bazar",
+      "Sarishabari",
+      "Tarakandi"
+    ]
+  },
+  {
+    "train_number": "736",
+    "train_name": "AGHNIBINA EXPRESS (736)",
+    "cities": [
+      "Tarakandi",
+      "Sarishabari",
+      "Kendua_Bazar",
+      "Jamalpur_Town",
+      "Narundi",
+      "Mymensingh",
+      "Gafargaon",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "737",
+    "train_name": "EGAROSINDHUR PROVATI (737)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Methikanda",
+      "Bhairab_Bazar",
+      "Kuliarchar",
+      "Bajitpur",
+      "Sararchar",
+      "Manikkhali",
+      "Gachihata",
+      "Kishorganj"
+    ]
+  },
+  {
+    "train_number": "738",
+    "train_name": "EGAROSINDHUR PROVATI (738)",
+    "cities": [
+      "Kishorganj",
+      "Gachihata",
+      "Manikkhali",
+      "Sararchar",
+      "Bajitpur",
+      "Kuliarchar",
+      "Bhairab_Bazar",
+      "Methikanda",
+      "Narsingdi",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "739",
+    "train_name": "UPABAN EXPRESS (739)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Bhairab_Bazar",
+      "Shaistaganj",
+      "Sreemangal",
+      "Bhanugach",
+      "Shamshernagar",
+      "Kulaura",
+      "Baramchal",
+      "Maijgaon",
+      "Sylhet"
+    ]
+  },
+  {
+    "train_number": "740",
+    "train_name": "UPABAN EXPRESS (740)",
+    "cities": [
+      "Sylhet",
+      "Maijgaon",
+      "Baramchal",
+      "Kulaura",
+      "Shamshernagar",
+      "Bhanugach",
+      "Sreemangal",
+      "Shaistaganj",
+      "Bhairab_Bazar",
+      "Narsingdi",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "741",
+    "train_name": "TURNA (741)",
+    "cities": [
+      "Chattogram",
+      "Feni",
+      "Laksam",
+      "Cumilla",
+      "Akhaura",
+      "Brahmanbaria",
+      "Bhairab_Bazar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "742",
+    "train_name": "TURNA (742)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Bhairab_Bazar",
+      "Brahmanbaria",
+      "Akhaura",
+      "Cumilla",
+      "Laksam",
+      "Feni",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "743",
+    "train_name": "BHRAMMAPUTRA EXPRESS (743)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Sreepur",
+      "Gafargaon",
+      "Mymensingh",
+      "Piyarpur",
+      "Nandina",
+      "Jamalpur_Town",
+      "Melandah_Bazar",
+      "Islampur_Bazar",
+      "Dewanganj_Bazar"
+    ]
+  },
+  {
+    "train_number": "744",
+    "train_name": "BHRAMMAPUTRA EXPRESS (744)",
+    "cities": [
+      "Dewanganj_Bazar",
+      "Islampur_Bazar",
+      "Melandah_Bazar",
+      "Jamalpur_Town",
+      "Nandina",
+      "Piyarpur",
+      "Mymensingh",
+      "Gafargaon",
+      "Sreepur",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "745",
+    "train_name": "JAMUNA EXPRESS (745)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Sreepur",
+      "Kaoraid",
+      "Gafargaon",
+      "Mymensingh",
+      "Bidyaganj",
+      "Piyarpur",
+      "Narundi",
+      "Jamalpur_Town",
+      "Sarishabari",
+      "Tarakandi"
+    ]
+  },
+  {
+    "train_number": "746",
+    "train_name": "JAMUNA EXPRESS (746)",
+    "cities": [
+      "Tarakandi",
+      "Sarishabari",
+      "Jamalpur_Town",
+      "Narundi",
+      "Piyarpur",
+      "Bidyaganj",
+      "Mymensingh",
+      "Gafargaon",
+      "Kaoraid",
+      "Sreepur",
+      "Joydebpur",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "749",
+    "train_name": "EGAROSINDHUR GODHULI (749)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Methikanda",
+      "Bhairab_Bazar",
+      "Kuliarchar",
+      "Bajitpur",
+      "Sararchar",
+      "Manikkhali",
+      "Gachihata",
+      "Kishorganj"
+    ]
+  },
+  {
+    "train_number": "750",
+    "train_name": "EGAROSINDHUR GODHULI (750)",
+    "cities": [
+      "Kishorganj",
+      "Gachihata",
+      "Manikkhali",
+      "Sararchar",
+      "Bajitpur",
+      "Kuliarchar",
+      "Bhairab_Bazar",
+      "Methikanda",
+      "Narsingdi",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "773",
+    "train_name": "KALNI EXPRESS (773)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Brahmanbaria",
+      "Azampur",
+      "Harashpur",
+      "Shaistaganj",
+      "Sreemangal",
+      "Shamshernagar",
+      "Kulaura",
+      "Maijgaon",
+      "Sylhet"
+    ]
+  },
+  {
+    "train_number": "774",
+    "train_name": "KALNI EXPRESS (774)",
+    "cities": [
+      "Sylhet",
+      "Maijgaon",
+      "Kulaura",
+      "Shamshernagar",
+      "Sreemangal",
+      "Shaistaganj",
+      "Harashpur",
+      "Azampur",
+      "Brahmanbaria",
+      "Bhairab_Bazar",
+      "Narsingdi",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "777",
+    "train_name": "HAWR EXPRESS (777)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Gafargaon",
+      "Mymensingh",
+      "Gouripur_Myn",
+      "Shyamgonj",
+      "Netrakona",
+      "Thakrokona",
+      "Barhatta",
+      "Mohanganj"
+    ]
+  },
+  {
+    "train_number": "778",
+    "train_name": "HAWR EXPRESS (778)",
+    "cities": [
+      "Mohanganj",
+      "Barhatta",
+      "Thakrokona",
+      "Netrakona",
+      "Shyamgonj",
+      "Gouripur_Myn",
+      "Mymensingh",
+      "Gafargaon",
+      "Joydebpur",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "781",
+    "train_name": "KISHORGANJ EXPRESS (781)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Methikanda",
+      "Bhairab_Bazar",
+      "Kuliarchar",
+      "Bajitpur",
+      "Sararchar",
+      "Manikkhali",
+      "Gachihata",
+      "Kishorganj"
+    ]
+  },
+  {
+    "train_number": "782",
+    "train_name": "KISHORGANJ EXPRESS (782)",
+    "cities": [
+      "Kishorganj",
+      "Gachihata",
+      "Manikkhali",
+      "Sararchar",
+      "Bajitpur",
+      "Kuliarchar",
+      "Bhairab_Bazar",
+      "Methikanda",
+      "Narsingdi",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "785",
+    "train_name": "BIJOY EXPRESS (785)",
+    "cities": [
+      "Chattogram",
+      "Bhatiary",
+      "Feni",
+      "Laksam",
+      "Cumilla",
+      "Akhaura",
+      "Bhairab_Bazar",
+      "Sararchar",
+      "Kishorganj",
+      "Atharabari",
+      "Gouripur_Myn",
+      "Mymensingh",
+      "Piyarpur",
+      "Jamalpur_Town"
+    ]
+  },
+  {
+    "train_number": "786",
+    "train_name": "BIJOY EXPRESS (786)",
+    "cities": [
+      "Jamalpur_Town",
+      "Piyarpur",
+      "Mymensingh",
+      "Gouripur_Myn",
+      "Atharabari",
+      "Kishorganj",
+      "Sararchar",
+      "Bhairab_Bazar",
+      "Akhaura",
+      "Cumilla",
+      "Laksam",
+      "Feni",
+      "Bhatiary",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "787",
+    "train_name": "SONAR BANGLA EXPRESS (787)",
+    "cities": [
+      "Chattogram",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "788",
+    "train_name": "SONAR BANGLA EXPRESS (788)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "789",
+    "train_name": "MOHONGANJ EXPRESS (789)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Gafargaon",
+      "Mymensingh",
+      "Gouripur_Myn",
+      "Shyamgonj",
+      "Netrakona",
+      "Thakrokona",
+      "Barhatta",
+      "Mohanganj"
+    ]
+  },
+  {
+    "train_number": "790",
+    "train_name": "MOHONGANJ EXPRESS (790)",
+    "cities": [
+      "Mohanganj",
+      "Barhatta",
+      "Thakrokona",
+      "Netrakona",
+      "Shyamgonj",
+      "Gouripur_Myn",
+      "Mymensingh",
+      "Gafargaon",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "799",
+    "train_name": "JAMALPUR EXPRESS (799)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Gafargaon",
+      "Mymensingh",
+      "Bidyaganj",
+      "Narundi",
+      "Nandina",
+      "Jamalpur_Town",
+      "Jaforshahi",
+      "Sarishabari",
+      "Tarakandi",
+      "Jagannathgonj_Bazar",
+      "Hemnagar",
+      "Bhuapur"
+    ]
+  },
+  {
+    "train_number": "800",
+    "train_name": "JAMALPUR EXPRESS (800)",
+    "cities": [
+      "Bhuapur",
+      "Hemnagar",
+      "Jagannathgonj_Bazar",
+      "Tarakandi",
+      "Sarishabari",
+      "Jaforshahi",
+      "Jamalpur_Town",
+      "Nandina",
+      "Narundi",
+      "Bidyaganj",
+      "Mymensingh",
+      "Gafargaon",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "801",
+    "train_name": "CHATTALA EXPRESS (801)",
+    "cities": [
+      "Chattogram",
+      "Kumira",
+      "Feni",
+      "Hasanpur",
+      "Nangolkot",
+      "Laksam",
+      "Cumilla",
+      "Shashidal",
+      "Quasba",
+      "Akhaura",
+      "Brahmanbaria",
+      "Bhairab_Bazar",
+      "Methikanda",
+      "Narsingdi",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "802",
+    "train_name": "CHATTALA EXPRESS (802)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Narsingdi",
+      "Methikanda",
+      "Bhairab_Bazar",
+      "Brahmanbaria",
+      "Akhaura",
+      "Quasba",
+      "Shashidal",
+      "Cumilla",
+      "Laksam",
+      "Nangolkot",
+      "Hasanpur",
+      "Feni",
+      "Kumira",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "813",
+    "train_name": "COXS BAZAR EXPRESS (813)",
+    "cities": [
+      "Cox's Bazar",
+      "Chattogram",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "814",
+    "train_name": "COXS BAZAR EXPRESS (814)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Chattogram",
+      "Cox's Bazar"
+    ]
+  },
+  {
+    "train_number": "815",
+    "train_name": "PARJOTAK EXPRESS (815)",
+    "cities": [
+      "Cox's Bazar",
+      "Chattogram",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "816",
+    "train_name": "PARJOTAK EXPRESS (816)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Chattogram",
+      "Cox's Bazar"
+    ]
+  },
+  {
+    "train_number": "821",
+    "train_name": "SHAIKAT EXPRESS (821)",
+    "cities": [
+      "Chattogram",
+      "Sholoshohor",
+      "Janali_Hat",
+      "Patiya",
+      "Dohazari",
+      "Satkania",
+      "HARBANG",
+      "Chakaria",
+      "Dulahazara",
+      "Ramu",
+      "Cox's Bazar"
+    ]
+  },
+  {
+    "train_number": "822",
+    "train_name": "PROBAL EXPRESS (822)",
+    "cities": [
+      "Cox's Bazar",
+      "Ramu",
+      "ISLAMABAD",
+      "Dulahazara",
+      "Chakaria",
+      "HARBANG",
+      "LOHAGARA",
+      "Satkania",
+      "Dohazari",
+      "Patiya",
+      "GOMDANDI",
+      "Sholoshohor",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "823",
+    "train_name": "PROBAL EXPRESS (823)",
+    "cities": [
+      "Chattogram",
+      "Sholoshohor",
+      "GOMDANDI",
+      "Patiya",
+      "Dohazari",
+      "Satkania",
+      "LOHAGARA",
+      "HARBANG",
+      "Chakaria",
+      "Dulahazara",
+      "ISLAMABAD",
+      "Ramu",
+      "Cox's Bazar"
+    ]
+  },
+  {
+    "train_number": "824",
+    "train_name": "SHAIKAT EXPRESS (824)",
+    "cities": [
+      "Cox's Bazar",
+      "Ramu",
+      "Dulahazara",
+      "Chakaria",
+      "HARBANG",
+      "Satkania",
+      "Dohazari",
+      "Patiya",
+      "Janali_Hat",
+      "Chattogram"
+    ]
+  },
+  {
+    "train_number": "705",
+    "train_name": "EKOTA EXPRESS (705)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Tangail",
+      "Ibrahimabad",
+      "SH M Monsur Ali",
+      "Ullapara",
+      "Ishwardi Bypass",
+      "Natore",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Panchbibi",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Chirirbandar",
+      "Dinajpur",
+      "Setabganj",
+      "Pirganj",
+      "Thakurgaon_Road",
+      "Ruhia",
+      "Kismat",
+      "Panchagarh"
+    ]
+  },
+  {
+    "train_number": "706",
+    "train_name": "EKOTA EXPRESS (706)",
+    "cities": [
+      "Panchagarh",
+      "Kismat",
+      "Ruhia",
+      "Thakurgaon_Road",
+      "Pirganj",
+      "Setabganj",
+      "Dinajpur",
+      "Chirirbandar",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Panchbibi",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Natore",
+      "Ullapara",
+      "Ibrahimabad",
+      "Tangail",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "713",
+    "train_name": "KOROTOA EXPRESS (713)",
+    "cities": [
+      "Santahar",
+      "Bogura",
+      "Sonatola",
+      "Mahimaganj",
+      "Bonar_Para",
+      "Gaibandha",
+      "Bamondanga",
+      "Pirgacha",
+      "Kaunia",
+      "Teesta_Junction",
+      "Lalmonirhat",
+      "Aditmari",
+      "Kankina",
+      "Tushbhandar",
+      "Hatibandha",
+      "Barkhata",
+      "Baura",
+      "Patgram",
+      "Burimari"
+    ]
+  },
+  {
+    "train_number": "714",
+    "train_name": "KOROTOA EXPRESS (714)",
+    "cities": [
+      "Burimari",
+      "Patgram",
+      "Baura",
+      "Barkhata",
+      "Hatibandha",
+      "Tushbhandar",
+      "Kankina",
+      "Aditmari",
+      "Lalmonirhat",
+      "Teesta_Junction",
+      "Kaunia",
+      "Pirgacha",
+      "Bamondanga",
+      "Gaibandha",
+      "Bonar_Para",
+      "Mahimaganj",
+      "Sonatola",
+      "Bogura",
+      "Santahar"
+    ]
+  },
+  {
+    "train_number": "715",
+    "train_name": "KAPOTAKSHA EXPRESS (715)",
+    "cities": [
+      "Khulna",
+      "Noapara",
+      "Jashore",
+      "Mubarakganj",
+      "Kotchandpur",
+      "Safdarpur",
+      "Darshana_Halt",
+      "Chuadanga",
+      "Alamdanga",
+      "Poradaha",
+      "Mirpur",
+      "Bheramara",
+      "Paksey",
+      "Ishwardi",
+      "Azim Nagar",
+      "Abdulpur",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "716",
+    "train_name": "KAPOTAKSHA EXPRESS (716)",
+    "cities": [
+      "Rajshahi",
+      "Azim Nagar",
+      "Ishwardi",
+      "Paksey",
+      "Bheramara",
+      "Mirpur",
+      "Poradaha",
+      "Alamdanga",
+      "Chuadanga",
+      "Darshana_Halt",
+      "Safdarpur",
+      "Kotchandpur",
+      "Mubarakganj",
+      "Jashore",
+      "Noapara",
+      "Khulna"
+    ]
+  },
+  {
+    "train_number": "725",
+    "train_name": "SUNDARBAN EXPRESS (725)",
+    "cities": [
+      "Khulna",
+      "Daulatpur",
+      "Noapara",
+      "Jashore",
+      "Mubarakganj",
+      "Kotchandpur",
+      "Darshana_Halt",
+      "Chuadanga",
+      "Alamdanga",
+      "Poradaha",
+      "Kushtia_Court",
+      "Kumarkhali",
+      "Pangsha",
+      "Rajbari",
+      "Faridpur",
+      "Bhanga",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "726",
+    "train_name": "SUNDARBAN EXPRESS (726)",
+    "cities": [
+      "Dhaka",
+      "Bhanga",
+      "Faridpur",
+      "Rajbari",
+      "Pangsha",
+      "Kumarkhali",
+      "Kushtia_Court",
+      "Poradaha",
+      "Alamdanga",
+      "Chuadanga",
+      "Darshana_Halt",
+      "Kotchandpur",
+      "Mubarakganj",
+      "Jashore",
+      "Noapara",
+      "Daulatpur",
+      "Khulna"
+    ]
+  },
+  {
+    "train_number": "727",
+    "train_name": "RUPSHA EXPRESS (727)",
+    "cities": [
+      "Khulna",
+      "Noapara",
+      "Jashore",
+      "Mubarakganj",
+      "Kotchandpur",
+      "Darshana_Halt",
+      "Chuadanga",
+      "Alamdanga",
+      "Poradaha",
+      "Bheramara",
+      "Paksey",
+      "Ishwardi",
+      "Natore",
+      "Ahsanganj",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Saidpur",
+      "Nilphamari",
+      "Domar",
+      "Chilahati"
+    ]
+  },
+  {
+    "train_number": "728",
+    "train_name": "RUPSHA EXPRESS (728)",
+    "cities": [
+      "Chilahati",
+      "Domar",
+      "Nilphamari",
+      "Saidpur",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Ahsanganj",
+      "Natore",
+      "Ishwardi",
+      "Paksey",
+      "Bheramara",
+      "Poradaha",
+      "Alamdanga",
+      "Chuadanga",
+      "Darshana_Halt",
+      "Kotchandpur",
+      "Mubarakganj",
+      "Jashore",
+      "Noapara",
+      "Khulna"
+    ]
+  },
+  {
+    "train_number": "731",
+    "train_name": "BARENDRA EXPRESS (731)",
+    "cities": [
+      "Rajshahi",
+      "Abdulpur",
+      "Natore",
+      "Madhnagar",
+      "Ahsanganj",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Panchbibi",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Saidpur",
+      "Nilphamari",
+      "Domar",
+      "Chilahati"
+    ]
+  },
+  {
+    "train_number": "732",
+    "train_name": "BARENDRA EXPRESS (732)",
+    "cities": [
+      "Chilahati",
+      "Domar",
+      "Nilphamari",
+      "Saidpur",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Hili",
+      "Panchbibi",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Ahsanganj",
+      "Madhnagar",
+      "Natore",
+      "Abdulpur",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "733",
+    "train_name": "TITUMIR EXPRESS (733)",
+    "cities": [
+      "Rajshahi",
+      "Abdulpur",
+      "Natore",
+      "Madhnagar",
+      "Ahsanganj",
+      "Santahar",
+      "Akkelpur",
+      "Jamalganj",
+      "Joypurhat",
+      "Panchbibi",
+      "Hili",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Saidpur",
+      "Nilphamari",
+      "Domar",
+      "Chilahati"
+    ]
+  },
+  {
+    "train_number": "734",
+    "train_name": "TITUMIR EXPRESS (734)",
+    "cities": [
+      "Chilahati",
+      "Domar",
+      "Nilphamari",
+      "Saidpur",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Panchbibi",
+      "Joypurhat",
+      "Jamalganj",
+      "Akkelpur",
+      "Santahar",
+      "Ahsanganj",
+      "Madhnagar",
+      "Natore",
+      "Abdulpur",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "747",
+    "train_name": "SIMANTA EXPRESS (747)",
+    "cities": [
+      "Khulna",
+      "Daulatpur",
+      "Noapara",
+      "Jashore",
+      "Mubarakganj",
+      "Kotchandpur",
+      "Darshana_Halt",
+      "Chuadanga",
+      "Alamdanga",
+      "Poradaha",
+      "Bheramara",
+      "Ishwardi",
+      "Natore",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Saidpur",
+      "Nilphamari",
+      "Domar",
+      "Chilahati"
+    ]
+  },
+  {
+    "train_number": "748",
+    "train_name": "SIMANTA EXPRESS (748)",
+    "cities": [
+      "Chilahati",
+      "Domar",
+      "Nilphamari",
+      "Saidpur",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Natore",
+      "Ishwardi",
+      "Bheramara",
+      "Poradaha",
+      "Alamdanga",
+      "Chuadanga",
+      "Darshana_Halt",
+      "Kotchandpur",
+      "Mubarakganj",
+      "Jashore",
+      "Noapara",
+      "Daulatpur",
+      "Khulna"
+    ]
+  },
+  {
+    "train_number": "751",
+    "train_name": "LALMONI EXPRESS (751)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Tangail",
+      "Ibrahimabad",
+      "SH M Monsur Ali",
+      "Ullapara",
+      "Boral_Bridge",
+      "Azim Nagar",
+      "Natore",
+      "Santahar",
+      "Bogura",
+      "Sonatola",
+      "Bonar_Para",
+      "Gaibandha",
+      "Bamondanga",
+      "Pirgacha",
+      "Kaunia",
+      "Teesta_Junction",
+      "Lalmonirhat"
+    ]
+  },
+  {
+    "train_number": "752",
+    "train_name": "LALMONI EXPRESS (752)",
+    "cities": [
+      "Lalmonirhat",
+      "Teesta_Junction",
+      "Kaunia",
+      "Pirgacha",
+      "Bamondanga",
+      "Gaibandha",
+      "Bonar_Para",
+      "Sonatola",
+      "Bogura",
+      "Santahar",
+      "Natore",
+      "Azim Nagar",
+      "Boral_Bridge",
+      "Ullapara",
+      "SH M Monsur Ali",
+      "Ibrahimabad",
+      "Tangail",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "753",
+    "train_name": "SILKCITY EXPRESS (753)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Mirzapur",
+      "Tangail",
+      "Ibrahimabad",
+      "SH M Monsur Ali",
+      "Jamtail",
+      "Ullapara",
+      "Boral_Bridge",
+      "Chatmohar",
+      "Ishwardi Bypass",
+      "Abdulpur",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "754",
+    "train_name": "SILKCITY EXPRESS (754)",
+    "cities": [
+      "Rajshahi",
+      "Abdulpur",
+      "Ishwardi Bypass",
+      "Chatmohar",
+      "Boral_Bridge",
+      "Ullapara",
+      "Jamtail",
+      "SH M Monsur Ali",
+      "Ibrahimabad",
+      "Tangail",
+      "Mirzapur",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "755",
+    "train_name": "MADHUMATI EXPRESS (755)",
+    "cities": [
+      "Dhaka",
+      "Sreenagar",
+      "Mawa",
+      "Padma",
+      "Shibchar",
+      "Bhanga",
+      "Pukuria",
+      "Talma",
+      "Faridpur",
+      "Amirabad",
+      "Pachuria",
+      "Rajbari",
+      "Kalukhali",
+      "Pangsha",
+      "Khoksha",
+      "Kumarkhali",
+      "Kushtia_Court",
+      "Poradaha",
+      "Mirpur",
+      "Bheramara",
+      "Paksey",
+      "Ishwardi",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "756",
+    "train_name": "MADHUMATI EXPRESS (756)",
+    "cities": [
+      "Rajshahi",
+      "Ishwardi",
+      "Paksey",
+      "Bheramara",
+      "Mirpur",
+      "Poradaha",
+      "Kushtia_Court",
+      "Kumarkhali",
+      "Khoksha",
+      "Pangsha",
+      "Kalukhali",
+      "Rajbari",
+      "Pachuria",
+      "Amirabad",
+      "Faridpur",
+      "Talma",
+      "Pukuria",
+      "Bhanga",
+      "Shibchar",
+      "Padma",
+      "Mawa",
+      "Sreenagar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "757",
+    "train_name": "DRUTOJAN EXPRESS (757)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Tangail",
+      "Ibrahimabad",
+      "Jamtail",
+      "Chatmohar",
+      "Natore",
+      "Ahsanganj",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Panchbibi",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Chirirbandar",
+      "Dinajpur",
+      "Setabganj",
+      "Pirganj",
+      "Thakurgaon_Road",
+      "Ruhia",
+      "Kismat",
+      "Panchagarh"
+    ]
+  },
+  {
+    "train_number": "758",
+    "train_name": "DRUTOJAN EXPRESS (758)",
+    "cities": [
+      "Panchagarh",
+      "Kismat",
+      "Ruhia",
+      "Thakurgaon_Road",
+      "Pirganj",
+      "Setabganj",
+      "Dinajpur",
+      "Chirirbandar",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Panchbibi",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Ahsanganj",
+      "Natore",
+      "Ishwardi Bypass",
+      "Chatmohar",
+      "Jamtail",
+      "Ibrahimabad",
+      "Tangail",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "759",
+    "train_name": "PADMA EXPRESS (759)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Tangail",
+      "Ibrahimabad",
+      "SH M Monsur Ali",
+      "Ullapara",
+      "Boral_Bridge",
+      "Chatmohar",
+      "Ishwardi Bypass",
+      "Abdulpur",
+      "Sardah_Road",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "760",
+    "train_name": "PADMA EXPRESS (760)",
+    "cities": [
+      "Rajshahi",
+      "Sardah_Road",
+      "Abdulpur",
+      "Ishwardi Bypass",
+      "Chatmohar",
+      "Boral_Bridge",
+      "Ullapara",
+      "SH M Monsur Ali",
+      "Ibrahimabad",
+      "Tangail",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "761",
+    "train_name": "SAGARDARI EXPRESS (761)",
+    "cities": [
+      "Khulna",
+      "Noapara",
+      "Jashore",
+      "Mubarakganj",
+      "Kotchandpur",
+      "Safdarpur",
+      "Darshana_Halt",
+      "Chuadanga",
+      "Alamdanga",
+      "Poradaha",
+      "Mirpur",
+      "Bheramara",
+      "Paksey",
+      "Ishwardi",
+      "Azim Nagar",
+      "Abdulpur",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "762",
+    "train_name": "SAGARDARI EXPRESS (762)",
+    "cities": [
+      "Rajshahi",
+      "Abdulpur",
+      "Azim Nagar",
+      "Ishwardi",
+      "Paksey",
+      "Bheramara",
+      "Mirpur",
+      "Poradaha",
+      "Alamdanga",
+      "Chuadanga",
+      "Darshana_Halt",
+      "Safdarpur",
+      "Kotchandpur",
+      "Mubarakganj",
+      "Jashore",
+      "Noapara",
+      "Khulna"
+    ]
+  },
+  {
+    "train_number": "763",
+    "train_name": "CHITRA EXPRESS (763)",
+    "cities": [
+      "Khulna",
+      "Noapara",
+      "Jashore",
+      "Mubarakganj",
+      "Kotchandpur",
+      "Darshana_Halt",
+      "Chuadanga",
+      "Alamdanga",
+      "Poradaha",
+      "Mirpur",
+      "Bheramara",
+      "Ishwardi",
+      "Chatmohar",
+      "Boral_Bridge",
+      "Ullapara",
+      "SH M Monsur Ali",
+      "Ibrahimabad",
+      "Tangail",
+      "Joydebpur",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "764",
+    "train_name": "CHITRA EXPRESS (764)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Tangail",
+      "Ibrahimabad",
+      "SH M Monsur Ali",
+      "Ullapara",
+      "Boral_Bridge",
+      "Chatmohar",
+      "Ishwardi",
+      "Bheramara",
+      "Poradaha",
+      "Alamdanga",
+      "Chuadanga",
+      "Kotchandpur",
+      "Mubarakganj",
+      "Jashore",
+      "Noapara",
+      "Khulna"
+    ]
+  },
+  {
+    "train_number": "765",
+    "train_name": "NILSAGAR EXPRESS (765)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Ibrahimabad",
+      "Muladhuli",
+      "Natore",
+      "Ahsanganj",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Saidpur",
+      "Nilphamari",
+      "Domar",
+      "Chilahati"
+    ]
+  },
+  {
+    "train_number": "766",
+    "train_name": "NILSAGAR EXPRESS (766)",
+    "cities": [
+      "Chilahati",
+      "Domar",
+      "Nilphamari",
+      "Saidpur",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Ahsanganj",
+      "Natore",
+      "Muladhuli",
+      "Ibrahimabad",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "767",
+    "train_name": "DOLONCHAPA EXPRESS (767)",
+    "cities": [
+      "Santahar",
+      "Talora",
+      "Bogura",
+      "Sonatola",
+      "Mahimaganj",
+      "Bonar_Para",
+      "Badiakhali",
+      "Gaibandha",
+      "Bamondanga",
+      "Pirgacha",
+      "Kaunia",
+      "Rangpur",
+      "Badarganj",
+      "Kholahati",
+      "Parbatipur",
+      "Chirirbandar",
+      "Dinajpur",
+      "Setabganj",
+      "Pirganj",
+      "Bhomradah",
+      "Thakurgaon_Road",
+      "Ruhia",
+      "Kismat",
+      "Panchagarh"
+    ]
+  },
+  {
+    "train_number": "768",
+    "train_name": "DOLONCHAPA EXPRESS (768)",
+    "cities": [
+      "Panchagarh",
+      "Kismat",
+      "Ruhia",
+      "Thakurgaon_Road",
+      "Bhomradah",
+      "Pirganj",
+      "Setabganj",
+      "Dinajpur",
+      "Chirirbandar",
+      "Parbatipur",
+      "Kholahati",
+      "Badarganj",
+      "Rangpur",
+      "Kaunia",
+      "Pirgacha",
+      "Bamondanga",
+      "Gaibandha",
+      "Badiakhali",
+      "Bonar_Para",
+      "Mahimaganj",
+      "Sonatola",
+      "Bogura",
+      "Talora",
+      "Santahar"
+    ]
+  },
+  {
+    "train_number": "769",
+    "train_name": "DHUMKETU EXPRESS (769)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Tangail",
+      "Ibrahimabad",
+      "SH M Monsur Ali",
+      "Jamtail",
+      "Ullapara",
+      "Boral_Bridge",
+      "Chatmohar",
+      "Ishwardi Bypass",
+      "Abdulpur",
+      "Arani",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "770",
+    "train_name": "DHUMKETU EXPRESS (770)",
+    "cities": [
+      "Rajshahi",
+      "Arani",
+      "Abdulpur",
+      "Ishwardi Bypass",
+      "Chatmohar",
+      "Boral_Bridge",
+      "SH M Monsur Ali",
+      "Ibrahimabad",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "771",
+    "train_name": "RANGPUR EXPRESS (771)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Ibrahimabad",
+      "Chatmohar",
+      "Natore",
+      "Santahar",
+      "Talora",
+      "Bogura",
+      "Sonatola",
+      "Bonar_Para",
+      "Gaibandha",
+      "Bamondanga",
+      "Pirgacha",
+      "Kaunia",
+      "Kurigram",
+      "Rangpur"
+    ]
+  },
+  {
+    "train_number": "772",
+    "train_name": "RANGPUR EXPRESS (772)",
+    "cities": [
+      "Rangpur",
+      "Kaunia",
+      "Kurigram",
+      "Pirgacha",
+      "Bamondanga",
+      "Gaibandha",
+      "Bonar_Para",
+      "Sonatola",
+      "Bogura",
+      "Talora",
+      "Santahar",
+      "Natore",
+      "Ibrahimabad",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "775",
+    "train_name": "SIRAJGANJ EXPRESS (775)",
+    "cities": [
+      "Sirajganj_Bazar",
+      "Sirajganjraipur",
+      "Jamtail",
+      "SH M Monsur Ali",
+      "SOYDABAD",
+      "Ibrahimabad",
+      "Tangail",
+      "Mirzapur",
+      "Hi-Tech City",
+      "Joydebpur",
+      "Biman_Bandar",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "776",
+    "train_name": "SIRAJGANJ EXPRESS (776)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Mirzapur",
+      "Tangail",
+      "Ibrahimabad",
+      "SH M Monsur Ali",
+      "Jamtail",
+      "Sirajganjraipur",
+      "Sirajganj_Bazar"
+    ]
+  },
+  {
+    "train_number": "779",
+    "train_name": "DHALARCHAR EXPRESS (779)",
+    "cities": [
+      "Dhalarchar",
+      "Pabna",
+      "Ishwardi Bypass",
+      "Azim Nagar",
+      "Abdulpur",
+      "Arani",
+      "Sardah_Road",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "780",
+    "train_name": "DHALARCHAR EXPRESS (780)",
+    "cities": [
+      "Rajshahi",
+      "Sardah_Road",
+      "Arani",
+      "Abdulpur",
+      "Azim Nagar",
+      "Ishwardi Bypass",
+      "Majhgram",
+      "Dashuria",
+      "Tebunia",
+      "Pabna",
+      "Raghabpur",
+      "Dublia",
+      "Tantibandha",
+      "Sathia_Rajapur",
+      "Kashinathpur",
+      "Badherhat",
+      "Dhalarchar"
+    ]
+  },
+  {
+    "train_number": "783",
+    "train_name": "TUNGIPARA EXPRESS (783)",
+    "cities": [
+      "Gobra",
+      "Borashi",
+      "Gopalganj",
+      "Chandradighalia",
+      "Choto Bahirbag",
+      "Chapta",
+      "Kashiani",
+      "Boalmari_Bazar",
+      "Madhukhali",
+      "Baharpur",
+      "Kalukhali",
+      "Pangsha",
+      "Khoksha",
+      "Kumarkhali",
+      "Kushtia_Court",
+      "Poradaha",
+      "Bheramara",
+      "Ishwardi",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "784",
+    "train_name": "TUNGIPARA EXPRESS (784)",
+    "cities": [
+      "Rajshahi",
+      "Ishwardi",
+      "Bheramara",
+      "Poradaha",
+      "Kushtia_Court",
+      "Kumarkhali",
+      "Khoksha",
+      "Pangsha",
+      "Kalukhali",
+      "Naliagram",
+      "Baharpur",
+      "Madhukhali",
+      "Boalmari_Bazar",
+      "Kashiani",
+      "Chapta",
+      "Choto Bahirbag",
+      "Chandradighalia",
+      "Gopalganj",
+      "Borashi",
+      "Khatra",
+      "Gobra"
+    ]
+  },
+  {
+    "train_number": "791",
+    "train_name": "BANALATA EXPRESS (791)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Rajshahi",
+      "Chapainawabganj"
+    ]
+  },
+  {
+    "train_number": "792",
+    "train_name": "BANALATA EXPRESS (792)",
+    "cities": [
+      "Chapainawabganj",
+      "Rajshahi",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "793",
+    "train_name": "PANCHAGARH EXPRESS (793)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Natore",
+      "Santahar",
+      "Joypurhat",
+      "Parbatipur",
+      "Dinajpur",
+      "Pirganj",
+      "Thakurgaon_Road",
+      "Panchagarh"
+    ]
+  },
+  {
+    "train_number": "794",
+    "train_name": "PANCHAGARH EXPRESS (794)",
+    "cities": [
+      "Panchagarh",
+      "Thakurgaon_Road",
+      "Pirganj",
+      "Dinajpur",
+      "Parbatipur",
+      "Joypurhat",
+      "Santahar",
+      "Natore",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "795",
+    "train_name": "BENAPOLE EXPRESS (795)",
+    "cities": [
+      "Benapole",
+      "Jhikargacha",
+      "Jashore",
+      "Mubarakganj",
+      "Kotchandpur",
+      "Darshana_Halt",
+      "Chuadanga",
+      "Alamdanga",
+      "Poradaha",
+      "Kushtia_Court",
+      "Khoksha",
+      "Kalukhali",
+      "Rajbari",
+      "Faridpur",
+      "Bhanga",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "796",
+    "train_name": "BENAPOLE EXPRESS (796)",
+    "cities": [
+      "Dhaka",
+      "Bhanga",
+      "Faridpur",
+      "Rajbari",
+      "Kalukhali",
+      "Khoksha",
+      "Kushtia_Court",
+      "Poradaha",
+      "Alamdanga",
+      "Chuadanga",
+      "Darshana_Halt",
+      "Kotchandpur",
+      "Mubarakganj",
+      "Jashore",
+      "Jhikargacha",
+      "Benapole"
+    ]
+  },
+  {
+    "train_number": "797",
+    "train_name": "KURIGRAM EXPRESS (797)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Natore",
+      "Madhnagar",
+      "Santahar",
+      "Joypurhat",
+      "Parbatipur",
+      "Badarganj",
+      "Rangpur",
+      "Kaunia",
+      "Kurigram"
+    ]
+  },
+  {
+    "train_number": "798",
+    "train_name": "KURIGRAM EXPRESS (798)",
+    "cities": [
+      "Kurigram",
+      "Kaunia",
+      "Rangpur",
+      "Badarganj",
+      "Parbatipur",
+      "Joypurhat",
+      "Santahar",
+      "Madhnagar",
+      "Natore",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "803",
+    "train_name": "BANGLABANDHA EXPRESS (803)",
+    "cities": [
+      "Rajshahi",
+      "Abdulpur",
+      "Natore",
+      "Madhnagar",
+      "Ahsanganj",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Panchbibi",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Chirirbandar",
+      "Dinajpur",
+      "Setabganj",
+      "Pirganj",
+      "Shibganj",
+      "Thakurgaon_Road",
+      "Ruhia",
+      "Kismat",
+      "Panchagarh"
+    ]
+  },
+  {
+    "train_number": "804",
+    "train_name": "BANGLABANDHA EXPRESS (804)",
+    "cities": [
+      "Panchagarh",
+      "Kismat",
+      "Ruhia",
+      "Thakurgaon_Road",
+      "Shibganj",
+      "Pirganj",
+      "Setabganj",
+      "Dinajpur",
+      "Chirirbandar",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Panchbibi",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Ahsanganj",
+      "Madhnagar",
+      "Natore",
+      "Abdulpur",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "805",
+    "train_name": "CHILAHATI EXPRESS (805)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Joydebpur",
+      "Ishwardi Bypass",
+      "Azim Nagar",
+      "Natore",
+      "Santahar",
+      "Akkelpur",
+      "Joypurhat",
+      "Birampur",
+      "Fulbari",
+      "Parbatipur",
+      "Saidpur",
+      "Nilphamari",
+      "Domar",
+      "Chilahati"
+    ]
+  },
+  {
+    "train_number": "806",
+    "train_name": "CHILAHATI EXPRESS (806)",
+    "cities": [
+      "Chilahati",
+      "Domar",
+      "Nilphamari",
+      "Saidpur",
+      "Parbatipur",
+      "Fulbari",
+      "Birampur",
+      "Joypurhat",
+      "Akkelpur",
+      "Santahar",
+      "Natore",
+      "Azim Nagar",
+      "Ishwardi Bypass",
+      "Joydebpur",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "809",
+    "train_name": "BURIMARI EXPRESS (809)",
+    "cities": [
+      "Dhaka",
+      "Biman_Bandar",
+      "Ishwardi Bypass",
+      "Natore",
+      "Santahar",
+      "Bogura",
+      "Sonatola",
+      "Mahimaganj",
+      "Bonar_Para",
+      "Gaibandha",
+      "Kaunia",
+      "Lalmonirhat"
+    ]
+  },
+  {
+    "train_number": "810",
+    "train_name": "BURIMARI EXPRESS (810)",
+    "cities": [
+      "Lalmonirhat",
+      "Burimari",
+      "Patgram",
+      "Barkhata",
+      "Hatibandha",
+      "Tushbhandar",
+      "Kankina",
+      "Kaunia",
+      "Gaibandha",
+      "Bonar_Para",
+      "Mahimaganj",
+      "Sonatola",
+      "Bogura",
+      "Santahar",
+      "Natore",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "825",
+    "train_name": "JAHANABAD EXPRESS (825)",
+    "cities": [
+      "Khulna",
+      "Noapara",
+      "Singia",
+      "Narail",
+      "Lohagora",
+      "Kashiani",
+      "Bhanga_Junction",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "826",
+    "train_name": "JAHANABAD EXPRESS (826)",
+    "cities": [
+      "Dhaka",
+      "Bhanga_Junction",
+      "Kashiani",
+      "Lohagora",
+      "Narail",
+      "Singia",
+      "Noapara",
+      "Khulna"
+    ]
+  },
+  {
+    "train_number": "827",
+    "train_name": "RUPOSHI BANGLA EXPRESS (827)",
+    "cities": [
+      "Benapole",
+      "Jashore",
+      "Narail",
+      "Kashiani",
+      "Muksudpur",
+      "Bhanga_Junction",
+      "Dhaka"
+    ]
+  },
+  {
+    "train_number": "828",
+    "train_name": "RUPOSHI BANGLA EXPRESS (828)",
+    "cities": [
+      "Dhaka",
+      "Bhanga_Junction",
+      "Muksudpur",
+      "Kashiani",
+      "Narail",
+      "Jashore",
+      "Benapole"
+    ]
+  },
+  {
+    "train_number": "110",
+    "train_name": "CHAPAINAWABGANJ SHUTTLE (110)",
+    "cities": [
+      "Chapainawabganj",
+      "Amnura_Bypass",
+      "Lolitnagar",
+      "Kakonhat",
+      "Rajshahi"
+    ]
+  },
+  {
+    "train_number": "41",
+    "train_name": "KANCHON INTERCITY COMMUTER (41)",
+    "cities": [
+      "Parbatipur",
+      "Manmathapur",
+      "Chirirbandar",
+      "Kawgaon",
+      "Dinajpur",
+      "Kanchan_Junction",
+      "Mongalpur",
+      "Setabganj",
+      "Sultanpur",
+      "Pirganj",
+      "Bhomradah",
+      "Shibganj",
+      "Thakurgaon_Road",
+      "Akhanagar",
+      "Ruhia",
+      "Kismat",
+      "Nayaniburuj",
+      "Panchagarh"
+    ]
+  },
+  {
+    "train_number": "42",
+    "train_name": "KANCHON INTERCITY COMMUTER (42)",
+    "cities": [
+      "Panchagarh",
+      "Nayaniburuj",
+      "Kismat",
+      "Ruhia",
+      "Akhanagar",
+      "Thakurgaon_Road",
+      "Shibganj",
+      "Bhomradah",
+      "Pirganj",
+      "Sultanpur",
+      "Setabganj",
+      "Mongalpur",
+      "Kanchan_Junction",
+      "Dinajpur",
+      "Kawgaon",
+      "Chirirbandar",
+      "Manmathapur",
+      "Parbatipur"
+    ]
+  },
+  {
+    "train_number": "57",
+    "train_name": "RAJSHAHI COMMUTER (57)",
+    "cities": [
+      "Ishwardi",
+      "Azim Nagar",
+      "Abdulpur",
+      "Lokmanpur",
+      "Arani",
+      "Nandangachi",
+      "Sardah_Road",
+      "Rajshahi",
+      "Rajshahi_Court",
+      "Kakonhat",
+      "Lolitnagar",
+      "Amnura_Junction",
+      "Nachole",
+      "Rohanpur"
+    ]
+  },
+  {
+    "train_number": "58",
+    "train_name": "RAJSHAHI COMMUTER (58)",
+    "cities": [
+      "Rohanpur",
+      "Nachole",
+      "Amnura_Junction",
+      "Lolitnagar",
+      "Kakonhat",
+      "Rajshahi",
+      "Sardah_Road",
+      "Nandangachi",
+      "Arani",
+      "Lokmanpur",
+      "Abdulpur",
+      "Azim Nagar",
+      "Ishwardi"
+    ]
+  },
+  {
+    "train_number": "77",
+    "train_name": "RAJSHAHI COMMUTER (77)",
+    "cities": [
+      "Rajshahi",
+      "Kakonhat",
+      "Lolitnagar",
+      "Amnura_Junction",
+      "Nachole",
+      "Rohanpur"
+    ]
+  },
+  {
+    "train_number": "78",
+    "train_name": "RAJSHAHI COMMUTER (78)",
+    "cities": [
+      "Rohanpur",
+      "Nachole",
+      "Amnura_Junction",
+      "Lolitnagar",
+      "Kakonhat",
+      "Rajshahi_Court",
+      "Rajshahi"
+    ]
+  }
+]
