@@ -11,16 +11,17 @@ def extract_routes(document):
     if not isinstance(trains, list):
         raise ValueError("Expected an array at the top-level 'trains' property.")
 
-    extracted = []
+    routes_by_endpoints = {}
+
     for train in trains:
         if not isinstance(train, dict):
             raise ValueError("Each train record must be an object.")
 
         schedule = train.get("schedule")
         route_stops = schedule.get("routes") if isinstance(schedule, dict) else None
-        train_name = schedule.get("train_name") if isinstance(schedule, dict) else None
         if not route_stops:
             continue
+
         if not isinstance(route_stops, list):
             raise ValueError(f"Train {train.get('train_number')}: routes must be an array.")
 
@@ -33,6 +34,7 @@ def extract_routes(document):
 
         origin = train.get("origin_city")
         destination = train.get("destination_city")
+
         try:
             start = cities.index(origin)
             end = cities.index(destination, start)
@@ -41,13 +43,64 @@ def extract_routes(document):
                 f"Train {train.get('train_number')}: origin and destination must appear in route order."
             ) from error
 
-        train_number = train.get("train_number")
-        
-        if train_number is None:
-            raise ValueError("Every train with a route must have a train_number.")
-        extracted.append({"train_number": str(train_number), "train_name": train_name, "cities": cities[start : end + 1]})
+        if not isinstance(origin, str) or not origin or not isinstance(destination, str) or not destination:
+            raise ValueError(f"Train {train.get('train_number')}: origin and destination must be city names.")
 
+        key = (origin, destination)
+        
+        # 1. Initialize the master list with the full segment of the FIRST train found
+        train_segment = cities[start : end + 1]
+        if key not in routes_by_endpoints:
+            routes_by_endpoints[key] = {
+                "origin_city": origin,
+                "destination_city": destination,
+                "cities": train_segment
+            }
+        else:
+            # 2. NEW MERGE LOGIC: Merge the current train's segment into the master list
+            master_list = routes_by_endpoints[key]["cities"]
+            merged = []
+            m_idx, t_idx = 0, 0
+            
+            while m_idx < len(master_list) or t_idx < len(train_segment):
+                # If master list is exhausted, push remaining train cities
+                if m_idx >= len(master_list):
+                    if train_segment[t_idx] not in merged:
+                        merged.append(train_segment[t_idx])
+                    t_idx += 1
+                # If train list is exhausted, push remaining master cities
+                elif t_idx >= len(train_segment):
+                    if master_list[m_idx] not in merged:
+                        merged.append(master_list[m_idx])
+                    m_idx += 1
+                # If elements match, advance both
+                elif master_list[m_idx] == train_segment[t_idx]:
+                    if master_list[m_idx] not in merged:
+                        merged.append(master_list[m_idx])
+                    m_idx += 1
+                    t_idx += 1
+                # If they disagree, figure out which one to insert first
+                else:
+                    # Look ahead to see if the current master city appears later in the train segment
+                    if master_list[m_idx] in train_segment[t_idx:]:
+                        # The train segment has an extra city before it hits the master city
+                        if train_segment[t_idx] not in merged:
+                            merged.append(train_segment[t_idx])
+                        t_idx += 1
+                    else:
+                        # The master list has an extra city before it hits the train city
+                        if master_list[m_idx] not in merged:
+                            merged.append(master_list[m_idx])
+                        m_idx += 1
+            
+            routes_by_endpoints[key]["cities"] = merged
+
+    # Clean up the return block (we don't need to append destination anymore as it's already included)
+    extracted = []
+    for route in routes_by_endpoints.values():
+        extracted.append(route)
     return extracted
+
 
 
 def main():
