@@ -210,10 +210,11 @@
 <body>
   <main>
     <h1>Train schedule search</h1>
-    <p>Search the local train name/number index as you type. Selecting a train requests its full route and schedule details from the server.</p>
+    <p>Search the server-provided train list by name, number, or route. Selecting a train requests its full route and schedule details.</p>
     <section class="card" aria-labelledby="run-heading">
       <h2 id="run-heading">Frontend-only API access</h2>
-      <p>This page sends the schedule request directly from the browser to the railway API; no local proxy or backend is used. The railway API currently allows browser requests only from <code>https://eticket.railway.gov.bd</code>. Browser CORS rules prevent frontend JavaScript from bypassing that restriction, so localhost, file previews, and other deployment domains will be blocked until the API owner allows those origins.</p>
+      <p>This follows the official frontend flow: load <code>GET /all-trains/info</code>, filter the returned trains in the browser, then request the selected schedule with <code>POST /train-routes</code>. The official train list contains train numbers and routes, but not train names; known display names are mapped locally.</p>
+      <p class="note">The API currently permits browser access from <code>https://eticket.railway.gov.bd</code>. CORS is enforced by the browser, so other localhost or production origins work only if the API owner allows them. Frontend code cannot bypass that policy.</p>
     </section>
 
     <section class="card" aria-labelledby="search-heading">
@@ -226,8 +227,7 @@
         <span id="selection" class="note">No train selected</span>
       </div>
       <p id="status" role="status" aria-live="polite">Start typing a train name or number.</p>
-      <p class="note">Typing only filters the local index; it does not call an API. Details are requested only after selecting a result. You can add entries to <code>TRAIN_INDEX</code> in this file.</p>
-      <p class="note">Selecting a result sends a direct browser POST to <code>https://railspaapi.shohoz.com/v1.0/web/train-routes</code> with the selected train number as the <code>model</code>.</p>
+      <p class="note">Typing loads the official train-number/route list once, then narrows results locally. Selecting a result sends the train number as the <code>model</code> to the schedule endpoint.</p>
       <section class="api-trace" aria-labelledby="request-heading">
         <h3 id="request-heading">Latest API request</h3>
         <pre id="request-trace" aria-live="polite">No request sent yet.</pre>
@@ -263,10 +263,11 @@
   <script>
     "use strict";
 
-    const API_URL = "https://railspaapi.shohoz.com/v1.0/web/train-routes";
+    const API_BASE_URL = "https://railspaapi.shohoz.com/v1.0/web";
+    const TRAIN_LIST_URL = `${API_BASE_URL}/all-trains/info`;
+    const TRAIN_SCHEDULE_URL = `${API_BASE_URL}/train-routes`;
 
-    // Keep this small client-side index aligned with the train numbers supported by the app.
-    const TRAIN_INDEX = [
+    const KNOWN_TRAIN_NAMES = [
       { name: "Suborno Express", number: "701" },
       { name: "Suborno Express", number: "702" },
       { name: "Mahanagar Godhuli", number: "703" },
@@ -343,10 +344,73 @@
     const requestTrace = document.getElementById("request-trace");
     let selectedTrain = null;
     let requestId = 0;
+    let trainIndex = null;
+    let trainIndexPromise = null;
+    let suggestionRequestId = 0;
 
     function setStatus(message, kind = "") {
       status.textContent = message;
       status.className = kind;
+    }
+
+    function apiHeaders(includeJsonContentType = false) {
+      return {
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        ...(includeJsonContentType ? { "Content-Type": "application/json" } : {})
+      };
+    }
+
+    async function loadTrainIndex() {
+      if (trainIndex) {
+        return trainIndex;
+      }
+      if (trainIndexPromise) {
+        return trainIndexPromise;
+      }
+
+      trainIndexPromise = (async () => {
+        const response = await fetch(TRAIN_LIST_URL, {
+          method: "GET",
+          headers: apiHeaders()
+        });
+        const responseText = await response.text();
+        let payload;
+        try {
+          payload = JSON.parse(responseText);
+        } catch {
+          throw new Error(`Train list API returned HTTP ${response.status} with a non-JSON response.`);
+        }
+        if (!response.ok) {
+          const apiMessage = payload?.error?.messages?.join("; ");
+          throw new Error(apiMessage || `Train list API returned HTTP ${response.status}`);
+        }
+        if (!Array.isArray(payload?.data?.trains)) {
+          throw new Error("Unexpected train list response: expected an array at data.trains.");
+        }
+
+        const namesByNumber = new Map(KNOWN_TRAIN_NAMES.map((train) => [train.number, train.name]));
+        trainIndex = payload.data.trains
+          .filter((train) => train && train.train_number != null)
+          .map((train) => {
+            const number = String(train.train_number);
+            return {
+              name: namesByNumber.get(number) || "",
+              number,
+              origin: train.origin_city || "",
+              destination: train.destination_city || "",
+              zone: train.zone || ""
+            };
+          });
+        return trainIndex;
+      })();
+
+      try {
+        return await trainIndexPromise;
+      } catch (error) {
+        trainIndexPromise = null;
+        throw error;
+      }
     }
 
     function clearDetails() {
@@ -354,10 +418,14 @@
       routeRows.replaceChildren();
     }
 
+    function getTrainLabel(train) {
+      return train.name || `Train ${train.number}`;
+    }
+
     function chooseTrain(train) {
       selectedTrain = train;
-      searchInput.value = `${train.name} (${train.number})`;
-      selectionLabel.textContent = `${train.name} (${train.number}) selected`;
+      searchInput.value = `${getTrainLabel(train)} (${train.number})`;
+      selectionLabel.textContent = `${getTrainLabel(train)} (${train.number}) selected`;
       lookupButton.textContent = "Load train details";
       lookupButton.disabled = false;
       suggestions.replaceChildren();
@@ -365,8 +433,9 @@
       loadSelectedTrain();
     }
 
-    function renderSuggestions() {
+    async function renderSuggestions() {
       const query = searchInput.value.trim().toLocaleLowerCase();
+      const currentSuggestionRequestId = ++suggestionRequestId;
       requestId += 1;
       selectedTrain = null;
       lookupButton.disabled = true;
@@ -376,47 +445,58 @@
       suggestions.replaceChildren();
 
       if (!query) {
+        suggestions.replaceChildren();
         setStatus("Start typing a train name or number.");
         return;
       }
 
-      const matches = TRAIN_INDEX.filter((train) =>
-        train.name.toLocaleLowerCase().includes(query) || train.number.includes(query)
-      ).slice(0, 12);
+      setStatus("Loading train list from the server…");
+      try {
+        const trains = await loadTrainIndex();
+        if (currentSuggestionRequestId !== suggestionRequestId) {
+          return;
+        }
 
-      if (matches.length === 0) {
-        if (/^\d{1,4}$/.test(query)) {
+        const matches = trains.filter((train) =>
+          train.name.toLocaleLowerCase().includes(query) ||
+          train.number.toLocaleLowerCase().includes(query) ||
+          train.origin.toLocaleLowerCase().includes(query) ||
+          train.destination.toLocaleLowerCase().includes(query)
+        ).slice(0, 12);
+
+        if (matches.length === 0) {
+          setStatus("No matching trains found in the server train list.");
+          return;
+        }
+
+        for (const train of matches) {
           const option = document.createElement("button");
           option.type = "button";
           option.className = "suggestion";
           option.setAttribute("role", "option");
-          option.textContent = `Look up train number ${query} on the server`;
-          option.addEventListener("click", () => chooseTrain({ name: "Train", number: query }));
+
+          const name = document.createElement("span");
+          name.textContent = train.name || `${train.origin} → ${train.destination}`;
+          const number = document.createElement("span");
+          number.className = "suggestion-number";
+          number.textContent = train.number;
+          option.append(name, number);
+          option.addEventListener("click", () => chooseTrain(train));
           suggestions.append(option);
-          setStatus(`No local name match. Select to look up train number ${query} directly.`);
-        } else {
-          setStatus("No local name matches. Add the train to TRAIN_INDEX to make it searchable.");
         }
-        return;
+
+        setStatus(`${matches.length} matching train${matches.length === 1 ? "" : "s"} from the server. Select one to load its schedule.`);
+      } catch (error) {
+        if (currentSuggestionRequestId !== suggestionRequestId) {
+          return;
+        }
+        console.error("Could not load train list:", error);
+        const detail = error instanceof Error ? error.message : String(error);
+        setStatus(
+          `${detail} The API may block this page's origin via CORS; the API owner must allow your localhost or deployment domain.`,
+          "error"
+        );
       }
-
-      for (const train of matches) {
-        const option = document.createElement("button");
-        option.type = "button";
-        option.className = "suggestion";
-        option.setAttribute("role", "option");
-
-        const name = document.createElement("span");
-        name.textContent = train.name;
-        const number = document.createElement("span");
-        number.className = "suggestion-number";
-        number.textContent = train.number;
-        option.append(name, number);
-        option.addEventListener("click", () => chooseTrain(train));
-        suggestions.append(option);
-      }
-
-      setStatus(`${matches.length} matching train${matches.length === 1 ? "" : "s"}. Select one to continue.`);
     }
 
     function addCell(row, value) {
@@ -466,14 +546,11 @@
       const requestBody = { model: train.number };
       lookupButton.disabled = true;
       lookupButton.textContent = "Loading schedule…";
-      setStatus(`Loading details for ${train.name} (${train.number})…`);
+      setStatus(`Loading details for ${getTrainLabel(train)} (${train.number})…`);
       requestTrace.textContent = JSON.stringify({
         method: "POST",
-        url: API_URL,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
+        url: TRAIN_SCHEDULE_URL,
+        headers: apiHeaders(true),
         body: requestBody,
         status: "pending"
       }, null, 2);
@@ -481,12 +558,9 @@
       let responseStatus = null;
       let responsePayload = null;
       try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(TRAIN_SCHEDULE_URL, {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
+          headers: apiHeaders(true),
           body: JSON.stringify(requestBody)
         });
 
@@ -501,7 +575,7 @@
         responsePayload = payload;
         requestTrace.textContent = JSON.stringify({
           method: "POST",
-          url: API_URL,
+          url: TRAIN_SCHEDULE_URL,
           body: requestBody,
           status: response.status,
           response: payload
@@ -533,7 +607,7 @@
         const detail = error instanceof Error ? error.message : String(error);
         requestTrace.textContent = JSON.stringify({
           method: "POST",
-          url: API_URL,
+          url: TRAIN_SCHEDULE_URL,
           body: requestBody,
           status: responseStatus,
           response: responsePayload,
@@ -552,6 +626,7 @@
     }
 
     searchInput.addEventListener("input", renderSuggestions);
+    searchInput.addEventListener("focus", renderSuggestions);
     lookupButton.addEventListener("click", loadSelectedTrain);
   </script>
 </body>
