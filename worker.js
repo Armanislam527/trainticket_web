@@ -1,19 +1,35 @@
-// Frontend calls append an allowlisted path, e.g.
-// `${WORKER_BASE_URL}/web/train-routes` or `/web/all-trains/info`.
+// Frontend calls append one of the allowlisted paths to its Worker URL.
 const UPSTREAM_BASE_URL = "https://railspaapi.shohoz.com/v1.0/";
 const MAX_REQUEST_BYTES = 16 * 1024;
 const MAX_RESPONSE_BYTES = 5 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 
 const ALLOWED_ROUTES = new Map([
-  ["/web/all-trains/info", new Set(["GET"])],
-  ["/web/train-routes", new Set(["POST"])],
+  ["/web/all-trains/info", { methods: new Set(["GET"]), query: new Set(["model"]) }],
+  ["/web/train-routes", { methods: new Set(["POST"]), query: new Set() }],
+  ["/web/bookings/search-trips-v2", {
+    methods: new Set(["GET"]),
+    query: new Set(["from_city", "to_city", "date_of_journey", "seat_class"]),
+  }],
 ]);
 
 const ALLOWED_ORIGINS = new Set([
   "https://trainseatchecker.tech",
   "http://trainseatchecker.tech",
+  "https://eticket.railway.gov.bd",
 ]);
+const ALLOWED_REQUEST_HEADERS = new Set([
+  "authorization",
+  "content-type",
+  "x-device-id",
+  "x-device-key",
+  "x-requested-with",
+]);
+const FORWARDED_AUTH_HEADERS = [
+  "Authorization",
+  "X-Device-Id",
+  "X-Device-Key",
+];
 
 function isAllowedOrigin(origin) {
   if (ALLOWED_ORIGINS.has(origin)) {
@@ -44,10 +60,33 @@ function getCorsHeaders(origin) {
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Requested-With",
+    "Access-Control-Allow-Headers": [...ALLOWED_REQUEST_HEADERS].join(", "),
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
+}
+
+function validQuery(pathname, searchParams, allowedParams) {
+  for (const key of searchParams.keys()) {
+    if (!allowedParams.has(key) || searchParams.getAll(key).length !== 1) {
+      return false;
+    }
+  }
+
+  if (pathname === "/web/all-trains/info") {
+    const model = searchParams.get("model");
+    return model === null || /^\d{1,6}$/.test(model);
+  }
+
+  if (pathname === "/web/bookings/search-trips-v2") {
+    const required = ["from_city", "to_city", "date_of_journey", "seat_class"];
+    return required.every((key) => {
+      const value = searchParams.get(key);
+      return typeof value === "string" && value.trim().length > 0 && value.length <= 100;
+    });
+  }
+
+  return searchParams.size === 0;
 }
 
 async function readLimitedBody(stream, maxBytes) {
@@ -89,21 +128,32 @@ export default {
 
     const corsHeaders = origin ? getCorsHeaders(origin) : { "Vary": "Origin" };
     const requestUrl = new URL(request.url);
-    const methods = ALLOWED_ROUTES.get(requestUrl.pathname);
+    if (requestUrl.pathname === "/" && request.method === "GET") {
+      return jsonResponse({
+        service: "Train schedule data proxy",
+        upstreamBase: UPSTREAM_BASE_URL,
+        routes: [
+          "GET /web/all-trains/info[?model=500]",
+          "POST /web/train-routes",
+          "GET /web/bookings/search-trips-v2?from_city=...&to_city=...&date_of_journey=...&seat_class=...",
+        ],
+      }, 200, corsHeaders);
+    }
 
-    if (!methods) {
+    const route = ALLOWED_ROUTES.get(requestUrl.pathname);
+
+    if (!route) {
       return jsonResponse({
         error: "Route is not allowed.",
-        allowedRoutes: [
-          "GET /web/all-trains/info",
-          "POST /web/train-routes",
-        ],
+        allowedRoutes: [...ALLOWED_ROUTES.entries()].flatMap(([path, config]) =>
+          [...config.methods].map((method) => `${method} ${path}`)
+        ),
       }, 404, corsHeaders);
     }
 
     if (request.method === "OPTIONS") {
       const requestedMethod = request.headers.get("Access-Control-Request-Method");
-      if (!requestedMethod || !methods.has(requestedMethod)) {
+      if (!requestedMethod || !route.methods.has(requestedMethod)) {
         return jsonResponse({ error: "Method is not allowed for this route." }, 405, corsHeaders);
       }
 
@@ -111,27 +161,34 @@ export default {
         .split(",")
         .map((header) => header.trim().toLowerCase())
         .filter(Boolean);
-      const allowedHeaders = new Set(["content-type", "x-requested-with"]);
-      if (requestedHeaders.some((header) => !allowedHeaders.has(header))) {
+      if (requestedHeaders.some((header) => !ALLOWED_REQUEST_HEADERS.has(header))) {
         return jsonResponse({ error: "Requested header is not allowed." }, 403, corsHeaders);
       }
 
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
-    if (!methods.has(request.method)) {
+    if (!route.methods.has(request.method)) {
       return jsonResponse({ error: "Method is not allowed for this route." }, 405, corsHeaders);
     }
 
-    if (requestUrl.search) {
-      return jsonResponse({ error: "Query parameters are not allowed for this route." }, 400, corsHeaders);
+    if (!validQuery(requestUrl.pathname, requestUrl.searchParams, route.query)) {
+      return jsonResponse({ error: "Query parameters are missing, repeated, or not allowed for this route." }, 400, corsHeaders);
     }
 
-    const upstreamUrl = new URL(requestUrl.pathname.slice(1), UPSTREAM_BASE_URL);
+    const upstreamUrl = new URL(requestUrl.pathname.slice(1) + requestUrl.search, UPSTREAM_BASE_URL);
     const upstreamHeaders = new Headers({
       "Accept": "application/json",
       "X-Requested-With": "XMLHttpRequest",
     });
+    if (requestUrl.pathname === "/web/bookings/search-trips-v2") {
+      for (const header of FORWARDED_AUTH_HEADERS) {
+        const value = request.headers.get(header);
+        if (value) {
+          upstreamHeaders.set(header, value);
+        }
+      }
+    }
     let body;
 
     if (request.method === "POST") {

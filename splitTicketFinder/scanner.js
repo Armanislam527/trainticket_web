@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const API = "https://railspaapi.shohoz.com/v1.0/web/bookings";
+  const API = "https://train-proxy.armanislam527.workers.dev/web/bookings";
   const DELAY_MS = 1500;
 
   const CLASSES = ["S_CHAIR", "SHOVAN", "SNIGDHA", "F_SEAT", "F_BERTH", "F_CHAIR", "AC_S", "AC_B", "AC_CHAIR", "SHULOV"];

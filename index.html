@@ -79,6 +79,10 @@
       font-weight: 600;
     }
 
+    .load-list-button {
+      margin: 0 0 12px;
+    }
+
     #suggestions {
       display: grid;
       gap: 6px;
@@ -212,13 +216,14 @@
     <h1>Train schedule search</h1>
     <p>Search the server-provided train list by name, number, or route. Selecting a train requests its full route and schedule details.</p>
     <section class="card" aria-labelledby="run-heading">
-      <h2 id="run-heading">Frontend-only API access</h2>
-      <p>This follows the official frontend flow: load <code>GET /all-trains/info</code>, filter the returned trains in the browser, then request the selected schedule with <code>POST /train-routes</code>. The official train list contains train numbers and routes, but not train names; known display names are mapped locally.</p>
-      <p class="note">The API currently permits browser access from <code>https://eticket.railway.gov.bd</code>. CORS is enforced by the browser, so other localhost or production origins work only if the API owner allows them. Frontend code cannot bypass that policy.</p>
+      <h2 id="run-heading">Train API proxy</h2>
+      <p>Requests go through the Cloudflare Worker. It appends each allowlisted <code>/web/...</code> path to the fixed upstream base <code>https://railspaapi.shohoz.com/v1.0/</code>.</p>
+      <p class="note">The Worker must allow the origin hosting this page. Add your production domain to its CORS origin list before deploying there.</p>
     </section>
 
     <section class="card" aria-labelledby="search-heading">
       <h2 id="search-heading">Find a train</h2>
+      <button id="load-trains-button" class="primary load-list-button" type="button">Load train list from proxy</button>
       <label for="train-search">Train name or number</label>
       <input id="train-search" type="search" placeholder="For example, Suborno or 701" autocomplete="off" aria-controls="suggestions" aria-autocomplete="list">
       <div id="suggestions" role="listbox" aria-label="Matching trains"></div>
@@ -263,7 +268,7 @@
   <script>
     "use strict";
 
-    const API_BASE_URL = "https://railspaapi.shohoz.com/v1.0/web";
+    const API_BASE_URL = "https://train-proxy.armanislam527.workers.dev/web";
     const TRAIN_LIST_URL = `${API_BASE_URL}/all-trains/info`;
     const TRAIN_SCHEDULE_URL = `${API_BASE_URL}/train-routes`;
 
@@ -335,6 +340,7 @@
     ];
 
     const searchInput = document.getElementById("train-search");
+    const loadTrainsButton = document.getElementById("load-trains-button");
     const suggestions = document.getElementById("suggestions");
     const lookupButton = document.getElementById("lookup-button");
     const selectionLabel = document.getElementById("selection");
@@ -361,6 +367,10 @@
       };
     }
 
+    function showRequestTrace(request) {
+      requestTrace.textContent = JSON.stringify(request, null, 2);
+    }
+
     async function loadTrainIndex() {
       if (trainIndex) {
         return trainIndex;
@@ -370,39 +380,59 @@
       }
 
       trainIndexPromise = (async () => {
-        const response = await fetch(TRAIN_LIST_URL, {
-          method: "GET",
-          headers: apiHeaders()
-        });
-        const responseText = await response.text();
-        let payload;
         try {
-          payload = JSON.parse(responseText);
-        } catch {
-          throw new Error(`Train list API returned HTTP ${response.status} with a non-JSON response.`);
-        }
-        if (!response.ok) {
-          const apiMessage = payload?.error?.messages?.join("; ");
-          throw new Error(apiMessage || `Train list API returned HTTP ${response.status}`);
-        }
-        if (!Array.isArray(payload?.data?.trains)) {
-          throw new Error("Unexpected train list response: expected an array at data.trains.");
-        }
-
-        const namesByNumber = new Map(KNOWN_TRAIN_NAMES.map((train) => [train.number, train.name]));
-        trainIndex = payload.data.trains
-          .filter((train) => train && train.train_number != null)
-          .map((train) => {
-            const number = String(train.train_number);
-            return {
-              name: namesByNumber.get(number) || "",
-              number,
-              origin: train.origin_city || "",
-              destination: train.destination_city || "",
-              zone: train.zone || ""
-            };
+          showRequestTrace({
+            method: "GET",
+            url: TRAIN_LIST_URL,
+            status: "pending"
           });
-        return trainIndex;
+          const response = await fetch(TRAIN_LIST_URL, {
+            method: "GET",
+            headers: apiHeaders()
+          });
+          const responseText = await response.text();
+          let payload;
+          try {
+            payload = JSON.parse(responseText);
+          } catch {
+            throw new Error(`Train list API returned HTTP ${response.status} with a non-JSON response.`);
+          }
+          showRequestTrace({
+            method: "GET",
+            url: TRAIN_LIST_URL,
+            status: response.status,
+            response: payload
+          });
+          if (!response.ok) {
+            const apiMessage = payload?.error?.messages?.join("; ");
+            throw new Error(apiMessage || `Train list API returned HTTP ${response.status}`);
+          }
+          if (!Array.isArray(payload?.data?.trains)) {
+            throw new Error("Unexpected train list response: expected an array at data.trains.");
+          }
+
+          const namesByNumber = new Map(KNOWN_TRAIN_NAMES.map((train) => [train.number, train.name]));
+          trainIndex = payload.data.trains
+            .filter((train) => train && train.train_number != null)
+            .map((train) => {
+              const number = String(train.train_number);
+              return {
+                name: namesByNumber.get(number) || "",
+                number,
+                origin: train.origin_city || "",
+                destination: train.destination_city || "",
+                zone: train.zone || ""
+              };
+            });
+          return trainIndex;
+        } catch (error) {
+          showRequestTrace({
+            method: "GET",
+            url: TRAIN_LIST_URL,
+            error: error instanceof Error ? error.message : String(error)
+          });
+          throw error;
+        }
       })();
 
       try {
@@ -410,6 +440,23 @@
       } catch (error) {
         trainIndexPromise = null;
         throw error;
+      }
+    }
+
+    async function loadTrainList() {
+      loadTrainsButton.disabled = true;
+      loadTrainsButton.textContent = "Loading train list…";
+      setStatus("Fetching the train list through your Cloudflare Worker…");
+      try {
+        const trains = await loadTrainIndex();
+        setStatus(`Loaded ${trains.length} train records. Search by train number or station to choose a schedule.`, "success");
+      } catch (error) {
+        console.error("Could not load train list:", error);
+        const detail = error instanceof Error ? error.message : String(error);
+        setStatus(`${detail} Confirm the Worker is deployed and allows this page's origin.`, "error");
+      } finally {
+        loadTrainsButton.disabled = false;
+        loadTrainsButton.textContent = "Reload train list from proxy";
       }
     }
 
@@ -547,13 +594,13 @@
       lookupButton.disabled = true;
       lookupButton.textContent = "Loading schedule…";
       setStatus(`Loading details for ${getTrainLabel(train)} (${train.number})…`);
-      requestTrace.textContent = JSON.stringify({
+      showRequestTrace({
         method: "POST",
         url: TRAIN_SCHEDULE_URL,
         headers: apiHeaders(true),
         body: requestBody,
         status: "pending"
-      }, null, 2);
+      });
 
       let responseStatus = null;
       let responsePayload = null;
@@ -573,13 +620,13 @@
         }
         responseStatus = response.status;
         responsePayload = payload;
-        requestTrace.textContent = JSON.stringify({
+        showRequestTrace({
           method: "POST",
           url: TRAIN_SCHEDULE_URL,
           body: requestBody,
           status: response.status,
           response: payload
-        }, null, 2);
+        });
 
         if (!response.ok) {
           const apiMessage = payload?.error?.messages?.join("; ");
@@ -605,14 +652,14 @@
         }
         console.error("Could not load train details:", error);
         const detail = error instanceof Error ? error.message : String(error);
-        requestTrace.textContent = JSON.stringify({
+        showRequestTrace({
           method: "POST",
           url: TRAIN_SCHEDULE_URL,
           body: requestBody,
           status: responseStatus,
           response: responsePayload,
           error: detail
-        }, null, 2);
+        });
         lookupButton.textContent = "Retry train details";
         const runHint = detail === "Failed to fetch"
           ? "This is commonly caused by the railway API rejecting this page's origin via CORS. Frontend-only code cannot override that policy; deploy on an allowed origin or ask the API owner to allow your production domain."
@@ -625,6 +672,7 @@
       }
     }
 
+    loadTrainsButton.addEventListener("click", loadTrainList);
     searchInput.addEventListener("input", renderSuggestions);
     searchInput.addEventListener("focus", renderSuggestions);
     lookupButton.addEventListener("click", loadSelectedTrain);
