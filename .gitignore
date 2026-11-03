@@ -1,0 +1,8 @@
+/*/node_modules
+/mobile/android/app/build
+/mobile/android/gradle
+/mobile/android/.gradle
+/mobile/android/.idea
+/mobile/android/local.properties
+/mobile/expo/android/app/build
+.wrangler
