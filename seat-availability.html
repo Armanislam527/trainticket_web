@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bangladesh Railway Seat Availability</title>
+  <style>
+    :root {
+      font-family: Arial, sans-serif;
+      color: #172b4d;
+      background: #f3f6fa;
+      font-synthesis: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 28px 16px;
+    }
+
+    main {
+      width: min(1050px, 100%);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 1.2rem;
+    }
+
+    p {
+      line-height: 1.5;
+    }
+
+    .card {
+      margin-top: 18px;
+      padding: 20px;
+      border: 1px solid #dce3ed;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 3px 12px rgb(23 43 77 / 5%);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    button {
+      min-height: 42px;
+      padding: 9px 11px;
+      border: 1px solid #bdc9d8;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: #fff;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .primary {
+      border-color: #145da0;
+      background: #145da0;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .note {
+      color: #53647a;
+      font-size: 0.9rem;
+    }
+
+    #status {
+      min-height: 24px;
+      margin: 14px 0 0;
+      color: #43536a;
+    }
+
+    #status.error {
+      color: #a32121;
+    }
+
+    #status.success {
+      color: #176b3a;
+    }
+
+    #catalog-status.error {
+      color: #a32121;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 10px 0;
+      color: #43536a;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #e5eaf0;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f6fa;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .available {
+      color: #176b3a;
+      font-weight: 700;
+    }
+
+    .unavailable {
+      color: #a32121;
+      font-weight: 700;
+    }
+
+    details {
+      margin-top: 18px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    pre {
+      overflow: auto;
+      max-height: 360px;
+      padding: 12px;
+      border-radius: 6px;
+      background: #f3f6fa;
+      font-size: 0.84rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 18px 10px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Bangladesh Railway seat availability</h1>
+    <p>Choose a route and date to check current availability from the railway API. Local JSON files are used only to autocomplete train and station names; live seat counts are fetched when you submit.</p>
+
+    <section class="card" aria-labelledby="how-heading">
+      <h2 id="how-heading">How availability is queried</h2>
+      <p>The existing scanner requests one route at a time using <code>GET /web/bookings/search-trips-v2</code> with <code>from_city</code>, <code>to_city</code>, <code>date_of_journey</code>, and <code>seat_class</code>. Results include trains and per-class <code>seat_counts.online</code>, <code>seat_counts.offline</code>, and fares.</p>
+      <p class="note">This page submits one request per click; it does not scan every route pair. The API requires an authorized user session. If it returns 401, enter your own current access token below. Credentials stay in this page's memory and are sent only to your configured proxy.</p>
+      <p id="catalog-status" class="note" role="status" aria-live="polite">Loading local train and station data…</p>
+    </section>
+
+    <section class="card" aria-labelledby="search-heading">
+      <h2 id="search-heading">Search one route</h2>
+      <form id="availability-form">
+        <div class="form-grid">
+          <label for="train-filter">Optional train name or number
+            <input id="train-filter" list="train-options" placeholder="All trains on this route" autocomplete="off">
+            <datalist id="train-options"></datalist>
+          </label>
+          <label for="date-input">Journey date
+            <input id="date-input" type="date" required>
+          </label>
+          <label for="from-input">From station
+            <input id="from-input" list="station-options" placeholder="Select or type a station" autocomplete="off" required>
+          </label>
+          <label for="to-input">To station
+            <input id="to-input" list="station-options" placeholder="Select or type a station" autocomplete="off" required>
+          </label>
+          <label for="class-input">Seat class
+            <select id="class-input" required>
+              <option value="S_CHAIR">S_CHAIR — Shovon Chair</option>
+              <option value="SHOVAN">SHOVAN</option>
+              <option value="SNIGDHA">SNIGDHA</option>
+              <option value="F_SEAT">F_SEAT</option>
+              <option value="F_BERTH">F_BERTH</option>
+              <option value="F_CHAIR">F_CHAIR</option>
+              <option value="AC_S">AC_S</option>
+              <option value="AC_B">AC_B</option>
+              <option value="AC_CHAIR">AC_CHAIR</option>
+              <option value="SHULOV">SHULOV</option>
+            </select>
+          </label>
+          <label for="token-input">Optional access token
+            <input id="token-input" type="password" autocomplete="off" placeholder="Bearer token for your signed-in session">
+          </label>
+          <label for="device-id-input">Optional device ID
+            <input id="device-id-input" type="text" autocomplete="off" placeholder="Only if required by your session">
+          </label>
+          <label for="device-key-input">Optional device key
+            <input id="device-key-input" type="password" autocomplete="off" placeholder="Only if required by your session">
+          </label>
+        </div>
+        <datalist id="station-options"></datalist>
+        <div class="actions">
+          <button id="search-button" class="primary" type="submit" disabled>Load local data first</button>
+          <button id="reset-button" type="reset">Clear inputs</button>
+        </div>
+      </form>
+      <p id="status" role="status" aria-live="polite">Waiting for the local JSON catalog.</p>
+    </section>
+
+    <section id="results-card" class="card" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Availability results</h2>
+      <div class="summary">
+        <span id="result-route"></span>
+        <span id="result-date"></span>
+        <span id="result-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Train</th>
+              <th scope="col">Class</th>
+              <th scope="col">Online seats</th>
+              <th scope="col">Counter seats</th>
+              <th scope="col">Fare</th>
+              <th scope="col">Origin seq</th>
+              <th scope="col">Destination seq</th>
+            </tr>
+          </thead>
+          <tbody id="availability-rows"></tbody>
+        </table>
+      </div>
+      <details>
+        <summary>Raw API response</summary>
+        <pre id="raw-response"></pre>
+      </details>
+      <details>
+        <summary>Latest request (credentials redacted)</summary>
+        <pre id="request-details"></pre>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const WORKER_BASE = "https://train-proxy.armanislam527.workers.dev/web";
+    const AVAILABILITY_URL = `${WORKER_BASE}/bookings/search-trips-v2`;
+    const CATALOG_FILES = {
+      names: "./train-names.json",
+      cities: "./train-city-names.json",
+      info: "./train-info.json",
+      routes: "./train-routes.json",
+      schedules: "./train-schedules.json"
+    };
+
+    const form = document.getElementById("availability-form");
+    const trainFilter = document.getElementById("train-filter");
+    const fromInput = document.getElementById("from-input");
+    const toInput = document.getElementById("to-input");
+    const dateInput = document.getElementById("date-input");
+    const classInput = document.getElementById("class-input");
+    const tokenInput = document.getElementById("token-input");
+    const deviceIdInput = document.getElementById("device-id-input");
+    const deviceKeyInput = document.getElementById("device-key-input");
+    const searchButton = document.getElementById("search-button");
+    const status = document.getElementById("status");
+    const catalogStatus = document.getElementById("catalog-status");
+    const resultsCard = document.getElementById("results-card");
+    const rows = document.getElementById("availability-rows");
+    const routeIndex = new Map();
+    let catalog = null;
+    let activeRequest = null;
+    let lastSearchAt = 0;
+
+    function setStatus(message, kind = "") {
+      status.textContent = message;
+      status.className = kind;
+    }
+
+    async function fetchJsonFile(path) {
+      const response = await fetch(path, { headers: { Accept: "application/json" } });
+      if (!response.ok) {
+        throw new Error(`Could not load ${path} (HTTP ${response.status}).`);
+      }
+      return response.json();
+    }
+
+    function normalize(value) {
+      return String(value || "").trim().toLocaleLowerCase();
+    }
+
+    function trainNumberFromName(name) {
+      const match = String(name || "").match(/\((\d{1,6})\)\s*$/);
+      return match ? match[1] : "";
+    }
+
+    async function loadCatalog() {
+      const [names, cities, info, routes, schedules] = await Promise.all(
+        Object.values(CATALOG_FILES).map(fetchJsonFile)
+      );
+      if (![names, cities, info, routes].every(Array.isArray) || !schedules || !Array.isArray(schedules.trains)) {
+        throw new Error("One or more local train JSON files have an unexpected format.");
+      }
+
+      const namesByNumber = new Map();
+      for (const displayName of names) {
+        const number = trainNumberFromName(displayName);
+        if (number && displayName) {
+          namesByNumber.set(number, displayName);
+        }
+      }
+      for (const route of routes) {
+        if (route?.train_number && route.train_name) {
+          namesByNumber.set(String(route.train_number), route.train_name);
+        }
+      }
+      for (const train of schedules.trains) {
+        const number = String(train?.train_number || "");
+        const scheduleName = train?.schedule?.train_name;
+        if (number && scheduleName) {
+          namesByNumber.set(number, scheduleName);
+        }
+      }
+
+      const routeByNumber = new Map(
+        routes.filter((route) => route?.train_number).map((route) => [String(route.train_number), route])
+      );
+      const scheduleByNumber = new Map(
+        schedules.trains.filter((train) => train?.train_number).map((train) => [String(train.train_number), train])
+      );
+      const trainByNumber = new Map();
+      const stations = new Set(cities.filter((city) => typeof city === "string" && city.trim()));
+
+      for (const item of info) {
+        if (item?.no == null) {
+          continue;
+        }
+        const number = String(item.no);
+        const route = routeByNumber.get(number);
+        const savedSchedule = scheduleByNumber.get(number);
+        const scheduleCities = savedSchedule?.schedule?.routes
+          ?.map((stop) => stop?.city)
+          .filter((city) => typeof city === "string" && city);
+        const routeCities = Array.isArray(route?.cities) ? route.cities : scheduleCities || [];
+        for (const station of routeCities) {
+          stations.add(station);
+        }
+        const train = {
+          number,
+          name: namesByNumber.get(number) || item.name || `Train ${number}`,
+          origin: item.origin || routeCities[0] || "",
+          destination: item.destination || routeCities[routeCities.length - 1] || "",
+          cities: routeCities
+        };
+        trainByNumber.set(number, train);
+        if (routeCities.length) {
+          routeIndex.set(number, routeCities);
+        }
+      }
+
+      catalog = {
+        trains: [...trainByNumber.values()],
+        stations: [...stations].sort((a, b) => a.localeCompare(b)),
+        summary: schedules.summary
+      };
+      populateDatalists();
+      catalogStatus.textContent =
+        `Loaded ${catalog.trains.length} train records, ${catalog.stations.length} station names, and saved schedule metadata. Live availability is fetched per search.`;
+      searchButton.disabled = false;
+      searchButton.textContent = "Check seat availability";
+    }
+
+    function populateDatalists(stationsForRoute = catalog?.stations || []) {
+      const stationOptions = document.getElementById("station-options");
+      const trainOptions = document.getElementById("train-options");
+      stationOptions.replaceChildren();
+      trainOptions.replaceChildren();
+
+      for (const station of stationsForRoute) {
+        stationOptions.append(new Option(station));
+      }
+      for (const train of catalog.trains) {
+        const label = `${train.name} (${train.number})`;
+        trainOptions.append(new Option(label, label));
+      }
+    }
+
+    function updateRouteSuggestions() {
+      if (!catalog) {
+        return;
+      }
+      const query = normalize(trainFilter.value);
+      if (!query) {
+        populateDatalists();
+        return;
+      }
+
+      const selectedTrain = catalog.trains.find((train) =>
+        normalize(train.number) === query ||
+        normalize(`${train.name} (${train.number})`) === query ||
+        normalize(train.name) === query
+      );
+      if (selectedTrain) {
+        const routeCities = routeIndex.get(selectedTrain.number);
+        if (routeCities?.length) {
+          populateDatalists(routeCities);
+          return;
+        }
+      }
+
+      const matches = catalog.trains.filter((train) =>
+        normalize(train.number).includes(query) || normalize(train.name).includes(query)
+      );
+      document.getElementById("train-options").replaceChildren(
+        ...matches.slice(0, 20).map((train) => {
+          const label = `${train.name} (${train.number})`;
+          return new Option(label, label);
+        })
+      );
+    }
+
+    function resolveSelectedTrain() {
+      const query = normalize(trainFilter.value);
+      if (!query) {
+        return null;
+      }
+      return catalog.trains.find((train) =>
+        normalize(train.number) === query ||
+        normalize(`${train.name} (${train.number})`) === query ||
+        normalize(train.name) === query
+      ) || null;
+    }
+
+    function formatJourneyDate(value) {
+      const [year, month, day] = value.split("-").map(Number);
+      const monthName = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month - 1];
+      return `${String(day).padStart(2, "0")}-${monthName}-${year}`;
+    }
+
+    function apiErrorMessage(payload, statusCode) {
+      const message = payload?.error?.messages?.join("; ");
+      if (statusCode === 401) {
+        return `${message || "Unauthorized."} Enter a valid access token from your own signed-in railway session and retry.`;
+      }
+      if (statusCode === 403) {
+        return `${message || "Forbidden."} Check Worker CORS/origin settings and whether your session is authorized.`;
+      }
+      return message || `Availability API returned HTTP ${statusCode}.`;
+    }
+
+    function addCell(row, value, className = "") {
+      const cell = document.createElement("td");
+      cell.textContent = value == null || value === "" ? "—" : String(value);
+      if (className) {
+        cell.className = className;
+      }
+      row.append(cell);
+    }
+
+    function renderAvailability(trains, requestedClass, selectedTrain) {
+      rows.replaceChildren();
+      const filtered = selectedTrain
+        ? trains.filter((train) => {
+          const number = trainNumberFromName(train.trip_number);
+          return number === selectedTrain.number ||
+            normalize(train.trip_number).includes(normalize(selectedTrain.name));
+        })
+        : trains;
+
+      document.getElementById("result-count").textContent =
+        `${filtered.length} matching train${filtered.length === 1 ? "" : "s"}`;
+      document.getElementById("result-route").textContent = `${fromInput.value.trim()} → ${toInput.value.trim()}`;
+      document.getElementById("result-date").textContent = formatJourneyDate(dateInput.value);
+
+      if (!filtered.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 7;
+        cell.textContent = selectedTrain
+          ? `No result for ${selectedTrain.name} on this route/date.`
+          : "No trains were returned for this route and date.";
+        row.append(cell);
+        rows.append(row);
+        return;
+      }
+
+      for (const train of filtered) {
+        const seatTypes = Array.isArray(train.seat_types) ? train.seat_types : [];
+        const matchingClass = seatTypes.filter((seat) => seat.type === requestedClass);
+        const displayClasses = matchingClass.length ? matchingClass : seatTypes;
+        if (!displayClasses.length) {
+          const row = document.createElement("tr");
+          addCell(row, train.trip_number || "Unknown train");
+          addCell(row, requestedClass);
+          addCell(row, "Not returned");
+          addCell(row, "Not returned");
+          addCell(row, "Not returned");
+          addCell(row, "—");
+          addCell(row, "—");
+          rows.append(row);
+          continue;
+        }
+
+        for (const seat of displayClasses) {
+          const counts = seat.seat_counts || {};
+          const online = Number(counts.online);
+          const row = document.createElement("tr");
+          addCell(row, train.trip_number);
+          addCell(row, seat.type);
+          addCell(row, Number.isFinite(online) ? online : "—", Number.isFinite(online) ? (online > 0 ? "available" : "unavailable") : "");
+          addCell(row, counts.offline);
+          addCell(row, seat.fare == null ? "—" : `৳${seat.fare}`);
+          addCell(row, seat.origin_city_seq);
+          addCell(row, seat.destination_city_seq);
+          rows.append(row);
+        }
+      }
+    }
+
+    async function searchAvailability(event) {
+      event.preventDefault();
+      if (!catalog || activeRequest) {
+        return;
+      }
+
+      const from = fromInput.value.trim();
+      const to = toInput.value.trim();
+      const journeyDate = dateInput.value;
+      const seatClass = classInput.value;
+      const selectedTrain = resolveSelectedTrain();
+      if (!catalog.stations.some((station) => normalize(station) === normalize(from)) ||
+          !catalog.stations.some((station) => normalize(station) === normalize(to))) {
+        setStatus("Choose both stations from the local station suggestions.", "error");
+        return;
+      }
+      if (normalize(from) === normalize(to)) {
+        setStatus("Origin and destination must be different.", "error");
+        return;
+      }
+      if (!journeyDate) {
+        setStatus("Choose a journey date.", "error");
+        return;
+      }
+      if (trainFilter.value.trim() && !selectedTrain) {
+        setStatus("Choose an exact train from the suggestions, or clear the optional train field.", "error");
+        return;
+      }
+
+      const elapsed = Date.now() - lastSearchAt;
+      if (elapsed < 1500) {
+        setStatus(`Please wait ${((1500 - elapsed) / 1000).toFixed(1)} seconds before another availability request.`, "error");
+        return;
+      }
+      lastSearchAt = Date.now();
+
+      const params = new URLSearchParams({
+        from_city: from,
+        to_city: to,
+        date_of_journey: formatJourneyDate(journeyDate),
+        seat_class: seatClass
+      });
+      const requestUrl = `${AVAILABILITY_URL}?${params}`;
+      const headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest"
+      };
+      const token = tokenInput.value.trim();
+      if (token) {
+        headers.Authorization = /^Bearer\s/i.test(token) ? token : `Bearer ${token}`;
+      }
+      if (deviceIdInput.value.trim()) {
+        headers["X-Device-Id"] = deviceIdInput.value.trim();
+      }
+      if (deviceKeyInput.value.trim()) {
+        headers["X-Device-Key"] = deviceKeyInput.value.trim();
+      }
+
+      activeRequest = new AbortController();
+      searchButton.disabled = true;
+      searchButton.textContent = "Fetching availability…";
+      resultsCard.hidden = false;
+      rows.replaceChildren();
+      document.getElementById("raw-response").textContent = "";
+      setStatus(`Checking ${from} → ${to} for ${formatJourneyDate(journeyDate)}…`);
+      document.getElementById("request-details").textContent = JSON.stringify({
+        method: "GET",
+        url: requestUrl,
+        headers: {
+          Accept: headers.Accept,
+          "Content-Type": headers["Content-Type"],
+          "X-Requested-With": headers["X-Requested-With"],
+          Authorization: token ? "[provided; hidden]" : "[not provided]",
+          "X-Device-Id": headers["X-Device-Id"] ? "[provided; hidden]" : "[not provided]",
+          "X-Device-Key": headers["X-Device-Key"] ? "[provided; hidden]" : "[not provided]"
+        }
+      }, null, 2);
+
+      try {
+        const response = await fetch(requestUrl, {
+          method: "GET",
+          headers,
+          signal: activeRequest.signal,
+          cache: "no-store"
+        });
+        const responseText = await response.text();
+        let payload;
+        try {
+          payload = JSON.parse(responseText);
+        } catch {
+          throw new Error(`Proxy returned HTTP ${response.status} with a non-JSON response.`);
+        }
+        document.getElementById("raw-response").textContent = JSON.stringify(payload, null, 2);
+        if (!response.ok) {
+          throw new Error(apiErrorMessage(payload, response.status));
+        }
+
+        const trains = payload?.data?.trains;
+        if (!Array.isArray(trains)) {
+          throw new Error("Unexpected availability response: expected an array at data.trains.");
+        }
+        renderAvailability(trains, seatClass, selectedTrain);
+        setStatus(`Received live availability for ${trains.length} train${trains.length === 1 ? "" : "s"}.`, "success");
+      } catch (error) {
+        if (error.name === "AbortError") {
+          setStatus("Availability request cancelled.");
+        } else {
+          console.error("Could not fetch seat availability:", error);
+          setStatus(error instanceof Error ? error.message : String(error), "error");
+        }
+      } finally {
+        activeRequest = null;
+        searchButton.disabled = false;
+        searchButton.textContent = "Check seat availability";
+      }
+    }
+
+    trainFilter.addEventListener("input", updateRouteSuggestions);
+    trainFilter.addEventListener("change", updateRouteSuggestions);
+    form.addEventListener("submit", searchAvailability);
+    form.addEventListener("reset", () => {
+      setTimeout(() => {
+        populateDatalists();
+        resultsCard.hidden = true;
+        setStatus("Inputs cleared.");
+      }, 0);
+    });
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    dateInput.value = [
+      tomorrow.getFullYear(),
+      String(tomorrow.getMonth() + 1).padStart(2, "0"),
+      String(tomorrow.getDate()).padStart(2, "0")
+    ].join("-");
+
+    loadCatalog().catch((error) => {
+      console.error("Could not load local train catalog:", error);
+      catalogStatus.textContent = `${error.message} Serve the folder over HTTP (for example: python3 -m http.server 8001) instead of opening the file directly.`;
+      catalogStatus.className = "error";
+      setStatus("Local station/train autocomplete is unavailable.", "error");
+      searchButton.disabled = true;
+      searchButton.textContent = "Catalog unavailable";
+    });
+  </script>
+</body>
+</html>
