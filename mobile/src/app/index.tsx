@@ -49,6 +49,14 @@ export default function HomeScreen() {
             <Text style={styles.eyebrow}>BANGLADESH RAILWAY</Text>
             <Text style={styles.title}>Plan your train trip</Text>
             <Text style={styles.subtitle}>Find a train by name, number, or station.</Text>
+            <Link href="/ticket-booking" asChild>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.bookingButton}
+              >
+                <Text style={styles.bookingButtonText}>Book tickets on the official website</Text>
+              </Pressable>
+            </Link>
             <TextInput
               value={query}
               onChangeText={setQuery}
@@ -88,6 +96,11 @@ const styles = StyleSheet.create({
   eyebrow: { color: colors.primary, fontSize: 12, fontWeight: "800", letterSpacing: 1.4, marginTop: 10 },
   title: { color: colors.text, fontSize: 29, fontWeight: "800", marginTop: 8 },
   subtitle: { color: colors.muted, fontSize: 15, marginTop: 6, marginBottom: 18 },
+  bookingButton: {
+    alignItems: "center", backgroundColor: colors.primary, borderRadius: 12, justifyContent: "center",
+    marginBottom: 16, minHeight: 50, paddingHorizontal: 16,
+  },
+  bookingButtonText: { color: colors.surface, fontSize: 15, fontWeight: "700" },
   search: {
     backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 12, borderWidth: 1,
     color: colors.text, fontSize: 16, minHeight: 52, paddingHorizontal: 15,

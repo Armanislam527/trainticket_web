@@ -17,6 +17,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ title: "Train finder" }} />
         <Stack.Screen name="train/[number]" options={{ title: "Train schedule" }} />
         <Stack.Screen name="availability" options={{ title: "Seat availability" }} />
+        <Stack.Screen name="ticket-booking" options={{ title: "Book official tickets" }} />
       </Stack>
     </>
   );
