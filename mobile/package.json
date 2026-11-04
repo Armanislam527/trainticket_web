@@ -34,7 +34,7 @@
     "lint": "expo lint",
     "prebuild": "expo prebuild --clean",
     "build": "expo build:android && expo build:ios",
-    "gradlebuild": "cd android && ./gradlew assembleRelease",
+    "gradlerelease": "cd android && ./gradlew assembleRelease",
     "debug": "cd android && ./gradlew assembleDebug",
     "install": "cd android && ./gradlew installDebug",
     "release": "npx expo run:android --variant release",
