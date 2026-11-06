@@ -1,337 +1,466 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { getRouteTrainTrips, TrainTripResponse } from '@/lib/availability';
-import { SplitFinderService, SplitJourneyOption } from '@/lib/splitFinder';
+import { TrainScheduleTimeline } from '@/components/TrainScheduleTimeline';
+import { seatClassLabel } from '@/lib/seatClasses';
+import { scanJourneyCombinations, SeatPair } from '@/lib/seatMatrix';
+import { TrainDataService, TrainScheduleItem } from '@/lib/train-data';
 import { useRailwaySession } from '@/lib/railwaySession';
 
 export default function AvailabilityScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ origin?: string; destination?: string; date?: string }>();
-  
-  // Extract primitive values to prevent useEffect loops
+  const session = useRailwaySession();
+  const params = useLocalSearchParams<{
+    origin?: string;
+    destination?: string;
+    date?: string;
+    seatClass?: string;
+  }>();
+
   const origin = params.origin || 'Dhaka';
   const destination = params.destination || 'Rajshahi';
-  const date = params.date || '06-Nov-2026';
+  const date = params.date || '';
+  const seatClass = params.seatClass || 'S_CHAIR';
 
-  const session = useRailwaySession();
-  const [attempt, setAttempt] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
-  const [trainTrips, setTrainTrips] = useState<TrainTripResponse[]>([]);
-  const [splitOptions, setSplitOptions] = useState<SplitJourneyOption[]>([]);
-  const [activeTab, setActiveTab] = useState<'split' | 'direct'>('split');
+  const trains = useMemo(
+    () =>
+      TrainDataService.findTrainsBetweenStations(origin, destination).filter((train) =>
+        TrainDataService.runsOnApiDate(train, date)
+      ),
+    [origin, destination, date]
+  );
 
-  const fetchedRef = useRef<string>('');
+  const [selectedNumber, setSelectedNumber] = useState(trains[0]?.train_number || '');
+  const selected = trains.find((train) => train.train_number === selectedNumber) || trains[0] || null;
+  const stops = selected ? TrainDataService.journeyStops(selected, origin, destination) : [];
+
+  const [pairs, setPairs] = useState<SeatPair[]>([]);
+  const [progress, setProgress] = useState({ done: 0, total: 0, label: '' });
+  const [running, setRunning] = useState(false);
+  const [error, setError] = useState('');
+  const [showEmpty, setShowEmpty] = useState(false);
+
+  const scanKey = `${selected?.train_number || ''}|${origin}|${destination}|${date}|${seatClass}|${session.hasAuthorization ? '1' : '0'}`;
 
   useEffect(() => {
-    const queryKey = `${origin}-${destination}-${date}-${session.hasAuthorization ? '1' : '0'}-${attempt}`;
-    if (fetchedRef.current === queryKey) return;
-    fetchedRef.current = queryKey;
-
-    let isMounted = true;
-
-    async function loadData() {
-      setLoading(true);
-      setLoadError('');
-      try {
-        const splits = SplitFinderService.findSplitJourneys(origin, destination);
-        if (isMounted) setSplitOptions(splits);
-
-        const trips = await getRouteTrainTrips({ origin, destination, dateOfJourney: date });
-        if (isMounted) {
-          setTrainTrips(trips);
-          if (trips.length > 0) setActiveTab('direct');
-        }
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to load trains';
-        if (isMounted) {
-          setTrainTrips([]);
-          setLoadError(
-            message === 'SESSION_EXPIRED'
-              ? 'Open the Official WebView tab, let the page load, and run one search there. Then search again here.'
-              : message
-          );
-        }
-      } finally {
-        if (isMounted) setLoading(false);
-      }
+    if (!selected || stops.length < 2) {
+      setPairs([]);
+      setRunning(false);
+      return;
+    }
+    if (!session.hasAuthorization) {
+      setPairs([]);
+      setRunning(false);
+      setError('Open the portal tab and run one search there so this screen can read live seat counts.');
+      return;
     }
 
-    loadData();
+    let cancelled = false;
+    setError('');
+    setRunning(true);
+    setPairs([]);
+    scanJourneyCombinations({
+      trainNumber: selected.train_number,
+      stops,
+      dateOfJourney: date,
+      seatClass,
+      isCancelled: () => cancelled,
+      onUpdate: (next, nextProgress) => {
+        if (cancelled) return;
+        setPairs(next);
+        setProgress(nextProgress);
+      },
+    })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        const message = err instanceof Error ? err.message : 'Seat check failed';
+        setError(
+          message === 'SESSION_EXPIRED'
+            ? 'The site session expired. Open the portal, search once, then come back.'
+            : message
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setRunning(false);
+      });
 
     return () => {
-      isMounted = false;
+      cancelled = true;
     };
-  }, [origin, destination, date, session.hasAuthorization, attempt]);
+    // stops is derived from selected train and the search params already in scanKey
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scanKey]);
+
+  const withSeats = pairs.filter((pair) => pair.state === 'ready' && (pair.online || 0) > 0);
+  const direct = pairs.find((pair) => pair.fromIndex === 0 && pair.toIndex === stops.length - 1);
+  const visiblePairs = showEmpty ? pairs.filter((pair) => pair.state !== 'pending') : withSeats;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.headerTitle}>Route: {origin} → {destination}</Text>
-      <Text style={styles.subtitle}>Journey Date: {date}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.route}>
+        {TrainDataService.formatStationDisplay(origin)} → {TrainDataService.formatStationDisplay(destination)}
+      </Text>
+      <Text style={styles.meta}>
+        {date} · {seatClassLabel(seatClass)}
+      </Text>
+      <Text style={styles.explain}>
+        Each count is a separate ticket the railway sells between two stops. A seat from an intermediate station to
+        another still appears, even when your own trip is longer.
+      </Text>
 
-      <TouchableOpacity
-        style={[styles.authBanner, session.hasAuthorization && styles.authBannerReady]}
-        onPress={() => router.push('/ticket-booking')}
-      >
-        <Text style={styles.authBannerText}>
-          {session.hasAuthorization
-            ? 'Site session is saved. Open the portal again if a search starts failing.'
-            : 'Open the official portal and search once there to capture the site session.'}
-        </Text>
-      </TouchableOpacity>
-      {loadError ? (
-        <TouchableOpacity onPress={() => setAttempt((n) => n + 1)}>
-          <Text style={styles.errorText}>{loadError} Tap to retry.</Text>
-        </TouchableOpacity>
+      {!session.hasAuthorization ? (
+        <Pressable style={styles.banner} onPress={() => router.push('/ticket-booking')}>
+          <Text style={styles.bannerText}>Open the portal and search once to load live seat counts.</Text>
+        </Pressable>
       ) : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      {/* Tabs */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'split' && styles.activeTab]}
-          onPress={() => setActiveTab('split')}
-        >
-          <Text style={[styles.tabText, activeTab === 'split' && styles.activeTabText]}>Split Options ({splitOptions.length})</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'direct' && styles.activeTab]}
-          onPress={() => setActiveTab('direct')}
-        >
-          <Text style={[styles.tabText, activeTab === 'direct' && styles.activeTabText]}>Direct Trains ({trainTrips.length})</Text>
-        </TouchableOpacity>
-      </View>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#2d6a4f" style={styles.loader} />
-      ) : activeTab === 'split' ? (
-        <FlatList
-          data={splitOptions}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.trainName}>{item.trains[0].trainName} ({item.trains[0].trainNumber})</Text>
-              <Text style={styles.splitText}>Break journey at: <Text style={styles.bold}>{item.intermediateStation}</Text></Text>
-              
-              <View style={styles.segmentBox}>
-                <Text style={styles.segmentText}>Segment 1: {item.trains[0].origin} → {item.trains[0].destination}</Text>
-                <Text style={styles.segmentText}>Segment 2: {item.trains[1].origin} → {item.trains[1].destination}</Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.bookButton}
-                onPress={() => router.push('/ticket-booking')}
-              >
-                <Text style={styles.bookButtonText}>Book via Official Portal WebView</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No split journeys found for this route.</Text>
-          }
-        />
+      {trains.length === 0 ? (
+        <Text style={styles.empty}>No train in the timetable runs between these stations on this day.</Text>
       ) : (
-        <FlatList
-          data={trainTrips}
-          keyExtractor={(item, index) => `${item.tripNumber}-${index}`}
-          renderItem={({ item }) => (
+        <>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainRow}>
+            {trains.map((train) => {
+              const active = train.train_number === selected?.train_number;
+              return (
+                <Pressable
+                  key={train.train_number}
+                  style={[styles.trainChip, active && styles.trainChipOn]}
+                  onPress={() => setSelectedNumber(train.train_number)}
+                >
+                  <Text style={[styles.trainChipTitle, active && styles.trainChipTitleOn]} numberOfLines={1}>
+                    {shortName(train)}
+                  </Text>
+                  <Text style={[styles.trainChipMeta, active && styles.trainChipTitleOn]}>
+                    {train.train_number} · {train.departure_time || 'time n/a'}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+
+          {selected ? (
             <View style={styles.card}>
-              <View style={styles.rowBetween}>
-                <Text style={styles.trainName}>{item.trainName}</Text>
-                <Text style={styles.tripNo}>{item.tripNumber}</Text>
-              </View>
-              <Text style={styles.timeText}>Departure: {item.departureTime} | Arrival: {item.arrivalTime}</Text>
+              <Text style={styles.cardTitle}>{selected.train_name}</Text>
+              <Text style={styles.cardMeta}>
+                {selected.days.length ? selected.days.join(', ') : 'Running days not listed'}
+                {selected.schedule?.total_duration ? ` · ${selected.schedule.total_duration}` : ''}
+              </Text>
 
-              <View style={styles.seatContainer}>
-                {item.seats.map((seat, idx) => (
-                  <View key={idx} style={styles.seatBadge}>
-                    <Text style={styles.seatClass}>{seat.className}</Text>
-                    <Text style={[styles.seatCount, seat.availableSeats > 0 ? styles.greenText : styles.redText]}>
-                      {seat.availableSeats} seats (৳{seat.fare})
-                    </Text>
+              <View style={styles.directBox}>
+                <Text style={styles.directLabel}>Your full trip</Text>
+                {direct?.state === 'ready' ? (
+                  <Text style={styles.directValue}>
+                    {(direct.online || 0) > 0 ? `${direct.online} seats` : 'Sold out'}
+                    {direct.fare != null ? ` · ৳${direct.fare}` : ''}
+                  </Text>
+                ) : (
+                  <Text style={styles.directValue}>{running ? 'Checking…' : '—'}</Text>
+                )}
+              </View>
+
+              {progress.total > 0 ? (
+                <View style={styles.progressBlock}>
+                  <Text style={styles.progressText}>
+                    {running
+                      ? `Checking ${progress.label} (${progress.done}/${progress.total})`
+                      : `Checked ${progress.done} of ${progress.total} combinations`}
+                  </Text>
+                  <View style={styles.track}>
+                    <View
+                      style={[
+                        styles.trackFill,
+                        { width: `${progress.total ? Math.round((progress.done / progress.total) * 100) : 0}%` },
+                      ]}
+                    />
                   </View>
-                ))}
+                  {running ? <ActivityIndicator color="#1b4332" style={styles.spinner} /> : null}
+                </View>
+              ) : null}
+
+              <Text style={styles.section}>Timetable for this journey</Text>
+              <TrainScheduleTimeline stops={stops} highlightFrom={origin} highlightTo={destination} />
+
+              <View style={styles.summaryRow}>
+                <View style={[styles.summary, styles.summaryYes]}>
+                  <Text style={styles.summaryNumber}>{withSeats.length}</Text>
+                  <Text style={styles.summaryLabel}>pairs with seats</Text>
+                </View>
+                <View style={styles.summary}>
+                  <Text style={styles.summaryNumber}>{pairs.filter((pair) => pair.state === 'ready' && pair.online === 0).length}</Text>
+                  <Text style={styles.summaryLabel}>sold out</Text>
+                </View>
               </View>
 
-              <TouchableOpacity
-                style={styles.bookButton}
-                onPress={() => router.push('/ticket-booking')}
-              >
-                <Text style={styles.bookButtonText}>Book via Official Portal WebView</Text>
-              </TouchableOpacity>
+              <Pressable onPress={() => setShowEmpty((value) => !value)}>
+                <Text style={styles.toggle}>{showEmpty ? 'Hide sold-out pairs' : 'Also show sold-out pairs'}</Text>
+              </Pressable>
+
+              <Text style={styles.section}>Combinations</Text>
+              {!running && pairs.length > 0 && visiblePairs.length === 0 ? (
+                <Text style={styles.empty}>No seats in this class on any station pair for this journey.</Text>
+              ) : (
+                <CombinationList pairs={visiblePairs} />
+              )}
             </View>
-          )}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              {loadError || 'No direct trains were returned for this search.'}
-            </Text>
-          }
-        />
+          ) : null}
+        </>
       )}
+    </ScrollView>
+  );
+}
+
+function CombinationList({ pairs }: { pairs: SeatPair[] }) {
+  const groups = useMemo(() => {
+    const map = new Map<string, SeatPair[]>();
+    pairs.forEach((pair) => {
+      const list = map.get(pair.from) || [];
+      list.push(pair);
+      map.set(pair.from, list);
+    });
+    return Array.from(map.entries());
+  }, [pairs]);
+
+  if (!pairs.length) {
+    return <Text style={styles.empty}>Pairs with seats show up here as each check finishes.</Text>;
+  }
+
+  return (
+    <View>
+      {groups.map(([from, list]) => (
+        <View key={from} style={styles.group}>
+          <Text style={styles.groupTitle}>From {TrainDataService.formatStationDisplay(from)}</Text>
+          {list.map((pair) => (
+            <View key={`${pair.from}-${pair.to}`} style={styles.pairRow}>
+              <View style={[styles.pairDot, pairColor(pair)]} />
+              <Text style={styles.pairTo}>{TrainDataService.formatStationDisplay(pair.to)}</Text>
+              <Text style={styles.pairCount}>{pairText(pair)}</Text>
+            </View>
+          ))}
+        </View>
+      ))}
     </View>
   );
 }
 
+function pairColor(pair: SeatPair) {
+  if (pair.state === 'ready' && (pair.online || 0) > 0) return styles.dotYes;
+  if (pair.state === 'ready') return styles.dotNo;
+  if (pair.state === 'failed') return styles.dotFail;
+  return styles.dotWait;
+}
+
+function pairText(pair: SeatPair): string {
+  if (pair.state === 'pending') return '…';
+  if (pair.state === 'failed') return 'failed';
+  if (pair.state === 'absent') return 'not sold';
+  if ((pair.online || 0) <= 0) return '0';
+  return pair.fare != null ? `${pair.online} · ৳${pair.fare}` : String(pair.online);
+}
+
+function shortName(train: TrainScheduleItem): string {
+  return train.train_name.replace(/\s*\(\d+\)\s*$/, '');
+}
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f3f7f4',
+    paddingBottom: 32,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  route: {
+    fontSize: 20,
+    fontWeight: '700',
     color: '#1b4332',
   },
-  subtitle: {
-    fontSize: 14,
-    color: '#6c757d',
-    marginBottom: 8,
+  meta: {
+    marginTop: 4,
+    color: '#52796f',
+    fontSize: 13,
   },
-  authBanner: {
+  explain: {
+    marginTop: 8,
+    color: '#343a40',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  banner: {
+    marginTop: 12,
     backgroundColor: '#fff3cd',
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ffeeba',
-    alignItems: 'center',
+    borderRadius: 10,
+    padding: 12,
   },
-  authBannerReady: {
-    backgroundColor: '#d8f3dc',
-    borderColor: '#b7e4c7',
+  bannerText: {
+    color: '#7c5e10',
+    fontWeight: '600',
+    fontSize: 13,
   },
-  authBannerText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#856404',
-    textAlign: 'center',
-  },
-  errorText: {
+  error: {
+    marginTop: 10,
     color: '#9b2226',
     fontSize: 13,
-    marginBottom: 10,
   },
-  tabContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    backgroundColor: '#e9ecef',
-    borderRadius: 8,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    borderRadius: 6,
-  },
-  activeTab: {
-    backgroundColor: '#2d6a4f',
-  },
-  tabText: {
+  empty: {
+    marginTop: 12,
+    color: '#52796f',
     fontSize: 14,
-    fontWeight: '600',
-    color: '#495057',
   },
-  activeTabText: {
-    color: '#ffffff',
+  trainRow: {
+    gap: 8,
+    paddingVertical: 14,
   },
-  loader: {
-    marginTop: 40,
+  trainChip: {
+    width: 180,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#d8f3dc',
+  },
+  trainChipOn: {
+    backgroundColor: '#1b4332',
+    borderColor: '#1b4332',
+  },
+  trainChipTitle: {
+    fontWeight: '700',
+    color: '#1b4332',
+  },
+  trainChipTitleOn: {
+    color: '#f4fff8',
+  },
+  trainChipMeta: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#52796f',
   },
   card: {
     backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
+    borderRadius: 16,
+    padding: 14,
     borderWidth: 1,
-    borderColor: '#dee2e6',
+    borderColor: '#d8f3dc',
   },
-  rowBetween: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1b4332',
   },
-  trainName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2d6a4f',
+  cardMeta: {
+    color: '#52796f',
+    marginTop: 4,
+    marginBottom: 10,
   },
-  tripNo: {
-    fontSize: 13,
-    color: '#6c757d',
+  directBox: {
+    backgroundColor: '#e8f6ee',
+    borderRadius: 12,
+    padding: 12,
+  },
+  directLabel: {
+    color: '#52796f',
+    fontSize: 12,
     fontWeight: '600',
   },
-  timeText: {
-    fontSize: 13,
-    color: '#495057',
+  directValue: {
     marginTop: 4,
-    marginBottom: 8,
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1b4332',
   },
-  seatContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginVertical: 8,
-  },
-  seatBadge: {
-    backgroundColor: '#f1f3f5',
-    padding: 8,
-    borderRadius: 6,
-    minWidth: '47%',
-  },
-  seatClass: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#343a40',
-  },
-  seatCount: {
-    fontSize: 13,
-    marginTop: 2,
-  },
-  greenText: {
-    color: '#2b9348',
-    fontWeight: 'bold',
-  },
-  redText: {
-    color: '#d90429',
-  },
-  splitText: {
-    fontSize: 14,
-    color: '#495057',
-    marginTop: 4,
-  },
-  bold: {
-    fontWeight: 'bold',
-  },
-  segmentBox: {
-    marginTop: 8,
-    padding: 8,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 6,
-    borderLeftWidth: 3,
-    borderLeftColor: '#52b788',
-  },
-  segmentText: {
-    fontSize: 13,
-    color: '#343a40',
-  },
-  bookButton: {
-    backgroundColor: '#1b4332',
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
+  progressBlock: {
     marginTop: 12,
   },
-  bookButtonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-    fontSize: 14,
+  progressText: {
+    fontSize: 12,
+    color: '#1b4332',
+    marginBottom: 6,
   },
-  emptyText: {
-    textAlign: 'center',
-    color: '#6c757d',
-    marginTop: 30,
-    fontSize: 14,
+  track: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#e9ecef',
+    overflow: 'hidden',
+  },
+  trackFill: {
+    height: 8,
+    backgroundColor: '#2d6a4f',
+  },
+  spinner: {
+    marginTop: 8,
+  },
+  section: {
+    marginTop: 16,
+    marginBottom: 8,
+    fontWeight: '700',
+    color: '#1b4332',
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  summary: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 12,
+  },
+  summaryYes: {
+    backgroundColor: '#d8f3dc',
+  },
+  summaryNumber: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1b4332',
+  },
+  summaryLabel: {
+    color: '#52796f',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  toggle: {
+    marginTop: 10,
+    color: '#1b4332',
+    fontWeight: '700',
+  },
+  group: {
+    marginBottom: 12,
+  },
+  groupTitle: {
+    fontWeight: '700',
+    color: '#1b4332',
+    marginBottom: 6,
+  },
+  pairRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f3f5',
+  },
+  pairDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  dotYes: { backgroundColor: '#2d6a4f' },
+  dotNo: { backgroundColor: '#c1121f' },
+  dotFail: { backgroundColor: '#adb5bd' },
+  dotWait: { backgroundColor: '#dee2e6' },
+  pairTo: {
+    flex: 1,
+    color: '#212529',
+    fontSize: 15,
+  },
+  pairCount: {
+    fontWeight: '700',
+    color: '#1b4332',
   },
 });

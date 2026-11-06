@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Tabs, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RailwaySessionBridge } from '@/components/RailwaySessionBridge';
 import { useRailwaySession } from '@/lib/railwaySession';
@@ -18,7 +19,7 @@ function PortalHost() {
       pointerEvents={visible ? 'auto' : 'none'}
       style={
         visible
-          ? [styles.portal, { top: insets.top + 56, bottom: insets.bottom + 64 }]
+          ? [styles.portal, { top: insets.top + 56, bottom: insets.bottom + 72 }]
           : styles.hiddenPortal
       }
     >
@@ -39,52 +40,73 @@ function PortalHost() {
 export default function RootLayout() {
   return (
     <View style={styles.root}>
+    <StatusBar style="light" />
     <Tabs
       screenOptions={{
         headerStyle: {
           backgroundColor: '#1b4332',
         },
-        headerTintColor: '#ffffff',
+        headerTintColor: '#f4fff8',
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: '700',
+          color: '#f4fff8',
         },
-        tabBarActiveTintColor: '#2d6a4f',
-        tabBarInactiveTintColor: '#6c757d',
+        headerShadowVisible: false,
+        tabBarActiveTintColor: '#ffe8a3',
+        tabBarInactiveTintColor: '#95d5b2',
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#dee2e6',
-          height: 60,
+          backgroundColor: '#0d2818',
+          borderTopWidth: 0,
+          paddingTop: 6,
           paddingBottom: 8,
-          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Search & Split',
+          title: 'Search',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search-outline" size={size} color={color} />
+            <Ionicons name="search" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="availability"
         options={{
-          title: 'Route Results',
+          title: 'Seats',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="train-outline" size={size} color={color} />
+            <Ionicons name="grid" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="trains"
+        options={{
+          title: 'Trains',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="train" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="ticket-booking"
         options={{
-          title: 'Official WebView',
+          title: 'Portal',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="globe-outline" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="train/[number]"
+        options={{
+          href: null,
+          title: 'Train schedule',
         }}
       />
     </Tabs>

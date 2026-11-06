@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+  width="108"
+  height="108"
+  viewBox="0 0 512 512"
+  version="1.1"
+  id="svg90"
+  sodipodi:docname="train-seat-availability.svg"
+  inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+    id="namedview90"
+    pagecolor="#ffffff"
+    bordercolor="#000000"
+    borderopacity="0.25"
+    inkscape:showpageshadow="2"
+    inkscape:pageopacity="0.0"
+    inkscape:pagecheckerboard="0"
+    inkscape:deskcolor="#d1d1d1"
+    inkscape:zoom="3.2548586"
+    inkscape:cx="46.699418"
+    inkscape:cy="78.190801"
+    inkscape:window-width="1536"
+    inkscape:window-height="795"
+    inkscape:window-x="0"
+    inkscape:window-y="0"
+    inkscape:window-maximized="1"
+    inkscape:current-layer="g90" />
+  <title
+    id="title1">Train Seat Availability</title>
+  <desc
+    id="desc1">Front view through a train window showing five seats receding into the carriage.</desc>
+  <defs
+    id="defs37">
+    <linearGradient
+      id="shell"
+      x1="0"
+      y1="0"
+      x2="0.15"
+      y2="1">
+      <stop
+        offset="0"
+        stop-color="#ffffff"
+        id="stop1" />
+      <stop
+        offset=".48"
+        stop-color="#eaf2ff"
+        id="stop2" />
+      <stop
+        offset="1"
+        stop-color="#cbdcf5"
+        id="stop3" />
+    </linearGradient>
+    <linearGradient
+      id="shellSide"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        offset="0"
+        stop-color="#f7fbff"
+        id="stop4" />
+      <stop
+        offset="1"
+        stop-color="#b9cce8"
+        id="stop5" />
+    </linearGradient>
+    <linearGradient
+      id="blueStripe"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#0874df"
+        id="stop6" />
+      <stop
+        offset="1"
+        stop-color="#06469e"
+        id="stop7" />
+    </linearGradient>
+    <linearGradient
+      id="frame"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#06294e"
+        id="stop8" />
+      <stop
+        offset=".45"
+        stop-color="#07569a"
+        id="stop9" />
+      <stop
+        offset="1"
+        stop-color="#031b39"
+        id="stop10" />
+    </linearGradient>
+    <linearGradient
+      id="glass"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#48c8f4"
+        id="stop11" />
+      <stop
+        offset=".45"
+        stop-color="#a6eaff"
+        id="stop12" />
+      <stop
+        offset="1"
+        stop-color="#e1f7ff"
+        id="stop13" />
+    </linearGradient>
+    <linearGradient
+      id="interior"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#8bb5d9"
+        id="stop14" />
+      <stop
+        offset=".55"
+        stop-color="#dceeff"
+        id="stop15" />
+      <stop
+        offset="1"
+        stop-color="#4b82b6"
+        id="stop16" />
+    </linearGradient>
+    <linearGradient
+      id="navyPanel"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#062d56"
+        id="stop17" />
+      <stop
+        offset="1"
+        stop-color="#00152f"
+        id="stop18" />
+    </linearGradient>
+    <linearGradient
+      id="seatGreen"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#00e94f"
+        id="stop19" />
+      <stop
+        offset=".7"
+        stop-color="#00b83c"
+        id="stop20" />
+      <stop
+        offset="1"
+        stop-color="#008c37"
+        id="stop21" />
+    </linearGradient>
+    <linearGradient
+      id="seatYellow"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#ffc329"
+        id="stop22" />
+      <stop
+        offset=".7"
+        stop-color="#ffa500"
+        id="stop23" />
+      <stop
+        offset="1"
+        stop-color="#d97800"
+        id="stop24" />
+    </linearGradient>
+    <linearGradient
+      id="seatRed"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#ff4545"
+        id="stop25" />
+      <stop
+        offset=".72"
+        stop-color="#ef171f"
+        id="stop26" />
+      <stop
+        offset="1"
+        stop-color="#b9091a"
+        id="stop27" />
+    </linearGradient>
+    <linearGradient
+      id="headrest"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#fffdf5"
+        id="stop28" />
+      <stop
+        offset="1"
+        stop-color="#e8e2d8"
+        id="stop29" />
+    </linearGradient>
+    <linearGradient
+      id="ceilingLight"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="1">
+      <stop
+        stop-color="#fffef2"
+        id="stop30" />
+      <stop
+        offset="1"
+        stop-color="#ffe4b3"
+        id="stop31" />
+    </linearGradient>
+    <radialGradient
+      id="lampGlow">
+      <stop
+        stop-color="#fffbd1"
+        id="stop32" />
+      <stop
+        offset=".42"
+        stop-color="#fff4a1"
+        id="stop33" />
+      <stop
+        offset=".7"
+        stop-color="#ffbd39"
+        id="stop34" />
+      <stop
+        offset="1"
+        stop-color="#ff9c18"
+        stop-opacity="0"
+        id="stop35" />
+    </radialGradient>
+    <filter
+      id="shadow"
+      x="-0.038480801"
+      y="-0.12090164"
+      width="1.0499477"
+      height="1.1747951">
+      <feGaussianBlur
+        in="SourceAlpha"
+        stdDeviation="7"
+        id="feGaussianBlur35" />
+      <feOffset
+        dy="7"
+        id="feOffset35" />
+      <feComponentTransfer
+        id="feComponentTransfer35">
+        <feFuncA
+          type="linear"
+          slope=".35"
+          id="feFuncA35" />
+      </feComponentTransfer>
+      <feMerge
+        id="feMerge36">
+        <feMergeNode
+          id="feMergeNode35" />
+        <feMergeNode
+          in="SourceGraphic"
+          id="feMergeNode36" />
+      </feMerge>
+    </filter>
+    <filter
+      id="softGlow"
+      x="-0.48"
+      y="-1.28"
+      width="1.96"
+      height="3.56">
+      <feGaussianBlur
+        stdDeviation="8"
+        id="feGaussianBlur36" />
+    </filter>
+    <clipPath
+      id="windowClip">
+      <rect
+        x="49"
+        y="105"
+        width="414"
+        height="333"
+        rx="48"
+        id="rect36" />
+    </clipPath>
+    <clipPath
+      id="viewClip">
+      <rect
+        x="120"
+        y="169"
+        width="272"
+        height="110"
+        rx="26"
+        id="rect37" />
+    </clipPath>
+  </defs>
+  <!-- Transparent outside the train body -->
+  <g
+    filter="url(#shadow)"
+    id="g90">
+    <!-- Outer train body -->
+    <path
+      d="M112 12H400Q493 12 500 108V405Q496 500 402 500H110Q16 496 12 404V109Q17 16 112 12Z"
+      fill="url(#shell)"
+      stroke="#d9e7fa"
+      stroke-width="5"
+      id="path37" />
+    <path
+      d="M20 58Q42 20 112 20H400Q470 20 492 58L497 79H15Z"
+      fill="#fff"
+      opacity=".55"
+      id="path38" />
+    <path
+      d="M13 64H160Q169 64 164 75L157 84H13Z"
+      fill="url(#blueStripe)"
+      id="path39" />
+    <path
+      d="M499 64H352Q343 64 348 75L355 84H499Z"
+      fill="url(#blueStripe)"
+      id="path40" />
+    <!-- Headlight housing -->
+    <rect
+      x="184"
+      y="18"
+      width="144"
+      height="47"
+      rx="23"
+      fill="#061e3d"
+      stroke="#d9e9ff"
+      stroke-width="3"
+      id="rect40" />
+    <rect
+      x="190"
+      y="23"
+      width="132"
+      height="37"
+      rx="19"
+      fill="#102d50"
+      id="rect41" />
+    <circle
+      cx="225"
+      cy="41"
+      r="20"
+      fill="url(#lampGlow)"
+      filter="url(#softGlow)"
+      id="circle41" />
+    <circle
+      cx="287"
+      cy="41"
+      r="20"
+      fill="url(#lampGlow)"
+      filter="url(#softGlow)"
+      id="circle42" />
+    <circle
+      cx="225"
+      cy="41"
+      r="10"
+      fill="#fffde9"
+      stroke="#ffcf4c"
+      stroke-width="2"
+      id="circle43" />
+    <circle
+      cx="287"
+      cy="41"
+      r="10"
+      fill="#fffde9"
+      stroke="#ffcf4c"
+      stroke-width="2"
+      id="circle44" />
+    <!-- Large front window frame -->
+    <rect
+      x="25"
+      y="76"
+      width="462"
+      height="365"
+      rx="62"
+      fill="url(#frame)"
+      stroke="#061a35"
+      stroke-width="5"
+      id="rect44" />
+    <rect
+      x="34"
+      y="84"
+      width="444"
+      height="348"
+      rx="55"
+      fill="#0a4d88"
+      stroke="#1a6db0"
+      stroke-width="3"
+      id="rect45" />
+    <rect
+      x="49"
+      y="105"
+      width="414"
+      height="333"
+      rx="48"
+      fill="#09284a"
+      stroke="#03172e"
+      stroke-width="7"
+      id="rect46" />
+    <g
+      clip-path="url(#windowClip)"
+      id="g89">
+      <!-- Carriage interior -->
+      <rect
+        x="49"
+        y="105"
+        width="414"
+        height="333"
+        fill="url(#interior)"
+        id="rect47" />
+      <!-- Ceiling panels and ribs -->
+      <path
+        d="M49 105H463V153H49Z"
+        fill="#557fa8"
+        id="path47" />
+      <path
+        d="M49 105L128 105L177 151H111Z"
+        fill="#345e86"
+        id="path48" />
+      <path
+        d="M463 105H384L335 151H401Z"
+        fill="#345e86"
+        id="path49" />
+      <path
+        d="M49 105L116 151M95 105L157 151M463 105L396 151M417 105L355 151"
+        fill="none"
+        stroke="#a8c9e7"
+        stroke-width="5"
+        opacity=".7"
+        id="path50" />
+      <path
+        d="M49 153H463"
+        stroke="#e4f4ff"
+        stroke-width="6"
+        opacity=".8"
+        id="path51" />
+      <path
+        d="M184 105L207 153M328 105L305 153"
+        stroke="#3f6f9b"
+        stroke-width="4"
+        id="path52" />
+      <!-- Ceiling lights -->
+      <path
+        d="M186 111H326L317 126H195Z"
+        fill="#ffb34a"
+        opacity=".7"
+        filter="url(#softGlow)"
+        id="path53" />
+      <path
+        d="M190 111H322Q326 111 323 116L318 124H194L189 116Q186 111 190 111Z"
+        fill="url(#ceilingLight)"
+        stroke="#ffbd68"
+        stroke-width="2"
+        id="path54" />
+      <path
+        d="M56 128L95 146Q102 150 92 150L54 135Z"
+        fill="url(#ceilingLight)"
+        stroke="#ffc06b"
+        stroke-width="1.5"
+        id="path55" />
+      <path
+        d="M456 128L417 146Q410 150 420 150L458 135Z"
+        fill="url(#ceilingLight)"
+        stroke="#ffc06b"
+        stroke-width="1.5"
+        id="path56" />
+      <!-- Opposite-side window -->
+      <rect
+        x="113"
+        y="159"
+        width="286"
+        height="137"
+        rx="31"
+        fill="#09294c"
+        stroke="#173d62"
+        stroke-width="5"
+        id="rect56" />
+      <rect
+        x="120"
+        y="166"
+        width="272"
+        height="123"
+        rx="26"
+        fill="url(#glass)"
+        stroke="#d8efff"
+        stroke-width="3"
+        id="rect57" />
+      <g
+        clip-path="url(#viewClip)"
+        id="g66">
+        <path
+          d="M120 222Q150 211 175 220T230 218T287 218T340 219T392 214V289H120Z"
+          fill="#a2e6fa"
+          id="path57" />
+        <path
+          d="M120 239Q144 220 160 239Q177 210 198 239Q219 216 242 239Q264 216 286 239Q309 211 331 239Q356 214 378 237Q388 227 398 239V289H120Z"
+          fill="#35c95c"
+          id="path58" />
+        <path
+          d="M120 254Q145 231 164 251Q182 224 203 251Q226 228 246 252Q266 228 288 251Q309 227 331 252Q353 228 373 251Q389 238 399 253V289H120Z"
+          fill="#0fae48"
+          id="path59" />
+        <path
+          d="M120 271Q158 258 187 271T250 269T318 270T392 267V291H120Z"
+          fill="#80d94e"
+          id="path60" />
+        <g
+          fill="#e9fbff"
+          opacity=".9"
+          id="g65">
+          <ellipse
+            cx="153"
+            cy="199"
+            rx="16"
+            ry="8"
+            id="ellipse60" />
+          <ellipse
+            cx="168"
+            cy="196"
+            rx="12"
+            ry="10"
+            id="ellipse61" />
+          <ellipse
+            cx="244"
+            cy="207"
+            rx="17"
+            ry="7"
+            id="ellipse62" />
+          <ellipse
+            cx="256"
+            cy="203"
+            rx="11"
+            ry="9"
+            id="ellipse63" />
+          <ellipse
+            cx="347"
+            cy="199"
+            rx="18"
+            ry="8"
+            id="ellipse64" />
+          <ellipse
+            cx="360"
+            cy="196"
+            rx="11"
+            ry="9"
+            id="ellipse65" />
+        </g>
+        <path
+          d="M120 282H392"
+          stroke="#e5f7ff"
+          stroke-width="5"
+          opacity=".7"
+          id="path65" />
+      </g>
+      <!-- Side windows -->
+      <path
+        d="M49 166Q82 169 82 193V291H49Z"
+        fill="#0a3158"
+        stroke="#06213f"
+        stroke-width="5"
+        id="path66" />
+      <path
+        d="M49 181Q73 185 73 202V274H49Z"
+        fill="url(#glass)"
+        id="path67" />
+      <path
+        d="M463 166Q430 169 430 193V291H463Z"
+        fill="#0a3158"
+        stroke="#06213f"
+        stroke-width="5"
+        id="path68" />
+      <path
+        d="M463 181Q439 185 439 202V274H463Z"
+        fill="url(#glass)"
+        id="path69" />
+      <!-- Side wall / lower interior -->
+      <path
+        d="M49 274L120 288H392L463 274V438H49Z"
+        fill="#d9edfb"
+        id="path70" />
+      <path
+        d="M49 289L120 302H392L463 289"
+        fill="none"
+        stroke="#739fc3"
+        stroke-width="6"
+        id="path71" />
+      <path
+        d="M49 315L120 306H392L463 315V438H49Z"
+        fill="#477ca9"
+        opacity=".55"
+        id="path72" />
+      <g
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        id="g88-9"
+        transform="rotate(1.2518748,1729.4278,11643.562)">
+        <g
+          transform="matrix(5.2358409,0,0,3.961401,-537.49358,-1058.6743)"
+          id="g75-2"
+          inkscape:transform-center-x="200.94213"
+          inkscape:transform-center-y="-85.690434">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path73-0" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path74-2" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path75-3" />
+        </g>
+        <g
+          transform="matrix(2.753859,0,0,2.6341382,-266.54529,-585.15009)"
+          id="g78-7">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path76-5" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path77-9" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path78-2" />
+        </g>
+        <g
+          transform="matrix(1.6001781,0,0,1.4943986,-148.41778,-189.46907)"
+          id="g81-2">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path79-8" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path80-9" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path81-7" />
+        </g>
+        <g
+          transform="matrix(1.0399356,0.00228491,0.0018501,0.92665781,-95.25672,9.7291039)"
+          id="g84-3"
+          inkscape:transform-center-x="-114.71151"
+          inkscape:transform-center-y="-11.886702">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path82-6" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path83-1" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path84-2" />
+        </g>
+        <g
+          transform="matrix(0.56,0,0,0.56,-41.845092,136.03858)"
+          id="g87-9"
+          inkscape:transform-center-x="-1.7444634"
+          inkscape:transform-center-y="-12.211244">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path85-3" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path86-1" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path87-9" />
+        </g>
+      </g>
+      <!-- Five seat pictograms receding into the carriage -->
+      <g
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        id="g88"
+        transform="translate(-5.2333901,-15.70017)">
+        <g
+          transform="matrix(5.2358409,0,0,3.961401,-579.25543,-1053.3995)"
+          id="g75"
+          inkscape:transform-center-x="200.94213"
+          inkscape:transform-center-y="-85.690434">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path73" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path74" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path75" />
+        </g>
+        <g
+          transform="matrix(2.753859,0,0,2.6341382,-213.71392,-602.88097)"
+          id="g78">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path76" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path77" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path78" />
+        </g>
+        <g
+          transform="matrix(1.6001781,0,0,1.4943986,-43.265,-208.34331)"
+          id="g81">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path79" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path80" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path81" />
+        </g>
+        <g
+          transform="matrix(1.0449227,0,0,0.8460746,36.800371,14.578496)"
+          id="g84"
+          inkscape:transform-center-x="-115.26715"
+          inkscape:transform-center-y="-10.852546">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path82" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path83" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path84" />
+        </g>
+        <g
+          transform="matrix(0.56,0,0,0.56,105.96061,112.74249)"
+          id="g87"
+          inkscape:transform-center-x="-1.7444634"
+          inkscape:transform-center-y="-12.211244">
+          <path
+            d="m 121,354 5,28 q 1,5 7,5 h 13"
+            id="path85" />
+          <path
+            d="m 128,353 7,24 h 13 q 6,0 6,6 v 2 h -22"
+            id="path86" />
+          <path
+            d="m 131,388 -3,6 m 21,-6 4,6"
+            id="path87" />
+        </g>
+      </g>
+    </g>
+    <!-- Inner window highlights -->
+    <rect
+      x="34"
+      y="84"
+      width="444"
+      height="348"
+      rx="55"
+      fill="none"
+      stroke="#5bb5f1"
+      stroke-width="2"
+      opacity=".6"
+      id="rect89" />
+    <path
+      d="M18 446Q256 462 494 446L482 479Q256 501 30 479Z"
+      fill="url(#blueStripe)"
+      id="path89" />
+    <path
+      d="M28 481Q256 503 484 481"
+      fill="none"
+      stroke="#fff"
+      stroke-width="3"
+      opacity=".75"
+      id="path90" />
+  </g>
+</svg>

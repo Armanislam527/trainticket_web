@@ -62,6 +62,21 @@ export class DateUtils {
     }
   }
 
+  /** Today plus the following days. Bangladesh e-ticket sells 10 days, including today. */
+  public static bookingWindow(dayCount = 10): Date[] {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    return Array.from({ length: dayCount }, (_, index) => {
+      const date = new Date(start);
+      date.setDate(start.getDate() + index);
+      return date;
+    });
+  }
+
+  public static weekdayShort(date: Date): string {
+    return date.toLocaleDateString('en-GB', { weekday: 'short' });
+  }
+
   /**
    * Returns a normalized Date object set to midnight (00:00:00.000) for comparison.
    */

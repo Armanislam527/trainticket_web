@@ -5,10 +5,10 @@
     "scheme": "trainseat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/train-seat-availability.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/train-seat-availability.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,15 +19,15 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/train-seat-availability.png",
+        "backgroundImage": "./assets/train-seat-availability.png",
+        "monochromeImage": "./assets/train-seat-availability.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.arman.trainseatfinder"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/train-seat-availability.png"
     },
     "plugins": [
       [
