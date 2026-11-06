@@ -50,7 +50,7 @@ export default function TrainDetailScreen() {
           [{ text: 'OK', onPress: () => router.push('/ticket-booking') }]
         );
       } else {
-        Alert.alert('Error', 'Failed to load train details.');
+        Alert.alert('Error', error?.message || 'Failed to load train details.');
       }
     } finally {
       setLoading(false);

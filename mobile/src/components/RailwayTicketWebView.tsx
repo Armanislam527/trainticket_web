@@ -14,7 +14,7 @@ export const RailwayTicketWebView: React.FC<RailwayTicketWebViewProps> = ({
   return (
     <View style={styles.container}>
       <WebView
-        source={{ uri }}
+        source={{ uri: url }}
         onNavigationStateChange={onNavigationStateChange}
         javaScriptEnabled={true}
         domStorageEnabled={true}

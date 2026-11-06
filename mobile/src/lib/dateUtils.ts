@@ -17,9 +17,12 @@ export class DateUtils {
       return this.formatApiDate(new Date());
     }
 
-    // If it's already in DD-MMM-YYYY format (e.g. "06-Nov-2026"), return it safely
-    if (typeof dateInput === 'string' && /^\d{2}-[A-Za-z]{3}-\d{4}$/.test(dateInput.trim())) {
-      return dateInput.trim();
+    if (typeof dateInput === 'string') {
+      const ready = dateInput.trim().match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+      if (ready) {
+        const month = ready[2].charAt(0).toUpperCase() + ready[2].slice(1).toLowerCase();
+        return `${ready[1].padStart(2, '0')}-${month}-${ready[3]}`;
+      }
     }
 
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;

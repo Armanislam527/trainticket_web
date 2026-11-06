@@ -1,61 +1,98 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { railwayApi } from './railwayApi';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import { railwaySession } from '@/lib/railwaySession';
+import { SESSION_HOOK_JS } from '@/lib/sessionInject';
 
 interface RailwaySessionBridgeProps {
   onSessionCaptured?: (credentials: { authToken: string; deviceId: string; deviceKey: string }) => void;
 }
 
-const INJECTED_JS = `
-  (function() {
-    const origOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(method, url) {
-      this.addEventListener('load', function() {
-        try {
-          const auth = this.getResponseHeader('authorization') || localStorage.getItem('authorization');
-          // Dispatch session credentials back to React Native container
-          if (auth) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              type: 'RAILWAY_SESSION',
-              authToken: auth,
-              deviceId: window.localStorage.getItem('x-device-id') || '',
-              deviceKey: window.localStorage.getItem('x-device-key') || ''
-            }));
-          }
-        } catch(e) {}
-      });
-      origOpen.apply(this, arguments);
-    };
-  })();
-  true;
-`;
-
 export const RailwaySessionBridge: React.FC<RailwaySessionBridgeProps> = ({ onSessionCaptured }) => {
-  const handleMessage = (event: any) => {
+  const webRef = useRef<WebView>(null);
+
+  useEffect(() => {
+    const bridge = {
+      inject: (js: string) => {
+        webRef.current?.injectJavaScript(js);
+      },
+    };
+    railwaySession.attach(bridge);
+    return () => railwaySession.detach(bridge);
+  }, []);
+
+  const handleMessage = (event: WebViewMessageEvent) => {
+    let data: {
+      type?: string;
+      id?: string;
+      status?: number;
+      text?: string;
+      error?: string;
+      authorization?: string;
+      authToken?: string;
+      deviceId?: string;
+      deviceKey?: string;
+    };
     try {
-      const data = JSON.parse(event.nativeEvent.data);
-      if (data && data.type === 'RAILWAY_SESSION') {
-        const { authToken, deviceId, deviceKey } = data;
-        railwayApi.setCredentials(authToken, deviceId, deviceKey);
-        if (onSessionCaptured) {
-          onSessionCaptured({ authToken, deviceId, deviceKey });
-        }
+      data = JSON.parse(event.nativeEvent.data);
+    } catch {
+      return;
+    }
+    if (!data || typeof data.type !== 'string') return;
+
+    if (data.type === 'TSF_READY') {
+      railwaySession.markReady();
+      return;
+    }
+
+    if (data.type === 'TSF_XHR') {
+      if (!data.id) return;
+      if (data.error) {
+        railwaySession.failGet(data.id, data.error);
+        return;
       }
-    } catch (e) {
-      // Ignore parsing errors for non-json messages
+      railwaySession.completeGet(data.id, {
+        status: Number(data.status) || 0,
+        text: typeof data.text === 'string' ? data.text : '',
+      });
+      return;
+    }
+
+    if (data.type === 'RAILWAY_SESSION') {
+      const authorization = data.authorization || data.authToken || '';
+      railwaySession.applyCaptured({
+        authorization,
+        deviceId: data.deviceId || '',
+        deviceKey: data.deviceKey || '',
+      });
+      if (onSessionCaptured && authorization) {
+        onSessionCaptured({
+          authToken: authorization,
+          deviceId: data.deviceId || '',
+          deviceKey: data.deviceKey || '',
+        });
+      }
     }
   };
 
   return (
     <View style={styles.container}>
       <WebView
-        source={{ uri: 'https://eticket.railway.gov.bd' }}
-        injectedJavaScript={INJECTED_JS}
+        ref={webRef}
+        source={{ uri: 'https://eticket.railway.gov.bd/' }}
+        injectedJavaScriptBeforeContentLoaded={SESSION_HOOK_JS}
+        injectedJavaScript={SESSION_HOOK_JS}
         onMessage={handleMessage}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        sharedCookiesEnabled={true}
+        onLoadEnd={() => railwaySession.markReady()}
+        onContentProcessDidTerminate={() => webRef.current?.reload()}
+        javaScriptEnabled
+        domStorageEnabled
+        thirdPartyCookiesEnabled
+        sharedCookiesEnabled
+        cacheEnabled
+        setSupportMultipleWindows={false}
+        originWhitelist={['https://*', 'http://*']}
+        startInLoadingState
       />
     </View>
   );

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator }
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { getRouteTrainTrips, TrainTripResponse } from '@/lib/availability';
 import { SplitFinderService, SplitJourneyOption } from '@/lib/splitFinder';
+import { useRailwaySession } from '@/lib/railwaySession';
 
 export default function AvailabilityScreen() {
   const router = useRouter();
@@ -13,7 +14,10 @@ export default function AvailabilityScreen() {
   const destination = params.destination || 'Rajshahi';
   const date = params.date || '06-Nov-2026';
 
+  const session = useRailwaySession();
+  const [attempt, setAttempt] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [trainTrips, setTrainTrips] = useState<TrainTripResponse[]>([]);
   const [splitOptions, setSplitOptions] = useState<SplitJourneyOption[]>([]);
   const [activeTab, setActiveTab] = useState<'split' | 'direct'>('split');
@@ -21,7 +25,7 @@ export default function AvailabilityScreen() {
   const fetchedRef = useRef<string>('');
 
   useEffect(() => {
-    const queryKey = `${origin}-${destination}-${date}`;
+    const queryKey = `${origin}-${destination}-${date}-${session.hasAuthorization ? '1' : '0'}-${attempt}`;
     if (fetchedRef.current === queryKey) return;
     fetchedRef.current = queryKey;
 
@@ -29,6 +33,7 @@ export default function AvailabilityScreen() {
 
     async function loadData() {
       setLoading(true);
+      setLoadError('');
       try {
         const splits = SplitFinderService.findSplitJourneys(origin, destination);
         if (isMounted) setSplitOptions(splits);
@@ -39,7 +44,15 @@ export default function AvailabilityScreen() {
           if (trips.length > 0) setActiveTab('direct');
         }
       } catch (err) {
-        console.warn('Data loading warning:', err);
+        const message = err instanceof Error ? err.message : 'Failed to load trains';
+        if (isMounted) {
+          setTrainTrips([]);
+          setLoadError(
+            message === 'SESSION_EXPIRED'
+              ? 'Open the Official WebView tab, let the page load, and run one search there. Then search again here.'
+              : message
+          );
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -50,20 +63,28 @@ export default function AvailabilityScreen() {
     return () => {
       isMounted = false;
     };
-  }, [origin, destination, date]);
+  }, [origin, destination, date, session.hasAuthorization, attempt]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerTitle}>Route: {origin} $\rightarrow$ {destination}</Text>
+      <Text style={styles.headerTitle}>Route: {origin} → {destination}</Text>
       <Text style={styles.subtitle}>Journey Date: {date}</Text>
 
-      {/* Auth Banner to jump to WebView */}
-      <TouchableOpacity 
-        style={styles.authBanner}
+      <TouchableOpacity
+        style={[styles.authBanner, session.hasAuthorization && styles.authBannerReady]}
         onPress={() => router.push('/ticket-booking')}
       >
-        <Text style={styles.authBannerText}>🔒 Log in via Official WebView Portal to enable live seat data</Text>
+        <Text style={styles.authBannerText}>
+          {session.hasAuthorization
+            ? 'Site session is saved. Open the portal again if a search starts failing.'
+            : 'Open the official portal and search once there to capture the site session.'}
+        </Text>
       </TouchableOpacity>
+      {loadError ? (
+        <TouchableOpacity onPress={() => setAttempt((n) => n + 1)}>
+          <Text style={styles.errorText}>{loadError} Tap to retry.</Text>
+        </TouchableOpacity>
+      ) : null}
 
       {/* Tabs */}
       <View style={styles.tabContainer}>
@@ -93,8 +114,8 @@ export default function AvailabilityScreen() {
               <Text style={styles.splitText}>Break journey at: <Text style={styles.bold}>{item.intermediateStation}</Text></Text>
               
               <View style={styles.segmentBox}>
-                <Text style={styles.segmentText}>Segment 1: {item.trains[0].origin} $\rightarrow$ {item.trains[0].destination}</Text>
-                <Text style={styles.segmentText}>Segment 2: {item.trains[1].origin} $\rightarrow$ {item.trains[1].destination}</Text>
+                <Text style={styles.segmentText}>Segment 1: {item.trains[0].origin} → {item.trains[0].destination}</Text>
+                <Text style={styles.segmentText}>Segment 2: {item.trains[1].origin} → {item.trains[1].destination}</Text>
               </View>
 
               <TouchableOpacity
@@ -141,7 +162,9 @@ export default function AvailabilityScreen() {
             </View>
           )}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Live direct seats require login. Use Split Options or log in via WebView.</Text>
+            <Text style={styles.emptyText}>
+              {loadError || 'No direct trains were returned for this search.'}
+            </Text>
           }
         />
       )}
@@ -174,10 +197,20 @@ const styles = StyleSheet.create({
     borderColor: '#ffeeba',
     alignItems: 'center',
   },
+  authBannerReady: {
+    backgroundColor: '#d8f3dc',
+    borderColor: '#b7e4c7',
+  },
   authBannerText: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#856404',
+    textAlign: 'center',
+  },
+  errorText: {
+    color: '#9b2226',
+    fontSize: 13,
+    marginBottom: 10,
   },
   tabContainer: {
     flexDirection: 'row',
