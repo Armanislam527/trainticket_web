@@ -1,0 +1,71 @@
+/**
+ * Production-grade date utilities for handling railway booking and search dates.
+ * Ensures strict compliance with the Shohoz/Bangladesh Railway 'd-M-Y' API requirement.
+ */
+
+const MONTH_NAMES = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+] as const;
+
+export class DateUtils {
+  /**
+   * Formats a Date object, ISO date string, or pre-formatted 'DD-MMM-YYYY' string into the required 'DD-MMM-YYYY' format.
+   */
+  public static formatApiDate(dateInput: string | Date): string {
+    if (!dateInput) {
+      return this.formatApiDate(new Date());
+    }
+
+    // If it's already in DD-MMM-YYYY format (e.g. "06-Nov-2026"), return it safely
+    if (typeof dateInput === 'string' && /^\d{2}-[A-Za-z]{3}-\d{4}$/.test(dateInput.trim())) {
+      return dateInput.trim();
+    }
+
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    
+    if (isNaN(date.getTime())) {
+      // Fallback to current date if parsing fails completely
+      const fallback = new Date();
+      const day = String(fallback.getDate()).padStart(2, '0');
+      const month = MONTH_NAMES[fallback.getMonth()];
+      const year = fallback.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = MONTH_NAMES[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
+
+  /**
+   * Formats a Date object into a standard display format (e.g., "Friday, 6 November 2026").
+   */
+  public static formatDisplayDate(dateInput: string | Date): string {
+    try {
+      const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+      if (isNaN(date.getTime())) return String(dateInput);
+
+      return new Intl.DateTimeFormat('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(date);
+    } catch (e) {
+      return String(dateInput);
+    }
+  }
+
+  /**
+   * Returns a normalized Date object set to midnight (00:00:00.000) for comparison.
+   */
+  public static normalizeDate(dateInput: string | Date): Date {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : new Date(dateInput.getTime());
+    if (isNaN(date.getTime())) return new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+}

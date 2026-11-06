@@ -1,50 +1,57 @@
 import React from 'react';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RootLayout() {
   return (
-    <>
-      <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#1b4d3e',
-          },
-          headerTintColor: '#ffffff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          contentStyle: {
-            backgroundColor: '#f5f7f8',
-          },
+    <Tabs
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#1b4332',
+        },
+        headerTintColor: '#ffffff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+        tabBarActiveTintColor: '#2d6a4f',
+        tabBarInactiveTintColor: '#6c757d',
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          borderTopWidth: 1,
+          borderTopColor: '#dee2e6',
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Search & Split',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="search-outline" size={size} color={color} />
+          ),
         }}
-      >
-        <Stack.Screen
-          name="index"
-          options={{
-            title: 'Railway Dashboard',
-          }}
-        />
-        <Stack.Screen
-          name="ticket-booking"
-          options={{
-            title: 'Railway Session Portal',
-          }}
-        />
-        <Stack.Screen
-          name="availability"
-          options={{
-            title: 'Seat Availability',
-          }}
-        />
-        <Stack.Screen
-          name="train/[number]"
-          options={{
-            title: 'Train Details',
-          }}
-        />
-      </Stack>
-    </>
+      />
+      <Tabs.Screen
+        name="availability"
+        options={{
+          title: 'Route Results',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="train-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ticket-booking"
+        options={{
+          title: 'Official WebView',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="globe-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

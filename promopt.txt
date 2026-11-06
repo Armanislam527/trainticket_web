@@ -2,3 +2,5 @@ here in this project there are many js files that are the webpack or something e
 Type Safety on API Responses: Consider defining full TypeScript interfaces for the raw API response in railwayApi.ts instead of any casts inside availability.ts for even tighter type safety.
 
 Automatic Token Refresh / Prompt: Your session expiration handler (SESSION_EXPIRED) correctly navigates back to /ticket-booking. Make sure ticket-booking.tsx clears expired tokens on mount if the session cookie is invalidated by the server.
+
+implement features modularly and dont give me any dummy or snippets code.always give me fully functional robust implementable production grade code.give me code one by one.and after implementing a single feature we will move next.lets start

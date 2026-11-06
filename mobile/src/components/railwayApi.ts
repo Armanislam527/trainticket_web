@@ -1,94 +1,93 @@
-import * as SecureStore from 'expo-secure-store';
+import { DateUtils } from '@/lib/dateUtils';
+import { TrainDataService } from '@/lib/train-data';
 
-// Base URL for the railway portal API (adjust if your endpoints use a specific subdomain or path)
-const BASE_URL = 'https://eticket.railway.gov.bd';
-
-interface ApiOptions extends RequestInit {
-  requiresAuth?: boolean;
+export interface RailwayApiConfig {
+  baseUrl?: string;
+  authToken?: string;
+  deviceId?: string;
+  deviceKey?: string;
 }
 
-/**
- * Helper to execute authenticated requests against the railway backend using stored session data.
- */
-export async function railwayApiFetch(endpoint: string, options: ApiOptions = { requiresAuth: true }) {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    ...(options.headers as Record<string, string>),
-  };
-
-  if (options.requiresAuth) {
-    try {
-      // Retrieve the session cookies and auth token captured by the WebView bridge
-      const sessionCookies = await SecureStore.getItemAsync('railway_session_cookies');
-      const authToken = await SecureStore.getItemAsync('railway_auth_token');
-
-      if (sessionCookies) {
-        headers['Cookie'] = sessionCookies;
-      }
-
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-    } catch (error) {
-      console.error('Error retrieving session credentials from SecureStore:', error);
-    }
-  }
-
-  // Construct the full URL (handling absolute or relative paths)
-  const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
-
-    // Handle session expiration / unauthorized access
-    if (response.status === 401 || response.status === 403) {
-      throw new Error('SESSION_EXPIRED');
-    }
-
-    if (!response.ok) {
-      throw new Error(`Railway API error: ${response.status} ${response.statusText}`);
-    }
-
-    // Parse response safely
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      return await response.json();
-    }
-
-    return await response.text();
-  } catch (error) {
-    console.error(`API Request failed for [${endpoint}]:`, error);
-    throw error;
-  }
-}
-
-/**
- * Specific function to check seat availability for a given train, date, and route.
- */
-export async function fetchSeatAvailability(params: {
+export interface SeatAvailabilityQuery {
   origin: string;
   destination: string;
-  dateOfJourney: string;
-  trainId: string;
-  seatType?: string;
-}) {
-  const queryParams = new URLSearchParams({
-    from_city: params.origin,
-    to_city: params.destination,
-    date_of_journey: params.dateOfJourney,
-    train_id: params.trainId,
-    ...(params.seatType ? { seat_type: params.seatType } : {}),
-  });
+  dateOfJourney: string | Date;
+  seatClass?: string;
+}
 
-  // Replace with your exact endpoint path discovered from network inspection
-  const endpoint = `/api/v1/booking/availability?${queryParams.toString()}`;
+export class RailwayApiClient {
+  private static DEFAULT_BASE_URL = 'https://railspaapi.shohoz.com/v1.0/web';
+  private authToken: string;
+  private deviceId: string;
+  private deviceKey: string;
 
-  return await railwayApiFetch(endpoint, {
-    method: 'GET',
-    requiresAuth: true,
-  });
+  constructor(config?: RailwayApiConfig) {
+    this.authToken = config?.authToken || '';
+    this.deviceId = config?.deviceId || '';
+    this.deviceKey = config?.deviceKey || '';
+  }
+
+  public setCredentials(authToken: string, deviceId: string, deviceKey: string): void {
+    this.authToken = authToken;
+    this.deviceId = deviceId;
+    this.deviceKey = deviceKey;
+  }
+
+  private getHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+    };
+
+    if (this.authToken) {
+      headers['authorization'] = this.authToken;
+    }
+    if (this.deviceId) {
+      headers['x-device-id'] = this.deviceId;
+    }
+    if (this.deviceKey) {
+      headers['x-device-key'] = this.deviceKey;
+    }
+
+    return headers;
+  }
+
+  /**
+   * Fetches live seat availability using Shohoz search-trips-v2 endpoint.
+   */
+  public async checkAvailability(query: SeatAvailabilityQuery): Promise<any> {
+    const formattedDate = DateUtils.formatApiDate(query.dateOfJourney);
+    const origin = TrainDataService.sanitizeStationName(query.origin);
+    const destination = TrainDataService.sanitizeStationName(query.destination);
+    const seatClass = query.seatClass || 'S_CHAIR';
+
+    const endpoint = `${RailwayApiClient.DEFAULT_BASE_URL}/bookings/search-trips-v2?from_city=${encodeURIComponent(
+      origin
+    )}&to_city=${encodeURIComponent(destination)}&date_of_journey=${encodeURIComponent(
+      formattedDate
+    )}&seat_class=${encodeURIComponent(seatClass)}`;
+
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error?.message || `Railway API error: HTTP ${response.status} - Unprocessable Entity / Request Failed`
+      );
+    }
+
+    return data;
+  }
+}
+
+export const railwayApi = new RailwayApiClient();
+
+// Helper export to match availability.ts imports
+export async function fetchSeatAvailability(query: SeatAvailabilityQuery): Promise<any> {
+  return railwayApi.checkAvailability(query);
 }

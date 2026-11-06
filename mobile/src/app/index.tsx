@@ -1,51 +1,117 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
+import { TrainDataService } from '@/lib/train-data';
+import { DateUtils } from '@/lib/dateUtils';
+import { theme } from '@/theme';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [origin, setOrigin] = useState('Dhaka');
+  const [destination, setDestination] = useState('Rajshahi');
+  const [date, setDate] = useState(DateUtils.formatApiDate(new Date()));
+
+  const [activeField, setActiveField] = useState<'origin' | 'destination' | null>(null);
+
+  // Get available stations from JSON dataset
+  const allStations = useMemo(() => TrainDataService.getAvailableStations(), []);
+
+  const filteredOriginStations = useMemo(() => {
+    if (!origin) return allStations.slice(0, 5);
+    return allStations.filter(s => s.toLowerCase().includes(origin.toLowerCase())).slice(0, 5);
+  }, [origin, allStations]);
+
+  const filteredDestinationStations = useMemo(() => {
+    if (!destination) return allStations.slice(0, 5);
+    return allStations.filter(s => s.toLowerCase().includes(destination.toLowerCase())).slice(0, 5);
+  }, [destination, allStations]);
+
+  const handleSearch = () => {
+    if (!origin || !destination) {
+      Alert.alert('Error', 'Please enter both origin and destination stations.');
+      return;
+    }
+
+    router.push({
+      pathname: '/availability',
+      params: { origin, destination, date },
+    });
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.headerCard}>
-        <Text style={styles.headerTitle}>Railway Ticketing & Availability</Text>
-        <Text style={styles.headerSubtitle}>
-          Securely manage your railway sessions, check live seat availability, and plan your journeys seamlessly.
-        </Text>
-      </View>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <Text style={styles.title}>Bangladesh Railway Ticket & Split Finder</Text>
+      
+      <View style={styles.card}>
+        {/* Origin Station */}
+        <Text style={styles.label}>From Station</Text>
+        <TextInput
+          style={styles.input}
+          value={origin}
+          onChangeText={(text) => {
+            setOrigin(text);
+            setActiveField('origin');
+          }}
+          onFocus={() => setActiveField('origin')}
+          placeholder="e.g. Dhaka"
+        />
+        {activeField === 'origin' && filteredOriginStations.length > 0 && (
+          <View style={styles.autocompleteContainer}>
+            {filteredOriginStations.map((station) => (
+              <TouchableOpacity
+                key={station}
+                style={styles.suggestionItem}
+                onPress={() => {
+                  setOrigin(station);
+                  setActiveField(null);
+                }}
+              >
+                <Text style={styles.suggestionText}>{station}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
-      <View style={styles.menuContainer}>
-        <TouchableOpacity
-          style={styles.menuCard}
-          onPress={() => router.push('/ticket-booking')}
-        >
-          <Text style={styles.menuIcon}>🔐</Text>
-          <Text style={styles.menuTitle}>Railway Session Login</Text>
-          <Text style={styles.menuDescription}>
-            Authenticate via WebView and capture secure session cookies.
-          </Text>
-        </TouchableOpacity>
+        {/* Destination Station */}
+        <Text style={styles.label}>To Station</Text>
+        <TextInput
+          style={styles.input}
+          value={destination}
+          onChangeText={(text) => {
+            setDestination(text);
+            setActiveField('destination');
+          }}
+          onFocus={() => setActiveField('destination')}
+          placeholder="e.g. Rajshahi"
+        />
+        {activeField === 'destination' && filteredDestinationStations.length > 0 && (
+          <View style={styles.autocompleteContainer}>
+            {filteredDestinationStations.map((station) => (
+              <TouchableOpacity
+                key={station}
+                style={styles.suggestionItem}
+                onPress={() => {
+                  setDestination(station);
+                  setActiveField(null);
+                }}
+              >
+                <Text style={styles.suggestionText}>{station}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
-        <TouchableOpacity
-          style={styles.menuCard}
-          onPress={() => router.push('/availability')}
-        >
-          <Text style={styles.menuIcon}>💺</Text>
-          <Text style={styles.menuTitle}>Check Availability</Text>
-          <Text style={styles.menuDescription}>
-            Search route seat availability, fares, and class status in real-time.
-          </Text>
-        </TouchableOpacity>
+        {/* Journey Date */}
+        <Text style={styles.label}>Journey Date (DD-MMM-YYYY)</Text>
+        <TextInput
+          style={styles.input}
+          value={date}
+          onChangeText={setDate}
+          placeholder="e.g. 06-Nov-2026"
+        />
 
-        <TouchableOpacity
-          style={styles.menuCard}
-          onPress={() => router.push('/train/701')}
-        >
-          <Text style={styles.menuIcon}>🚆</Text>
-          <Text style={styles.menuTitle}>Sample Train View (#701)</Text>
-          <Text style={styles.menuDescription}>
-            View detailed schedules and coach accommodations for specific trains.
-          </Text>
+        <TouchableOpacity style={styles.button} onPress={handleSearch}>
+          <Text style={styles.buttonText}>Search Available Tickets & Splits</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -54,64 +120,71 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#f5f7f8',
     flexGrow: 1,
+    padding: 20,
+    backgroundColor: '#f8f9fa',
     justifyContent: 'center',
   },
-  headerCard: {
-    backgroundColor: '#1b4d3e',
-    borderRadius: 14,
-    padding: 24,
-    marginBottom: 20,
-    alignItems: 'center',
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1b4332',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
+  label: {
     fontSize: 14,
-    color: '#e0f2f1',
-    textAlign: 'center',
-    lineHeight: 20,
+    fontWeight: '600',
+    color: '#333333',
+    marginBottom: 6,
+    marginTop: 12,
   },
-  menuContainer: {
-    gap: 12,
+  input: {
+    borderWidth: 1,
+    borderColor: '#ced4da',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#fff',
   },
-  menuCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
-    borderLeftWidth: 4,
-    borderLeftColor: '#1b4d3e',
-  },
-  menuIcon: {
-    fontSize: 24,
+  autocompleteContainer: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ced4da',
+    borderRadius: 8,
+    marginTop: 2,
     marginBottom: 8,
+    maxHeight: 150,
   },
-  menuTitle: {
-    fontSize: 17,
+  suggestionItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f3f5',
+  },
+  suggestionText: {
+    fontSize: 15,
+    color: '#212529',
+  },
+  button: {
+    backgroundColor: '#2d6a4f',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#1b4d3e',
-    marginBottom: 4,
-  },
-  menuDescription: {
-    fontSize: 13,
-    color: '#666666',
-    lineHeight: 18,
   },
 });

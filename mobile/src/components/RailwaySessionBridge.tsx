@@ -1,99 +1,70 @@
-import React, { useRef } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
-import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { WebView } from 'react-native-webview';
+import { railwayApi } from './railwayApi';
 
-export interface RailwaySession {
-  authorization: string;
-  deviceId: string;
-  deviceKey: string;
+interface RailwaySessionBridgeProps {
+  onSessionCaptured?: (credentials: { authToken: string; deviceId: string; deviceKey: string }) => void;
 }
 
-interface BridgeProps {
-  onSessionCaptured: (session: RailwaySession) => void;
-  onLoginStateChange?: (url: string) => void;
-}
-
-export const RailwaySessionBridge: React.FC<BridgeProps> = ({ 
-  onSessionCaptured,
-  onLoginStateChange 
-}) => {
-  const webViewRef = useRef<WebView>(null);
-
-  // This script mirrors the exact XHR proxy interception used in the Chrome extension
-  const injectionScript = `
-    (function() {
-      const KEEP = ["authorization", "x-device-id", "x-device-key"];
-      const sessionData = { authorization: '', deviceId: '', deviceKey: '' };
-      
-      const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
-      
-      XMLHttpRequest.prototype.setRequestHeader = function(key, value) {
+const INJECTED_JS = `
+  (function() {
+    const origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+      this.addEventListener('load', function() {
         try {
-          const lowerKey = String(key).toLowerCase();
-          if (KEEP.includes(lowerKey)) {
-            if (lowerKey === 'authorization') sessionData.authorization = value;
-            if (lowerKey === 'x-device-id') sessionData.deviceId = value;
-            if (lowerKey === 'x-device-key') sessionData.deviceKey = value;
-            
-            // Dispatch to the native App environment as soon as tokens emerge
-            if (sessionData.authorization && sessionData.deviceId) {
-              window.ReactNativeWebView.postMessage(JSON.stringify({
-                type: 'SESSION_INTERCEPTED',
-                data: sessionData
-              }));
-            }
+          const auth = this.getResponseHeader('authorization') || localStorage.getItem('authorization');
+          // Dispatch session credentials back to React Native container
+          if (auth) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'RAILWAY_SESSION',
+              authToken: auth,
+              deviceId: window.localStorage.getItem('x-device-id') || '',
+              deviceKey: window.localStorage.getItem('x-device-key') || ''
+            }));
           }
-        } catch (e) {
-          // Silent catch to match the extension context
-        }
-        return originalSetRequestHeader.apply(this, arguments);
-      };
-      true;
-    })();
-  `;
+        } catch(e) {}
+      });
+      origOpen.apply(this, arguments);
+    };
+  })();
+  true;
+`;
 
-  const handleMessage = (event: WebViewMessageEvent) => {
+export const RailwaySessionBridge: React.FC<RailwaySessionBridgeProps> = ({ onSessionCaptured }) => {
+  const handleMessage = (event: any) => {
     try {
-      const message = JSON.parse(event.nativeEvent.data);
-      if (message.type === 'SESSION_INTERCEPTED' && message.data.authorization) {
-        onSessionCaptured({
-          authorization: message.data.authorization,
-          deviceId: message.data.deviceId || '',
-          deviceKey: message.data.deviceKey || '',
-        });
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data && data.type === 'RAILWAY_SESSION') {
+        const { authToken, deviceId, deviceKey } = data;
+        railwayApi.setCredentials(authToken, deviceId, deviceKey);
+        if (onSessionCaptured) {
+          onSessionCaptured({ authToken, deviceId, deviceKey });
+        }
       }
-    } catch (err) {
-      console.error('Failed parsing event transmission data:', err);
+    } catch (e) {
+      // Ignore parsing errors for non-json messages
     }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>🔒 Log in via the official portal to secure your session</Text>
-      </View>
       <WebView
-        ref={webViewRef}
-        source={{ uri: 'https://eticket.railway.gov.bd/' }}
-        injectedJavaScriptBeforeContentLoaded={injectionScript}
+        source={{ uri: 'https://eticket.railway.gov.bd' }}
+        injectedJavaScript={INJECTED_JS}
         onMessage={handleMessage}
         javaScriptEnabled={true}
         domStorageEnabled={true}
-        onNavigationStateChange={(navState) => {
-          if (onLoginStateChange) onLoginStateChange(navState.url);
-        }}
-        startInLoadingState={true}
-        renderLoading={() => (
-          <ActivityIndicator size="large" color="#0a6" style={styles.loader} />
-        )}
+        sharedCookiesEnabled={true}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  banner: { backgroundColor: '#f2f7ff', padding: 12, borderBottomWidth: 1, borderColor: '#cde' },
-  bannerText: { color: '#06c', fontSize: 13, textAlign: 'center', fontWeight: '500' },
-  loader: { position: 'absolute', top: '45%', left: '45%' }
+  container: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
 });

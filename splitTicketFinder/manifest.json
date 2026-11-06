@@ -7,7 +7,6 @@
   "host_permissions": [
     "https://eticket.railway.gov.bd/*",
     "https://railspaapi.shohoz.com/*",
-    "https://train-proxy.armanislam527.workers.dev/*",
     "https://generativelanguage.googleapis.com/*"
   ],
   "background": { "service_worker": "background.js" },

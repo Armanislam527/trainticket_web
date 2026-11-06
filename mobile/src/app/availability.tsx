@@ -1,256 +1,304 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { getProcessedTrainAvailability, TrainAvailabilityResponse, formatFare } from '../lib/availability';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { getRouteTrainTrips, TrainTripResponse } from '@/lib/availability';
+import { SplitFinderService, SplitJourneyOption } from '@/lib/splitFinder';
 
 export default function AvailabilityScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ origin?: string; destination?: string; date?: string }>();
+  
+  // Extract primitive values to prevent useEffect loops
+  const origin = params.origin || 'Dhaka';
+  const destination = params.destination || 'Rajshahi';
+  const date = params.date || '06-Nov-2026';
 
-  const [origin, setOrigin] = useState('DHAKA');
-  const [destination, setDestination] = useState('CHITTAGONG');
-  const [dateOfJourney, setDateOfJourney] = useState('2026-06-01');
-  const [trainId, setTrainId] = useState('701'); // e.g., Subarna Express
+  const [loading, setLoading] = useState(true);
+  const [trainTrips, setTrainTrips] = useState<TrainTripResponse[]>([]);
+  const [splitOptions, setSplitOptions] = useState<SplitJourneyOption[]>([]);
+  const [activeTab, setActiveTab] = useState<'split' | 'direct'>('split');
 
-  const [loading, setLoading] = useState(false);
-  const [availabilityData, setAvailabilityData] = useState<TrainAvailabilityResponse | null>(null);
+  const fetchedRef = useRef<string>('');
 
-  const handleCheckAvailability = async () => {
-    if (!origin || !destination || !dateOfJourney || !trainId) {
-      Alert.alert('Error', 'Please fill in all search fields.');
-      return;
+  useEffect(() => {
+    const queryKey = `${origin}-${destination}-${date}`;
+    if (fetchedRef.current === queryKey) return;
+    fetchedRef.current = queryKey;
+
+    let isMounted = true;
+
+    async function loadData() {
+      setLoading(true);
+      try {
+        const splits = SplitFinderService.findSplitJourneys(origin, destination);
+        if (isMounted) setSplitOptions(splits);
+
+        const trips = await getRouteTrainTrips({ origin, destination, dateOfJourney: date });
+        if (isMounted) {
+          setTrainTrips(trips);
+          if (trips.length > 0) setActiveTab('direct');
+        }
+      } catch (err) {
+        console.warn('Data loading warning:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
 
-    setLoading(true);
-    setAvailabilityData(null);
+    loadData();
 
-    try {
-      const result = await getProcessedTrainAvailability({
-        origin: origin.toUpperCase(),
-        destination: destination.toUpperCase(),
-        dateOfJourney,
-        trainId,
-      });
-
-      setAvailabilityData(result);
-      if (!result) {
-        Alert.alert('Notice', 'No availability data found for this train/route.');
-      }
-    } catch (error: any) {
-      if (error.message === 'SESSION_EXPIRED') {
-        Alert.alert(
-          'Session Expired',
-          'Your login session has expired. Please log in again.',
-          [{ text: 'OK', onPress: () => router.push('/ticket-booking') }]
-        );
-      } else {
-        Alert.alert('Error', 'Failed to fetch seat availability. Please check your network or inputs.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      isMounted = false;
+    };
+  }, [origin, destination, date]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.headerTitle}>Check Seat Availability</Text>
+    <View style={styles.container}>
+      <Text style={styles.headerTitle}>Route: {origin} $\rightarrow$ {destination}</Text>
+      <Text style={styles.subtitle}>Journey Date: {date}</Text>
 
-      <View style={styles.formCard}>
-        <Text style={styles.label}>Origin Station</Text>
-        <TextInput
-          style={styles.input}
-          value={origin}
-          onChangeText={setOrigin}
-          placeholder="e.g. DHAKA"
-        />
+      {/* Auth Banner to jump to WebView */}
+      <TouchableOpacity 
+        style={styles.authBanner}
+        onPress={() => router.push('/ticket-booking')}
+      >
+        <Text style={styles.authBannerText}>🔒 Log in via Official WebView Portal to enable live seat data</Text>
+      </TouchableOpacity>
 
-        <Text style={styles.label}>Destination Station</Text>
-        <TextInput
-          style={styles.input}
-          value={destination}
-          onChangeText={setDestination}
-          placeholder="e.g. CHITTAGONG"
-        />
-
-        <Text style={styles.label}>Date of Journey (YYYY-MM-DD)</Text>
-        <TextInput
-          style={styles.input}
-          value={dateOfJourney}
-          onChangeText={setDateOfJourney}
-          placeholder="YYYY-MM-DD"
-        />
-
-        <Text style={styles.label}>Train ID / Number</Text>
-        <TextInput
-          style={styles.input}
-          value={trainId}
-          onChangeText={setTrainId}
-          placeholder="e.g. 701"
-        />
-
+      {/* Tabs */}
+      <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={styles.searchButton}
-          onPress={handleCheckAvailability}
-          disabled={loading}
+          style={[styles.tab, activeTab === 'split' && styles.activeTab]}
+          onPress={() => setActiveTab('split')}
         >
-          {loading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text style={styles.searchButtonText}>Search Availability</Text>
-          )}
+          <Text style={[styles.tabText, activeTab === 'split' && styles.activeTabText]}>Split Options ({splitOptions.length})</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'direct' && styles.activeTab]}
+          onPress={() => setActiveTab('direct')}
+        >
+          <Text style={[styles.tabText, activeTab === 'direct' && styles.activeTabText]}>Direct Trains ({trainTrips.length})</Text>
         </TouchableOpacity>
       </View>
 
-      {availabilityData && (
-        <View style={styles.resultCard}>
-          <Text style={styles.trainName}>{availabilityData.trainName} (Train: {availabilityData.trainId})</Text>
-          <Text style={styles.trainTime}>
-            Departure: {availabilityData.departureTime} | Arrival: {availabilityData.arrivalTime}
-          </Text>
-          <Text style={styles.dateText}>Date: {availabilityData.dateOfJourney}</Text>
-
-          <View style={styles.divider} />
-
-          <Text style={styles.sectionHeader}>Available Classes & Seats:</Text>
-          {availabilityData.seats.map((seat, index) => (
-            <View key={index} style={styles.seatRow}>
-              <View>
-                <Text style={styles.className}>{seat.className}</Text>
-                <Text style={[styles.statusText, seat.status === 'SOLD_OUT' ? styles.soldOut : styles.available]}>
-                  {seat.status} ({seat.availableSeats} seats left)
-                </Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#2d6a4f" style={styles.loader} />
+      ) : activeTab === 'split' ? (
+        <FlatList
+          data={splitOptions}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.trainName}>{item.trains[0].trainName} ({item.trains[0].trainNumber})</Text>
+              <Text style={styles.splitText}>Break journey at: <Text style={styles.bold}>{item.intermediateStation}</Text></Text>
+              
+              <View style={styles.segmentBox}>
+                <Text style={styles.segmentText}>Segment 1: {item.trains[0].origin} $\rightarrow$ {item.trains[0].destination}</Text>
+                <Text style={styles.segmentText}>Segment 2: {item.trains[1].origin} $\rightarrow$ {item.trains[1].destination}</Text>
               </View>
-              <Text style={styles.fareText}>{formatFare(seat.fare)}</Text>
+
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => router.push('/ticket-booking')}
+              >
+                <Text style={styles.bookButtonText}>Book via Official Portal WebView</Text>
+              </TouchableOpacity>
             </View>
-          ))}
-        </View>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No split journeys found for this route.</Text>
+          }
+        />
+      ) : (
+        <FlatList
+          data={trainTrips}
+          keyExtractor={(item, index) => `${item.tripNumber}-${index}`}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <View style={styles.rowBetween}>
+                <Text style={styles.trainName}>{item.trainName}</Text>
+                <Text style={styles.tripNo}>{item.tripNumber}</Text>
+              </View>
+              <Text style={styles.timeText}>Departure: {item.departureTime} | Arrival: {item.arrivalTime}</Text>
+
+              <View style={styles.seatContainer}>
+                {item.seats.map((seat, idx) => (
+                  <View key={idx} style={styles.seatBadge}>
+                    <Text style={styles.seatClass}>{seat.className}</Text>
+                    <Text style={[styles.seatCount, seat.availableSeats > 0 ? styles.greenText : styles.redText]}>
+                      {seat.availableSeats} seats (৳{seat.fare})
+                    </Text>
+                  </View>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => router.push('/ticket-booking')}
+              >
+                <Text style={styles.bookButtonText}>Book via Official Portal WebView</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>Live direct seats require login. Use Split Options or log in via WebView.</Text>
+          }
+        />
       )}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 16,
-    backgroundColor: '#f5f7f8',
-    flexGrow: 1,
+    backgroundColor: '#f8f9fa',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1b4d3e',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  formCard: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 6,
-    marginTop: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#cccccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    backgroundColor: '#fafafa',
-  },
-  searchButton: {
-    backgroundColor: '#1b4d3e',
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  searchButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  resultCard: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  trainName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1b4d3e',
+    color: '#1b4332',
   },
-  trainTime: {
-    fontSize: 13,
-    color: '#666666',
-    marginTop: 4,
+  subtitle: {
+    fontSize: 14,
+    color: '#6c757d',
+    marginBottom: 8,
   },
-  dateText: {
-    fontSize: 13,
-    color: '#666666',
-    marginTop: 2,
+  authBanner: {
+    backgroundColor: '#fff3cd',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ffeeba',
+    alignItems: 'center',
   },
-  divider: {
-    height: 1,
-    backgroundColor: '#eeeeee',
-    marginVertical: 12,
+  authBannerText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#856404',
   },
-  sectionHeader: {
-    fontSize: 15,
+  tabContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    backgroundColor: '#e9ecef',
+    borderRadius: 8,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  activeTab: {
+    backgroundColor: '#2d6a4f',
+  },
+  tabText: {
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333333',
-    marginBottom: 10,
+    color: '#495057',
   },
-  seatRow: {
+  activeTabText: {
+    color: '#ffffff',
+  },
+  loader: {
+    marginTop: 40,
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#dee2e6',
+  },
+  rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
   },
-  className: {
-    fontSize: 14,
+  trainName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2d6a4f',
+  },
+  tripNo: {
+    fontSize: 13,
+    color: '#6c757d',
     fontWeight: '600',
-    color: '#222222',
   },
-  statusText: {
+  timeText: {
+    fontSize: 13,
+    color: '#495057',
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  seatContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginVertical: 8,
+  },
+  seatBadge: {
+    backgroundColor: '#f1f3f5',
+    padding: 8,
+    borderRadius: 6,
+    minWidth: '47%',
+  },
+  seatClass: {
     fontSize: 12,
+    fontWeight: 'bold',
+    color: '#343a40',
+  },
+  seatCount: {
+    fontSize: 13,
     marginTop: 2,
   },
-  available: {
-    color: '#2e7d32',
-  },
-  soldOut: {
-    color: '#c62828',
-  },
-  fareText: {
-    fontSize: 15,
+  greenText: {
+    color: '#2b9348',
     fontWeight: 'bold',
-    color: '#1b4d3e',
+  },
+  redText: {
+    color: '#d90429',
+  },
+  splitText: {
+    fontSize: 14,
+    color: '#495057',
+    marginTop: 4,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  segmentBox: {
+    marginTop: 8,
+    padding: 8,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 6,
+    borderLeftWidth: 3,
+    borderLeftColor: '#52b788',
+  },
+  segmentText: {
+    fontSize: 13,
+    color: '#343a40',
+  },
+  bookButton: {
+    backgroundColor: '#1b4332',
+    padding: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  bookButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#6c757d',
+    marginTop: 30,
+    fontSize: 14,
   },
 });
