@@ -1,121 +1,117 @@
-import { Link } from "expo-router";
-import { useMemo, useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import { Screen } from "../components/Screen";
-import { scheduleSnapshotInfo, searchTrains, type Train } from "../lib/train-data";
-import { colors } from "../theme";
-
-function TrainCard({ train }: { train: Train }) {
-  return (
-    <Link href={`/train/${train.train_number}`} asChild>
-      <Pressable style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.trainName}>{train.schedule.train_name}</Text>
-          <Text style={styles.number}>#{train.train_number}</Text>
-        </View>
-        <Text style={styles.route}>
-          {train.origin_city.replaceAll("_", " ")}  →  {train.destination_city.replaceAll("_", " ")}
-        </Text>
-        <View style={styles.cardFooter}>
-          <Text style={styles.meta}>{train.schedule.routes.length} stops</Text>
-          <Text style={styles.meta}>{train.schedule.total_duration || "Schedule available"}</Text>
-        </View>
-      </Pressable>
-    </Link>
-  );
-}
+import React from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
-  const [query, setQuery] = useState("");
-  const results = useMemo(() => searchTrains(query), [query]);
+  const router = useRouter();
 
   return (
-    <Screen>
-      <FlatList
-        data={results}
-        keyExtractor={(train) => train.train_number}
-        renderItem={({ item }) => <TrainCard train={item} />}
-        contentContainerStyle={styles.list}
-        keyboardShouldPersistTaps="handled"
-        ListHeaderComponent={
-          <View>
-            <Text style={styles.eyebrow}>BANGLADESH RAILWAY</Text>
-            <Text style={styles.title}>Plan your train trip</Text>
-            <Text style={styles.subtitle}>Find a train by name, number, or station.</Text>
-            <Link href="/ticket-booking" asChild>
-              <Pressable
-                accessibilityRole="button"
-                style={styles.bookingButton}
-              >
-                <Text style={styles.bookingButtonText}>Book tickets on the official website</Text>
-              </Pressable>
-            </Link>
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="Try Dhaka, Suborno, or 701"
-              placeholderTextColor={colors.muted}
-              style={styles.search}
-              accessibilityLabel="Search trains and stations"
-              returnKeyType="search"
-              autoCorrect={false}
-            />
-            {!scheduleSnapshotInfo.complete && (
-              <View style={styles.notice}>
-                <Text style={styles.noticeTitle}>Offline schedule snapshot</Text>
-                <Text style={styles.noticeText}>
-                  {scheduleSnapshotInfo.fetched} of {scheduleSnapshotInfo.total} schedules were available when this data was collected. Live seats are shown separately and require an authorized provider.
-                </Text>
-              </View>
-            )}
-            <Text style={styles.sectionTitle}>
-              {query.trim() ? `${results.length} matching trains` : `${results.length} trains`}
-            </Text>
-          </View>
-        }
-        ListEmptyComponent={
-          <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>No trains found</Text>
-            <Text style={styles.meta}>Try a train number, train name, or station.</Text>
-          </View>
-        }
-      />
-    </Screen>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.headerCard}>
+        <Text style={styles.headerTitle}>Railway Ticketing & Availability</Text>
+        <Text style={styles.headerSubtitle}>
+          Securely manage your railway sessions, check live seat availability, and plan your journeys seamlessly.
+        </Text>
+      </View>
+
+      <View style={styles.menuContainer}>
+        <TouchableOpacity
+          style={styles.menuCard}
+          onPress={() => router.push('/ticket-booking')}
+        >
+          <Text style={styles.menuIcon}>🔐</Text>
+          <Text style={styles.menuTitle}>Railway Session Login</Text>
+          <Text style={styles.menuDescription}>
+            Authenticate via WebView and capture secure session cookies.
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuCard}
+          onPress={() => router.push('/availability')}
+        >
+          <Text style={styles.menuIcon}>💺</Text>
+          <Text style={styles.menuTitle}>Check Availability</Text>
+          <Text style={styles.menuDescription}>
+            Search route seat availability, fares, and class status in real-time.
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuCard}
+          onPress={() => router.push('/train/701')}
+        >
+          <Text style={styles.menuIcon}>🚆</Text>
+          <Text style={styles.menuTitle}>Sample Train View (#701)</Text>
+          <Text style={styles.menuDescription}>
+            View detailed schedules and coach accommodations for specific trains.
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 20, paddingBottom: 32, gap: 12 },
-  eyebrow: { color: colors.primary, fontSize: 12, fontWeight: "800", letterSpacing: 1.4, marginTop: 10 },
-  title: { color: colors.text, fontSize: 29, fontWeight: "800", marginTop: 8 },
-  subtitle: { color: colors.muted, fontSize: 15, marginTop: 6, marginBottom: 18 },
-  bookingButton: {
-    alignItems: "center", backgroundColor: colors.primary, borderRadius: 12, justifyContent: "center",
-    marginBottom: 16, minHeight: 50, paddingHorizontal: 16,
+  container: {
+    padding: 16,
+    backgroundColor: '#f5f7f8',
+    flexGrow: 1,
+    justifyContent: 'center',
   },
-  bookingButtonText: { color: colors.surface, fontSize: 15, fontWeight: "700" },
-  search: {
-    backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 12, borderWidth: 1,
-    color: colors.text, fontSize: 16, minHeight: 52, paddingHorizontal: 15,
+  headerCard: {
+    backgroundColor: '#1b4d3e',
+    borderRadius: 14,
+    padding: 24,
+    marginBottom: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  notice: { backgroundColor: colors.warning, borderRadius: 12, marginTop: 14, padding: 14 },
-  noticeTitle: { color: colors.warningText, fontSize: 14, fontWeight: "700", marginBottom: 4 },
-  noticeText: { color: colors.warningText, fontSize: 13, lineHeight: 19 },
-  sectionTitle: { color: colors.text, fontSize: 17, fontWeight: "700", marginTop: 22, marginBottom: 2 },
-  card: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 14, borderWidth: 1, padding: 15 },
-  cardHeader: { alignItems: "flex-start", flexDirection: "row", justifyContent: "space-between", gap: 10 },
-  trainName: { color: colors.text, flex: 1, fontSize: 16, fontWeight: "700" },
-  number: { backgroundColor: colors.softGreen, borderRadius: 8, color: colors.primaryDark, fontSize: 12, fontWeight: "700", overflow: "hidden", paddingHorizontal: 9, paddingVertical: 5 },
-  route: { color: colors.text, fontSize: 14, marginTop: 12 },
-  cardFooter: { borderTopColor: colors.border, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: "row", justifyContent: "space-between", marginTop: 13, paddingTop: 10 },
-  meta: { color: colors.muted, fontSize: 12 },
-  empty: { alignItems: "center", backgroundColor: colors.surface, borderRadius: 14, marginTop: 4, padding: 24 },
-  emptyTitle: { color: colors.text, fontSize: 16, fontWeight: "700", marginBottom: 5 },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#e0f2f1',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  menuContainer: {
+    gap: 12,
+  },
+  menuCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+    borderLeftWidth: 4,
+    borderLeftColor: '#1b4d3e',
+  },
+  menuIcon: {
+    fontSize: 24,
+    marginBottom: 8,
+  },
+  menuTitle: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#1b4d3e',
+    marginBottom: 4,
+  },
+  menuDescription: {
+    fontSize: 13,
+    color: '#666666',
+    lineHeight: 18,
+  },
 });

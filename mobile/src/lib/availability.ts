@@ -1,64 +1,85 @@
-export type SeatType = {
-  type: string;
-  fare: number | string;
-  seat_counts: {
-    online: number;
-    offline?: number;
-  };
-};
+import { fetchSeatAvailability } from '../components/railwayApi';
 
-export type AvailableTrain = {
-  trip_number: string;
-  seat_types: SeatType[];
-};
+export interface SeatClassAvailability {
+  className: string;
+  classCode: string;
+  availableSeats: number;
+  fare: number;
+  status: 'AVAILABLE' | 'BOOKING_OPEN' | 'SOLD_OUT' | 'RESERVED';
+}
 
-type AvailabilityPayload = {
-  data?: { trains?: AvailableTrain[] };
-  trains?: AvailableTrain[];
-  error?: { message?: string; messages?: string[] };
-};
+export interface TrainAvailabilityResponse {
+  trainId: string;
+  trainName: string;
+  departureTime: string;
+  arrivalTime: string;
+  dateOfJourney: string;
+  seats: SeatClassAvailability[];
+}
 
-export type AvailabilitySearch = {
-  from: string;
-  to: string;
-  date: string;
-  seatClass: string;
-};
-
-export async function searchAvailability(search: AvailabilitySearch): Promise<AvailableTrain[]> {
-  const endpoint = process.env.EXPO_PUBLIC_AVAILABILITY_ENDPOINT?.trim();
-  if (!endpoint) {
-    throw new Error("Live seat availability needs an authorized API endpoint. See the mobile README.");
-  }
-
-  let url: URL;
+/**
+ * Fetches and processes seat availability for a specific train and route.
+ */
+export async function getProcessedTrainAvailability(params: {
+  origin: string;
+  destination: string;
+  dateOfJourney: string;
+  trainId: string;
+}): Promise<TrainAvailabilityResponse | null> {
   try {
-    url = new URL(endpoint);
-  } catch {
-    throw new Error("EXPO_PUBLIC_AVAILABILITY_ENDPOINT must be a valid absolute URL.");
-  }
-  if (url.protocol !== "https:") {
-    throw new Error("The availability endpoint must use HTTPS.");
-  }
+    const rawData = await fetchSeatAvailability(params);
 
-  url.searchParams.set("from_city", search.from);
-  url.searchParams.set("to_city", search.to);
-  url.searchParams.set("date_of_journey", search.date);
-  url.searchParams.set("seat_class", search.seatClass);
+    if (!rawData || !rawData.data) {
+      return null;
+    }
 
-  const response = await fetch(url.toString(), {
-    headers: { Accept: "application/json" },
-  });
-  const payload = (await response.json()) as AvailabilityPayload;
-  if (!response.ok) {
-    const message = payload.error?.messages?.join("; ") || payload.error?.message;
-    throw new Error(message || `Availability service returned HTTP ${response.status}.`);
+    const trainInfo = rawData.data;
+
+    // Map and normalize raw seat classes into structured UI-friendly objects
+    const processedSeats: SeatClassAvailability[] = (trainInfo.seat_types || []).map((seat: any) => ({
+      className: seat.name || seat.class_name || 'Unknown',
+      classCode: seat.code || seat.class_code || '',
+      availableSeats: Number(seat.available_quantity ?? seat.seats_available ?? 0),
+      fare: Number(seat.fare ?? seat.price ?? 0),
+      status: determineSeatStatus(seat),
+    }));
+
+    return {
+      trainId: params.trainId,
+      trainName: trainInfo.train_name || trainInfo.name || 'Express Train',
+      departureTime: trainInfo.departure_time || '',
+      arrivalTime: trainInfo.arrival_time || '',
+      dateOfJourney: params.dateOfJourney,
+      seats: processedSeats,
+    };
+  } catch (error) {
+    console.error(`Failed to process availability for train ${params.trainId}:`, error);
+    throw error;
   }
+}
 
-  const results = payload.data?.trains ?? payload.trains;
-  if (!Array.isArray(results)) {
-    throw new Error("Availability service returned an unexpected response; expected data.trains.");
+/**
+ * Helper to determine standardized seat availability status.
+ */
+function determineSeatStatus(seat: any): 'AVAILABLE' | 'BOOKING_OPEN' | 'SOLD_OUT' | 'RESERVED' {
+  const qty = Number(seat.available_quantity ?? seat.seats_available ?? 0);
+  const rawStatus = (seat.status || '').toUpperCase();
+
+  if (rawStatus === 'SOLD_OUT' || qty === 0) {
+    return 'SOLD_OUT';
   }
+  if (rawStatus === 'RESERVED') {
+    return 'RESERVED';
+  }
+  if (qty > 0) {
+    return 'AVAILABLE';
+  }
+  return 'BOOKING_OPEN';
+}
 
-  return results;
+/**
+ * Helper formatter for currency display in Taka (BDT)
+ */
+export function formatFare(amount: number): string {
+  return `৳${amount.toLocaleString('en-BD')}`;
 }

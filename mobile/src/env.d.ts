@@ -1,9 +1,22 @@
-declare namespace NodeJS {
-  interface ProcessEnv {
-    EXPO_PUBLIC_AVAILABILITY_ENDPOINT?: string;
-  }
+/// <reference types="expo/types" />
+
+// Ambient declarations for asset imports
+declare module '*.png' {
+  const value: any;
+  export default value;
 }
 
-declare const process: {
-  env: NodeJS.ProcessEnv;
-};
+declare module '*.jpg' {
+  const value: any;
+  export default value;
+}
+
+declare module '*.jpeg' {
+  const value: any;
+  export default value;
+}
+
+declare module '*.svg' {
+  const value: any;
+  export default value;
+}

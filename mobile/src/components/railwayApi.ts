@@ -1,51 +1,94 @@
-import { RailwaySession } from './RailwaySessionBridge';
+import * as SecureStore from 'expo-secure-store';
 
-const API_BASE = 'https://shohoz.com';
+// Base URL for the railway portal API (adjust if your endpoints use a specific subdomain or path)
+const BASE_URL = 'https://eticket.railway.gov.bd';
 
-export interface TrainSearchQuery {
-  fromCity: string;
-  toCity: string;
-  dateOfJourney: string; // Expected Format: DD-Mon-YYYY (e.g., 04-Nov-2026)
-  seatClass: string;     // e.g., 'S_CHAIR', 'SNIGDHA'
+interface ApiOptions extends RequestInit {
+  requiresAuth?: boolean;
 }
 
 /**
- * Directly hits Shohoz's backend endpoints bypassing CORS constraints natively.
+ * Helper to execute authenticated requests against the railway backend using stored session data.
  */
-export async function fetchTrainAvailability(
-  session: RailwaySession,
-  query: TrainSearchQuery
-): Promise<any> {
-  const url = `${API_BASE}/search-trips-v2?from_city=${encodeURIComponent(query.fromCity)}&to_city=${encodeURIComponent(query.toCity)}&date_of_journey=${encodeURIComponent(query.dateOfJourney)}&seat_class=${encodeURIComponent(query.seatClass)}`;
+export async function railwayApiFetch(endpoint: string, options: ApiOptions = { requiresAuth: true }) {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      'Authorization': session.authorization,
-      'X-Device-Id': session.deviceId,
-      'X-Device-Key': session.deviceKey,
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+  if (options.requiresAuth) {
+    try {
+      // Retrieve the session cookies and auth token captured by the WebView bridge
+      const sessionCookies = await SecureStore.getItemAsync('railway_session_cookies');
+      const authToken = await SecureStore.getItemAsync('railway_auth_token');
+
+      if (sessionCookies) {
+        headers['Cookie'] = sessionCookies;
+      }
+
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+    } catch (error) {
+      console.error('Error retrieving session credentials from SecureStore:', error);
     }
+  }
+
+  // Construct the full URL (handling absolute or relative paths)
+  const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    // Handle session expiration / unauthorized access
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('SESSION_EXPIRED');
+    }
+
+    if (!response.ok) {
+      throw new Error(`Railway API error: ${response.status} ${response.statusText}`);
+    }
+
+    // Parse response safely
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    }
+
+    return await response.text();
+  } catch (error) {
+    console.error(`API Request failed for [${endpoint}]:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Specific function to check seat availability for a given train, date, and route.
+ */
+export async function fetchSeatAvailability(params: {
+  origin: string;
+  destination: string;
+  dateOfJourney: string;
+  trainId: string;
+  seatType?: string;
+}) {
+  const queryParams = new URLSearchParams({
+    from_city: params.origin,
+    to_city: params.destination,
+    date_of_journey: params.dateOfJourney,
+    train_id: params.trainId,
+    ...(params.seatType ? { seat_type: params.seatType } : {}),
   });
 
-  const text = await response.text();
-  let json;
-  try {
-    json = JSON.parse(text);
-  } catch (e) {
-    throw new Error(`Invalid server response formatting: ${text.slice(0, 100)}`);
-  }
+  // Replace with your exact endpoint path discovered from network inspection
+  const endpoint = `/api/v1/booking/availability?${queryParams.toString()}`;
 
-  if (response.status === 201 || response.status === 403) {
-    throw new Error('AUTH_EXPIRED');
-  }
-
-  if (!response.ok) {
-    throw new Error(json?.error?.messages?.[0] || `HTTP Fetch Exception: ${response.status}`);
-  }
-
-  return json?.data?.trains || [];
+  return await railwayApiFetch(endpoint, {
+    method: 'GET',
+    requiresAuth: true,
+  });
 }

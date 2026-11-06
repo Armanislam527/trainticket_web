@@ -1,168 +1,256 @@
-import { useState } from "react";
+import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
   StyleSheet,
+  View,
   Text,
   TextInput,
-  View,
-} from "react-native";
-import { Screen } from "../components/Screen";
-import {
-  searchAvailability,
-  type AvailableTrain,
-  type SeatType,
-} from "../lib/availability";
-import { colors } from "../theme";
-
-const SEAT_CLASSES = ["S_CHAIR", "SHOVAN", "SNIGDHA", "F_SEAT", "F_BERTH", "AC_S", "AC_B", "AC_CHAIR"];
-
-function localDateString() {
-  const date = new Date();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
-function SeatCard({ train, seatClass }: { train: AvailableTrain; seatClass: string }) {
-  const seats = train.seat_types.find((seat) => seat.type === seatClass);
-  if (!seats) return null;
-
-  return (
-    <View style={styles.resultCard}>
-      <Text style={styles.trainName}>{train.trip_number}</Text>
-      <SeatSummary seat={seats} />
-    </View>
-  );
-}
-
-function SeatSummary({ seat }: { seat: SeatType }) {
-  return (
-    <View style={styles.resultDetails}>
-      <View>
-        <Text style={styles.seatCount}>{seat.seat_counts.online} seats</Text>
-        <Text style={styles.meta}>{seat.type.replaceAll("_", " ")}</Text>
-      </View>
-      <Text style={styles.fare}>৳ {seat.fare}</Text>
-    </View>
-  );
-}
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { getProcessedTrainAvailability, TrainAvailabilityResponse, formatFare } from '../lib/availability';
 
 export default function AvailabilityScreen() {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [date, setDate] = useState(localDateString);
-  const [seatClass, setSeatClass] = useState("S_CHAIR");
-  const [results, setResults] = useState<AvailableTrain[] | null>(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  async function checkSeats() {
-    if (!from.trim() || !to.trim() || !date.trim()) {
-      setError("Enter both stations and a journey date.");
+  const [origin, setOrigin] = useState('DHAKA');
+  const [destination, setDestination] = useState('CHITTAGONG');
+  const [dateOfJourney, setDateOfJourney] = useState('2026-06-01');
+  const [trainId, setTrainId] = useState('701'); // e.g., Subarna Express
+
+  const [loading, setLoading] = useState(false);
+  const [availabilityData, setAvailabilityData] = useState<TrainAvailabilityResponse | null>(null);
+
+  const handleCheckAvailability = async () => {
+    if (!origin || !destination || !dateOfJourney || !trainId) {
+      Alert.alert('Error', 'Please fill in all search fields.');
       return;
     }
+
     setLoading(true);
-    setError("");
-    setResults(null);
+    setAvailabilityData(null);
+
     try {
-      const trains = await searchAvailability({ from: from.trim(), to: to.trim(), date: date.trim(), seatClass });
-      setResults(trains);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
+      const result = await getProcessedTrainAvailability({
+        origin: origin.toUpperCase(),
+        destination: destination.toUpperCase(),
+        dateOfJourney,
+        trainId,
+      });
+
+      setAvailabilityData(result);
+      if (!result) {
+        Alert.alert('Notice', 'No availability data found for this train/route.');
+      }
+    } catch (error: any) {
+      if (error.message === 'SESSION_EXPIRED') {
+        Alert.alert(
+          'Session Expired',
+          'Your login session has expired. Please log in again.',
+          [{ text: 'OK', onPress: () => router.push('/ticket-booking') }]
+        );
+      } else {
+        Alert.alert('Error', 'Failed to fetch seat availability. Please check your network or inputs.');
+      }
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <Screen>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Check live seat availability</Text>
-        <Text style={styles.subtitle}>
-          Search the authorized availability service configured for this app. This screen does not access or transfer official-site login sessions.
-        </Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.headerTitle}>Check Seat Availability</Text>
 
-        <View style={styles.formCard}>
-          <Field label="From" value={from} onChangeText={setFrom} placeholder="Station name" />
-          <Field label="To" value={to} onChangeText={setTo} placeholder="Station name" />
-          <Field label="Journey date" value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" autoCapitalize="none" />
-          <Text style={styles.label}>Seat class</Text>
-          <View style={styles.classes}>
-            {SEAT_CLASSES.map((item) => (
-              <Pressable
-                key={item}
-                onPress={() => setSeatClass(item)}
-                style={[styles.classChip, seatClass === item && styles.classChipSelected]}
-                accessibilityRole="button"
-                accessibilityState={{ selected: seatClass === item }}
-              >
-                <Text style={[styles.classText, seatClass === item && styles.classTextSelected]}>
-                  {item.replaceAll("_", " ")}
+      <View style={styles.formCard}>
+        <Text style={styles.label}>Origin Station</Text>
+        <TextInput
+          style={styles.input}
+          value={origin}
+          onChangeText={setOrigin}
+          placeholder="e.g. DHAKA"
+        />
+
+        <Text style={styles.label}>Destination Station</Text>
+        <TextInput
+          style={styles.input}
+          value={destination}
+          onChangeText={setDestination}
+          placeholder="e.g. CHITTAGONG"
+        />
+
+        <Text style={styles.label}>Date of Journey (YYYY-MM-DD)</Text>
+        <TextInput
+          style={styles.input}
+          value={dateOfJourney}
+          onChangeText={setDateOfJourney}
+          placeholder="YYYY-MM-DD"
+        />
+
+        <Text style={styles.label}>Train ID / Number</Text>
+        <TextInput
+          style={styles.input}
+          value={trainId}
+          onChangeText={setTrainId}
+          placeholder="e.g. 701"
+        />
+
+        <TouchableOpacity
+          style={styles.searchButton}
+          onPress={handleCheckAvailability}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.searchButtonText}>Search Availability</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {availabilityData && (
+        <View style={styles.resultCard}>
+          <Text style={styles.trainName}>{availabilityData.trainName} (Train: {availabilityData.trainId})</Text>
+          <Text style={styles.trainTime}>
+            Departure: {availabilityData.departureTime} | Arrival: {availabilityData.arrivalTime}
+          </Text>
+          <Text style={styles.dateText}>Date: {availabilityData.dateOfJourney}</Text>
+
+          <View style={styles.divider} />
+
+          <Text style={styles.sectionHeader}>Available Classes & Seats:</Text>
+          {availabilityData.seats.map((seat, index) => (
+            <View key={index} style={styles.seatRow}>
+              <View>
+                <Text style={styles.className}>{seat.className}</Text>
+                <Text style={[styles.statusText, seat.status === 'SOLD_OUT' ? styles.soldOut : styles.available]}>
+                  {seat.status} ({seat.availableSeats} seats left)
                 </Text>
-              </Pressable>
-            ))}
-          </View>
-          <Pressable onPress={checkSeats} disabled={loading} style={[styles.button, loading && styles.buttonDisabled]}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Search availability</Text>}
-          </Pressable>
+              </View>
+              <Text style={styles.fareText}>{formatFare(seat.fare)}</Text>
+            </View>
+          ))}
         </View>
-
-        {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
-        {results && results.length === 0 ? (
-          <Text style={styles.empty}>No trains were returned for this search.</Text>
-        ) : null}
-        {results?.map((train, index) => (
-          <SeatCard key={`${train.trip_number}-${index}`} train={train} seatClass={seatClass} />
-        ))}
-        {results && results.length > 0 && !results.some((train) => train.seat_types.some((seat) => seat.type === seatClass)) ? (
-          <Text style={styles.empty}>The provider returned trains, but no {seatClass.replaceAll("_", " ")} results.</Text>
-        ) : null}
-      </ScrollView>
-    </Screen>
-  );
-}
-
-function Field({
-  label,
-  ...inputProps
-}: React.ComponentProps<typeof TextInput> & { label: string }) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        {...inputProps}
-        style={styles.input}
-        placeholderTextColor={colors.muted}
-        autoCorrect={false}
-      />
-    </View>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 20, paddingBottom: 40 },
-  title: { color: colors.text, fontSize: 25, fontWeight: "800", marginTop: 8 },
-  subtitle: { color: colors.muted, fontSize: 14, lineHeight: 21, marginTop: 8, marginBottom: 20 },
-  formCard: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 14, borderWidth: 1, padding: 16 },
-  field: { marginBottom: 14 },
-  label: { color: colors.text, fontSize: 13, fontWeight: "700", marginBottom: 7 },
-  input: { borderColor: colors.border, borderRadius: 10, borderWidth: 1, color: colors.text, fontSize: 15, minHeight: 46, paddingHorizontal: 12 },
-  classes: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 2 },
-  classChip: { borderColor: colors.border, borderRadius: 18, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 8 },
-  classChipSelected: { backgroundColor: colors.softGreen, borderColor: colors.primary },
-  classText: { color: colors.muted, fontSize: 12, fontWeight: "600" },
-  classTextSelected: { color: colors.primaryDark },
-  button: { alignItems: "center", backgroundColor: colors.primary, borderRadius: 10, justifyContent: "center", marginTop: 18, minHeight: 48 },
-  buttonDisabled: { opacity: 0.65 },
-  buttonText: { color: "#fff", fontSize: 15, fontWeight: "700" },
-  error: { backgroundColor: "#fdecee", borderRadius: 10, color: colors.danger, fontSize: 14, lineHeight: 20, marginTop: 16, padding: 12 },
-  empty: { color: colors.muted, fontSize: 14, marginTop: 18, textAlign: "center" },
-  resultCard: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: 12, borderWidth: 1, marginTop: 12, padding: 15 },
-  trainName: { color: colors.text, fontSize: 15, fontWeight: "700" },
-  resultDetails: { alignItems: "center", flexDirection: "row", justifyContent: "space-between", marginTop: 12 },
-  seatCount: { color: colors.primaryDark, fontSize: 18, fontWeight: "800" },
-  meta: { color: colors.muted, fontSize: 12, marginTop: 3 },
-  fare: { color: colors.text, fontSize: 15, fontWeight: "700" },
+  container: {
+    padding: 16,
+    backgroundColor: '#f5f7f8',
+    flexGrow: 1,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1b4d3e',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  formCard: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333333',
+    marginBottom: 6,
+    marginTop: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    backgroundColor: '#fafafa',
+  },
+  searchButton: {
+    backgroundColor: '#1b4d3e',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  searchButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  resultCard: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  trainName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1b4d3e',
+  },
+  trainTime: {
+    fontSize: 13,
+    color: '#666666',
+    marginTop: 4,
+  },
+  dateText: {
+    fontSize: 13,
+    color: '#666666',
+    marginTop: 2,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#eeeeee',
+    marginVertical: 12,
+  },
+  sectionHeader: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#333333',
+    marginBottom: 10,
+  },
+  seatRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  className: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#222222',
+  },
+  statusText: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  available: {
+    color: '#2e7d32',
+  },
+  soldOut: {
+    color: '#c62828',
+  },
+  fareText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#1b4d3e',
+  },
 });

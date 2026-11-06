@@ -5,3 +5,9 @@
 /mobile/android/local.properties
 /mobile/expo/android/app/build
 .wrangler
+*.lock
+.lock
+*.bin
+.bin
+.jar
+/mobile/android/.gradle/buildOutputCleanup

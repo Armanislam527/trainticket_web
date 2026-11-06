@@ -1,4 +1,4 @@
-package com.anonymous.trainseatfinder
+package com.arman.trainseatfinder
 
 import android.os.Build
 import android.os.Bundle
