@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f2">
+  <meta name="description" content="Plan your Bangladesh train journey with Seat Combo. Find train schedules and explore every ticketable seat pair in one simple app.">
+  <title>Seat Combo — A clearer way to travel by train</title>
+  <style>
+    :root {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #18251e;
+      background: #f7f8f2;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --green: #214f39;
+      --green-dark: #143522;
+      --green-light: #e8eee5;
+      --muted: #718077;
+      --line: #e5e9e1;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .wrap { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+    .topbar { height: 78px; display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 18px; font-weight: 750; letter-spacing: -.5px; }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 12px; color: #fff; background: var(--green); }
+    .brand-mark svg { width: 21px; height: 21px; }
+    .nav { display: flex; gap: 34px; align-items: center; color: #536157; font-size: 13px; font-weight: 550; }
+    .nav a:hover { color: var(--green); }
+    .nav-cta { padding: 11px 17px; color: white !important; background: var(--green); border-radius: 8px; }
+    .hero { display: grid; grid-template-columns: 1.02fr .98fr; align-items: center; gap: 44px; min-height: 600px; padding: 43px 0 72px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 19px; color: var(--green); font-size: 11px; font-weight: 750; letter-spacing: 1.5px; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 20px; height: 1px; background: #81a18b; }
+    h1 { max-width: 550px; margin: 0; color: var(--green-dark); font-size: clamp(46px, 6vw, 76px); line-height: .99; letter-spacing: -5px; font-weight: 700; }
+    h1 span { color: #849b85; }
+    .hero-copy { max-width: 410px; margin: 23px 0 0; color: #66746a; font-size: 15px; line-height: 1.8; }
+    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin-top: 29px; }
+    .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 19px; border: 0; border-radius: 9px; color: white; background: var(--green); font-size: 13px; font-weight: 650; transition: background .2s, transform .2s; }
+    .button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .button svg { width: 16px; height: 16px; }
+    .text-link { color: var(--green); font-size: 13px; font-weight: 650; }
+    .text-link span { margin-left: 5px; }
+    .hero-note { display: flex; align-items: center; gap: 8px; margin-top: 26px; color: #879188; font-size: 11px; }
+    .hero-note svg { width: 15px; height: 15px; color: #668d6f; }
+    .showcase { position: relative; min-height: 500px; display: grid; place-items: center; }
+    .showcase::before { content: ""; position: absolute; width: min(440px, 90%); aspect-ratio: 1; border-radius: 50%; background: #e9eee2; }
+    .showcase::after { content: ""; position: absolute; width: 360px; height: 360px; border: 1px solid #dce5d8; border-radius: 50%; }
+    .phone { position: relative; z-index: 1; width: 258px; padding: 9px; border: 1px solid #d9ded6; border-radius: 35px; background: #fff; box-shadow: 0 26px 70px rgb(37 57 42 / 15%), 0 5px 15px rgb(37 57 42 / 6%); transform: rotate(2deg); }
+    .phone-screen { min-height: 440px; padding: 16px 14px 14px; border-radius: 27px; background: #f6f8f3; }
+    .phone-status { display: flex; justify-content: space-between; margin: 1px 5px 19px; color: #37473c; font-size: 9px; font-weight: 700; }
+    .app-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 17px; }
+    .app-logo { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 9px; color: #fff; background: var(--green); }
+    .app-logo svg { width: 17px; height: 17px; }
+    .app-heading strong { display: block; color: var(--green-dark); font-size: 12px; }
+    .app-heading small { display: block; margin-top: 2px; color: #879188; font-size: 8px; }
+    .screen-title { margin: 0 0 3px; color: #1d3828; font-size: 16px; letter-spacing: -.4px; }
+    .screen-caption { margin: 0 0 14px; color: #859087; font-size: 9px; }
+    .search-card { padding: 12px; border: 1px solid #e7ebe3; border-radius: 13px; background: #fff; box-shadow: 0 5px 15px rgb(38 60 41 / 4%); }
+    .route-stop { display: flex; gap: 9px; align-items: center; min-height: 41px; }
+    .route-symbol { width: 17px; display: flex; justify-content: center; }
+    .route-symbol.from::before, .route-symbol.to::before { content: ""; width: 7px; height: 7px; border: 1.5px solid #62866a; border-radius: 50%; }
+    .route-symbol.to::before { background: #62866a; }
+    .route-stop span { display: block; color: #8b948c; font-size: 8px; }
+    .route-stop strong { display: block; margin-top: 2px; color: #263d2d; font-size: 11px; }
+    .route-divider { height: 1px; margin-left: 26px; background: #edf0ea; }
+    .screen-options { display: flex; gap: 7px; margin: 10px 0; }
+    .option { flex: 1; padding: 8px 7px; border: 1px solid #edf0ea; border-radius: 8px; background: #fafbf8; }
+    .option span { display: block; color: #929991; font-size: 7px; }
+    .option strong { display: block; margin-top: 4px; color: #354b3a; font-size: 8px; }
+    .screen-search { padding: 10px; border-radius: 8px; color: #fff; background: var(--green); text-align: center; font-size: 9px; font-weight: 650; }
+    .screen-result { margin-top: 12px; padding: 11px; border: 1px solid #e7ebe3; border-radius: 12px; background: #fff; }
+    .result-head { display: flex; justify-content: space-between; align-items: center; color: #859087; font-size: 8px; }
+    .result-head strong { color: #4a7952; font-size: 8px; }
+    .result-route { display: flex; align-items: center; gap: 7px; margin-top: 10px; color: #314936; font-size: 9px; font-weight: 650; }
+    .result-route i { height: 1px; flex: 1; background: #cbd9c8; }
+    .result-meta { margin: 7px 0 0; color: #879188; font-size: 8px; }
+    .floating-tag { position: absolute; z-index: 2; display: flex; align-items: center; gap: 9px; padding: 11px 14px; border: 1px solid #edf0e9; border-radius: 11px; background: #fff; box-shadow: 0 10px 32px rgb(37 57 42 / 9%); }
+    .floating-tag svg { width: 17px; height: 17px; color: var(--green); }
+    .floating-tag strong { display: block; color: #2b4030; font-size: 10px; }
+    .floating-tag span { display: block; margin-top: 3px; color: #929991; font-size: 8px; }
+    .tag-one { top: 100px; right: -9px; }
+    .tag-two { bottom: 86px; left: -9px; }
+    .features { padding: 72px 0 83px; border-top: 1px solid var(--line); }
+    .section-heading { max-width: 510px; margin-bottom: 33px; }
+    .section-heading .eyebrow { margin-bottom: 13px; }
+    h2 { margin: 0; color: var(--green-dark); font-size: clamp(28px, 4vw, 42px); line-height: 1.12; letter-spacing: -1.7px; }
+    .section-intro { margin: 11px 0 0; color: #748077; font-size: 13px; line-height: 1.7; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .feature { min-height: 176px; padding: 23px; border: 1px solid #e7ebe3; border-radius: 13px; background: #fbfcf9; }
+    .feature-icon { width: 35px; height: 35px; display: grid; place-items: center; margin-bottom: 19px; border-radius: 10px; color: var(--green); background: #eaf0e7; }
+    .feature-icon svg { width: 18px; height: 18px; }
+    .feature h3 { margin: 0; color: #263a2c; font-size: 14px; }
+    .feature p { max-width: 260px; margin: 7px 0 0; color: #7b867d; font-size: 11px; line-height: 1.65; }
+    .steps { padding: 65px 0; color: #edf4ed; background: var(--green-dark); }
+    .steps .section-heading { margin-bottom: 31px; }
+    .steps .eyebrow { color: #aac3a9; }
+    .steps h2 { color: #f6f8f2; }
+    .steps .section-intro { color: #b6c4b8; }
+    .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .step { padding-top: 17px; border-top: 1px solid #385440; }
+    .step-number { color: #a8c3a7; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+    .step h3 { margin: 12px 0 6px; color: #f7f8f2; font-size: 14px; }
+    .step p { max-width: 260px; margin: 0; color: #b6c4b8; font-size: 11px; line-height: 1.7; }
+    .timetable { padding: 78px 0 83px; }
+    .lookup { padding: 27px; border: 1px solid var(--line); border-radius: 15px; background: #fff; box-shadow: 0 10px 30px rgb(34 54 38 / 4%); }
+    .lookup-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 22px; }
+    .lookup-head h2 { font-size: 25px; letter-spacing: -.8px; }
+    .lookup-head p { margin: 7px 0 0; color: #7b867d; font-size: 11px; line-height: 1.6; }
+    .load-list-button { flex: none; margin: 0; }
+    label { display: block; margin-bottom: 7px; color: #45554a; font-size: 11px; font-weight: 650; }
+    input, .lookup button { min-height: 42px; padding: 10px 12px; border: 1px solid #dfe5dc; border-radius: 8px; font-size: 12px; }
+    input { width: 100%; color: #27392c; outline: none; background: #fbfcf9; }
+    input:focus { border-color: #73947a; box-shadow: 0 0 0 3px rgb(115 148 122 / 12%); }
+    .primary { border-color: var(--green); color: #fff; background: var(--green); font-weight: 650; }
+    .primary:hover { background: var(--green-dark); }
+    .primary:disabled { cursor: wait; opacity: .58; }
+    #suggestions { display: grid; gap: 6px; margin-top: 8px; }
+    .suggestion { display: flex; width: 100%; justify-content: space-between; gap: 12px; text-align: left; background: #fff; }
+    .suggestion:hover, .suggestion:focus-visible { border-color: #73947a; background: #f5f8f3; }
+    .suggestion-number, .suggestion-hint { color: #718077; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+    #status { min-height: 20px; margin: 14px 0 0; color: #718077; font-size: 11px; }
+    #status.error { color: #a32121; }
+    #status.success { color: #176b3a; }
+    .note { color: #78847b; font-size: 10px; }
+    .details-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .details-heading h2 { margin: 0; font-size: 20px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0 18px; color: #526056; font-size: 11px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid #e7ebe3; white-space: nowrap; font-size: 11px; }
+    th { color: #647166; background: #f5f7f2; font-size: 10px; }
+    .empty { color: #718077; }
+    .api-trace { margin-top: 18px; }
+    .api-trace summary { color: #77847a; cursor: pointer; font-size: 10px; }
+    .api-trace pre { overflow: auto; max-height: 280px; padding: 12px; border-radius: 6px; background: #f5f7f2; font-size: 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .footer { padding: 22px 0; border-top: 1px solid var(--line); color: #859087; font-size: 10px; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 15px; }
+    .footer .brand { color: #35483a; font-size: 12px; }
+    .footer .brand-mark { width: 27px; height: 27px; border-radius: 9px; }
+    .footer .brand-mark svg { width: 16px; height: 16px; }
+    :focus-visible { outline: 3px solid #91ad91; outline-offset: 3px; }
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 36px, 560px); }
+      .topbar { height: 68px; }
+      .nav { gap: 19px; }
+      .nav a:not(.nav-cta) { display: none; }
+      .hero { grid-template-columns: 1fr; gap: 10px; padding: 43px 0 54px; }
+      h1 { max-width: 500px; font-size: clamp(48px, 12vw, 68px); letter-spacing: -3.8px; }
+      .hero-copy { max-width: 430px; font-size: 14px; }
+      .showcase { min-height: 470px; }
+      .features { padding: 58px 0; }
+      .feature-grid { grid-template-columns: 1fr; gap: 10px; }
+      .feature { min-height: 0; display: grid; grid-template-columns: 35px 1fr; column-gap: 13px; padding: 17px; }
+      .feature-icon { grid-row: span 2; margin: 0; }
+      .feature p { max-width: none; margin-top: 5px; }
+      .steps { padding: 55px 0; }
+      .step-grid { grid-template-columns: 1fr; gap: 17px; }
+      .step { padding-top: 13px; }
+      .timetable { padding: 56px 0; }
+      .lookup { padding: 20px; }
+      .lookup-head { flex-direction: column; }
+    }
+    @media (max-width: 420px) {
+      .wrap { width: calc(100% - 30px); }
+      .brand { font-size: 16px; }
+      .nav-cta { padding: 10px 12px; font-size: 11px; }
+      .hero { padding-top: 35px; }
+      .hero-actions { gap: 15px; }
+      .showcase { min-height: 430px; }
+      .phone { transform: scale(.94) rotate(2deg); }
+      .tag-one { right: -2px; }
+      .tag-two { left: -2px; }
+      .lookup { padding: 17px; }
+      .footer-inner { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="wrap topbar">
+    <a class="brand" href="#" aria-label="Seat Combo home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18V6h9.5a4.5 4.5 0 0 1 0 9H5m0-4h9m-9 7 3-3m-3 3-3-3m17-9v12m-3-3 3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Seat Combo
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it works</a>
+      <a class="nav-cta" href="#timetable">Explore timetable</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="wrap hero" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow">A better way to plan your rail journey</p>
+        <h1 id="hero-title">Every seat pair.<br><span>One simple journey.</span></h1>
+        <p class="hero-copy">Find your train, see the stops, and discover more ways to get there. Bangladesh rail travel, made a little clearer.</p>
+        <div class="hero-actions">
+          <a class="button" href="#timetable">Explore the timetable <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a class="text-link" href="#features">Meet the app <span>↓</span></a>
+        </div>
+        <p class="hero-note"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 7.8 7.5 9.5 4.3-1.7 7.5-4.9 7.5-9.5V6L12 3Z" stroke="currentColor" stroke-width="1.6"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Timetables at a glance. Seat availability when you’re signed in.</p>
+      </div>
+
+      <div class="showcase" aria-label="Preview of the Seat Combo mobile app">
+        <div class="floating-tag tag-one"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M7 15l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>More ways to go</strong><span>Explore seat combinations</span></div></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-status"><span>9:41</span><span>●●●　◖　▰</span></div>
+            <div class="app-heading"><span class="app-logo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 18V6h9.5a4.5 4.5 0 0 1 0 9H5m0-4h9m-9 7 3-3m-3 3-3-3m17-9v12m-3-3 3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Seat Combo</strong><small>Bangladesh rail, made clearer</small></div></div>
+            <h2 class="screen-title">Where to next?</h2>
+            <p class="screen-caption">Find your journey, your way.</p>
+            <div class="search-card">
+              <div class="route-stop"><span class="route-symbol from"></span><div><span>From</span><strong>Dhaka</strong></div></div>
+              <div class="route-divider"></div>
+              <div class="route-stop"><span class="route-symbol to"></span><div><span>To</span><strong>Rajshahi</strong></div></div>
+              <div class="screen-options"><div class="option"><span>TRAVEL DATE</span><strong>Today</strong></div><div class="option"><span>SEAT CLASS</span><strong>Shovon Chair</strong></div></div>
+              <div class="screen-search">Show seat combinations</div>
+            </div>
+            <div class="screen-result">
+              <div class="result-head"><span>YOUR JOURNEY</span><strong>Train timetable</strong></div>
+              <div class="result-route"><span>Dhaka</span><i></i><span>Rajshahi</span></div>
+              <p class="result-meta">Train schedules · Stop-by-stop routes</p>
+            </div>
+          </div>
+        </div>
+        <div class="floating-tag tag-two"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h14v14H5zM9 9h6v6H9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m14 0h3M2 15h3m14 0h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><div><strong>See every stop</strong><span>Plan beyond the endpoints</span></div></div>
+      </div>
+    </section>
+
+    <section class="wrap features" id="features" aria-labelledby="features-title">
+      <div class="section-heading">
+        <p class="eyebrow">Made for the journey</p>
+        <h2 id="features-title">Just what you need to get going.</h2>
+        <p class="section-intro">A simple companion for finding trains and making sense of the route ahead.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature"><span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4 4M8 11h6m-3-3v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><h3>Search your route</h3><p>Choose your stations, travel date, and seat class to get started.</p></article>
+        <article class="feature"><span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 20V4m0 16h14M8 16h3v-4h3V8h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>Explore seat pairs</h3><p>Check ticketable combinations between stops along your journey.</p></article>
+        <article class="feature"><span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M8 7h8m-8 4h8m-8 4h5m-4 5 1.5-2m4.5 2-1.5-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><h3>Know the timetable</h3><p>Look up train names, numbers, operating days, and stop-by-stop schedules.</p></article>
+      </div>
+    </section>
+
+    <section class="steps" id="how-it-works" aria-labelledby="steps-title">
+      <div class="wrap">
+        <div class="section-heading"><p class="eyebrow">Three small steps</p><h2 id="steps-title">Your next trip, made simpler.</h2><p class="section-intro">From choosing a route to finding a train that fits.</p></div>
+        <div class="step-grid">
+          <article class="step"><span class="step-number">01 / YOUR ROUTE</span><h3>Pick your stations</h3><p>Choose where you’re starting, where you’re going, and when.</p></article>
+          <article class="step"><span class="step-number">02 / YOUR TRAIN</span><h3>Explore the options</h3><p>See trains that run your route and the stations along the way.</p></article>
+          <article class="step"><span class="step-number">03 / YOUR SEAT</span><h3>Find a seat pair</h3><p>Check available station-to-station tickets with your railway session.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap timetable" id="timetable" aria-labelledby="search-heading">
+      <div class="section-heading"><p class="eyebrow">Try it here</p><h2>Find your train.</h2><p class="section-intro">Search the Bangladesh train list and explore a train’s full route and schedule.</p></div>
+      <div class="lookup">
+        <div class="lookup-head">
+          <div><h2 id="search-heading">Train timetable</h2><p>Search by train name or number to see stops and timings.</p></div>
+          <button id="load-trains-button" class="primary load-list-button" type="button">Load train list</button>
+        </div>
+        <label for="train-search">Train name or number</label>
+        <input id="train-search" type="search" placeholder="For example, Suborno or 701" autocomplete="off" aria-controls="suggestions" aria-autocomplete="list">
+        <div id="suggestions" role="listbox" aria-label="Matching trains"></div>
+        <div class="actions">
+          <button id="lookup-button" class="primary" type="button" disabled>Select a train to view its schedule</button>
+          <span id="selection" class="note">No train selected</span>
+        </div>
+        <p id="status" role="status" aria-live="polite">Start typing a train name or number.</p>
+        <details class="api-trace">
+          <summary>Technical details</summary>
+          <pre id="request-trace" aria-live="polite">No request sent yet.</pre>
+        </details>
+      </div>
+
+      <section id="details-card" class="lookup" aria-labelledby="details-title" hidden>
+        <div class="details-heading"><h2 id="details-title">Train details</h2><span id="details-number"></span></div>
+        <div class="meta">
+          <span><strong>Operating days:</strong> <span id="details-days"></span></span>
+          <span><strong>Total duration:</strong> <span id="details-duration"></span></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Station</th><th scope="col">Arrival</th><th scope="col">Departure</th><th scope="col">Halt</th><th scope="col">Duration</th></tr></thead>
+            <tbody id="route-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="wrap footer-inner"><a class="brand" href="#"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18V6h9.5a4.5 4.5 0 0 1 0 9H5m0-4h9m-9 7 3-3m-3 3-3-3m17-9v12m-3-3 3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Seat Combo</a><span>Made for Bangladesh rail journeys.</span></div></footer>
+
+  <script>
+    "use strict";
+
+    const API_BASE_URL = "https://train-proxy.armanislam527.workers.dev/web";
+    const TRAIN_LIST_URL = `${API_BASE_URL}/all-trains/info`;
+    const TRAIN_SCHEDULE_URL = `${API_BASE_URL}/train-routes`;
+
+    const KNOWN_TRAIN_NAMES = [
+      { name: "Suborno Express", number: "701" },
+      { name: "Suborno Express", number: "702" },
+      { name: "Mahanagar Godhuli", number: "703" },
+      { name: "Mahanagar Godhuli", number: "704" },
+      { name: "Ekota Express", number: "705" },
+      { name: "Ekota Express", number: "706" },
+      { name: "Tista Express", number: "707" },
+      { name: "Tista Express", number: "708" },
+      { name: "Parabat Express", number: "709" },
+      { name: "Parabat Express", number: "710" },
+      { name: "Karatoya Express", number: "713" },
+      { name: "Karatoya Express", number: "714" },
+      { name: "Kapotaksha Express", number: "715" },
+      { name: "Kapotaksha Express", number: "716" },
+      { name: "Joyantika Express", number: "717" },
+      { name: "Joyantika Express", number: "718" },
+      { name: "Paharika Express", number: "719" },
+      { name: "Paharika Express", number: "720" },
+      { name: "Mahanagar Express", number: "721" },
+      { name: "Mahanagar Express", number: "722" },
+      { name: "Sundarban Express", number: "725" },
+      { name: "Sundarban Express", number: "726" },
+      { name: "Rupsha Express", number: "727" },
+      { name: "Rupsha Express", number: "728" },
+      { name: "Agnibina Express", number: "735" },
+      { name: "Agnibina Express", number: "736" },
+      { name: "Upaban Express", number: "739" },
+      { name: "Upaban Express", number: "740" },
+      { name: "Turna Express", number: "741" },
+      { name: "Turna Express", number: "742" },
+      { name: "Brahmaputra Express", number: "743" },
+      { name: "Brahmaputra Express", number: "744" },
+      { name: "Jamuna Express", number: "745" },
+      { name: "Jamuna Express", number: "746" },
+      { name: "Lalmoni Express", number: "751" },
+      { name: "Lalmoni Express", number: "752" },
+      { name: "Silk City Express", number: "753" },
+      { name: "Silk City Express", number: "754" },
+      { name: "Drutojan Express", number: "757" },
+      { name: "Drutojan Express", number: "758" },
+      { name: "Padma Express", number: "759" },
+      { name: "Padma Express", number: "760" },
+      { name: "Sagardari Express", number: "761" },
+      { name: "Sagardari Express", number: "762" },
+      { name: "Chitra Express", number: "763" },
+      { name: "Chitra Express", number: "764" },
+      { name: "Nil Sagar Express", number: "765" },
+      { name: "Nil Sagar Express", number: "766" },
+      { name: "Dhumketu Express", number: "769" },
+      { name: "Dhumketu Express", number: "770" },
+      { name: "Rangpur Express", number: "771" },
+      { name: "Rangpur Express", number: "772" },
+      { name: "Kalni Express", number: "773" },
+      { name: "Kalni Express", number: "774" },
+      { name: "Sonar Bangla Express", number: "787" },
+      { name: "Sonar Bangla Express", number: "788" },
+      { name: "Banalata Express", number: "791" },
+      { name: "Banalata Express", number: "792" },
+      { name: "Panchagarh Express", number: "793" },
+      { name: "Panchagarh Express", number: "794" },
+      { name: "Benapole Express", number: "795" },
+      { name: "Benapole Express", number: "796" },
+      { name: "Kurigram Express", number: "797" },
+      { name: "Kurigram Express", number: "798" }
+    ];
+
+    const searchInput = document.getElementById("train-search");
+    const loadTrainsButton = document.getElementById("load-trains-button");
+    const suggestions = document.getElementById("suggestions");
+    const lookupButton = document.getElementById("lookup-button");
+    const selectionLabel = document.getElementById("selection");
+    const status = document.getElementById("status");
+    const detailsCard = document.getElementById("details-card");
+    const routeRows = document.getElementById("route-rows");
+    const requestTrace = document.getElementById("request-trace");
+    let selectedTrain = null;
+    let requestId = 0;
+    let trainIndex = null;
+    let trainIndexPromise = null;
+    let suggestionRequestId = 0;
+
+    function setStatus(message, kind = "") {
+      status.textContent = message;
+      status.className = kind;
+    }
+
+    function apiHeaders(includeJsonContentType = false) {
+      return {
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        ...(includeJsonContentType ? { "Content-Type": "application/json" } : {})
+      };
+    }
+
+    function showRequestTrace(request) {
+      requestTrace.textContent = JSON.stringify(request, null, 2);
+    }
+
+    async function loadTrainIndex() {
+      if (trainIndex) {
+        return trainIndex;
+      }
+      if (trainIndexPromise) {
+        return trainIndexPromise;
+      }
+
+      trainIndexPromise = (async () => {
+        try {
+          showRequestTrace({
+            method: "GET",
+            url: TRAIN_LIST_URL,
+            status: "pending"
+          });
+          const response = await fetch(TRAIN_LIST_URL, {
+            method: "GET",
+            headers: apiHeaders()
+          });
+          const responseText = await response.text();
+          let payload;
+          try {
+            payload = JSON.parse(responseText);
+          } catch {
+            throw new Error(`Train list API returned HTTP ${response.status} with a non-JSON response.`);
+          }
+          showRequestTrace({
+            method: "GET",
+            url: TRAIN_LIST_URL,
+            status: response.status,
+            response: payload
+          });
+          if (!response.ok) {
+            const apiMessage = payload?.error?.messages?.join("; ");
+            throw new Error(apiMessage || `Train list API returned HTTP ${response.status}`);
+          }
+          if (!Array.isArray(payload?.data?.trains)) {
+            throw new Error("Unexpected train list response: expected an array at data.trains.");
+          }
+
+          const namesByNumber = new Map(KNOWN_TRAIN_NAMES.map((train) => [train.number, train.name]));
+          trainIndex = payload.data.trains
+            .filter((train) => train && train.train_number != null)
+            .map((train) => {
+              const number = String(train.train_number);
+              return {
+                name: namesByNumber.get(number) || "",
+                number,
+                origin: train.origin_city || "",
+                destination: train.destination_city || "",
+                zone: train.zone || ""
+              };
+            });
+          return trainIndex;
+        } catch (error) {
+          showRequestTrace({
+            method: "GET",
+            url: TRAIN_LIST_URL,
+            error: error instanceof Error ? error.message : String(error)
+          });
+          throw error;
+        }
+      })();
+
+      try {
+        return await trainIndexPromise;
+      } catch (error) {
+        trainIndexPromise = null;
+        throw error;
+      }
+    }
+
+    async function loadTrainList() {
+      loadTrainsButton.disabled = true;
+      loadTrainsButton.textContent = "Loading train list…";
+      setStatus("Fetching the train list through your Cloudflare Worker…");
+      try {
+        const trains = await loadTrainIndex();
+        setStatus(`Loaded ${trains.length} train records. Search by train number or station to choose a schedule.`, "success");
+      } catch (error) {
+        console.error("Could not load train list:", error);
+        const detail = error instanceof Error ? error.message : String(error);
+        setStatus(`${detail} Confirm the Worker is deployed and allows this page's origin.`, "error");
+      } finally {
+        loadTrainsButton.disabled = false;
+        loadTrainsButton.textContent = "Reload train list from proxy";
+      }
+    }
+
+    function clearDetails() {
+      detailsCard.hidden = true;
+      routeRows.replaceChildren();
+    }
+
+    function getTrainLabel(train) {
+      return train.name || `Train ${train.number}`;
+    }
+
+    function chooseTrain(train) {
+      selectedTrain = train;
+      searchInput.value = `${getTrainLabel(train)} (${train.number})`;
+      selectionLabel.textContent = `${getTrainLabel(train)} (${train.number}) selected`;
+      lookupButton.textContent = "Load train details";
+      lookupButton.disabled = false;
+      suggestions.replaceChildren();
+      clearDetails();
+      loadSelectedTrain();
+    }
+
+    async function renderSuggestions() {
+      const query = searchInput.value.trim().toLocaleLowerCase();
+      const currentSuggestionRequestId = ++suggestionRequestId;
+      requestId += 1;
+      selectedTrain = null;
+      lookupButton.disabled = true;
+      lookupButton.textContent = "Select a train to load details";
+      selectionLabel.textContent = "No train selected";
+      clearDetails();
+      suggestions.replaceChildren();
+
+      if (!query) {
+        suggestions.replaceChildren();
+        setStatus("Start typing a train name or number.");
+        return;
+      }
+
+      setStatus("Loading train list from the server…");
+      try {
+        const trains = await loadTrainIndex();
+        if (currentSuggestionRequestId !== suggestionRequestId) {
+          return;
+        }
+
+        const matches = trains.filter((train) =>
+          train.name.toLocaleLowerCase().includes(query) ||
+          train.number.toLocaleLowerCase().includes(query) ||
+          train.origin.toLocaleLowerCase().includes(query) ||
+          train.destination.toLocaleLowerCase().includes(query)
+        ).slice(0, 12);
+
+        if (matches.length === 0) {
+          setStatus("No matching trains found in the server train list.");
+          return;
+        }
+
+        for (const train of matches) {
+          const option = document.createElement("button");
+          option.type = "button";
+          option.className = "suggestion";
+          option.setAttribute("role", "option");
+
+          const name = document.createElement("span");
+          name.textContent = train.name || `${train.origin} → ${train.destination}`;
+          const number = document.createElement("span");
+          number.className = "suggestion-number";
+          number.textContent = train.number;
+          option.append(name, number);
+          option.addEventListener("click", () => chooseTrain(train));
+          suggestions.append(option);
+        }
+
+        setStatus(`${matches.length} matching train${matches.length === 1 ? "" : "s"} from the server. Select one to load its schedule.`);
+      } catch (error) {
+        if (currentSuggestionRequestId !== suggestionRequestId) {
+          return;
+        }
+        console.error("Could not load train list:", error);
+        const detail = error instanceof Error ? error.message : String(error);
+        setStatus(
+          `${detail} The API may block this page's origin via CORS; the API owner must allow your localhost or deployment domain.`,
+          "error"
+        );
+      }
+    }
+
+    function addCell(row, value) {
+      const cell = document.createElement("td");
+      cell.textContent = value == null || value === "" ? "—" : String(value);
+      row.append(cell);
+    }
+
+    function renderDetails(data, train) {
+      document.getElementById("details-title").textContent = data.train_name || train.name;
+      document.getElementById("details-number").textContent = `Train ${train.number}`;
+      document.getElementById("details-days").textContent = Array.isArray(data.days) && data.days.length
+        ? data.days.join(", ")
+        : "Not provided";
+      document.getElementById("details-duration").textContent = data.total_duration || "Not provided";
+      routeRows.replaceChildren();
+
+      if (!Array.isArray(data.routes) || data.routes.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 5;
+        cell.textContent = "No route stops were returned for this train.";
+        row.append(cell);
+        routeRows.append(row);
+      } else {
+        for (const stop of data.routes) {
+          const row = document.createElement("tr");
+          addCell(row, stop.city);
+          addCell(row, stop.arrival_time);
+          addCell(row, stop.departure_time);
+          addCell(row, stop.halt);
+          addCell(row, stop.duration);
+          routeRows.append(row);
+        }
+      }
+
+      detailsCard.hidden = false;
+    }
+
+    async function loadSelectedTrain() {
+      if (!selectedTrain) {
+        return;
+      }
+
+      const train = selectedTrain;
+      const currentRequestId = ++requestId;
+      const requestBody = { model: train.number };
+      lookupButton.disabled = true;
+      lookupButton.textContent = "Loading schedule…";
+      setStatus(`Loading details for ${getTrainLabel(train)} (${train.number})…`);
+      showRequestTrace({
+        method: "POST",
+        url: TRAIN_SCHEDULE_URL,
+        headers: apiHeaders(true),
+        body: requestBody,
+        status: "pending"
+      });
+
+      let responseStatus = null;
+      let responsePayload = null;
+      try {
+        const response = await fetch(TRAIN_SCHEDULE_URL, {
+          method: "POST",
+          headers: apiHeaders(true),
+          body: JSON.stringify(requestBody)
+        });
+
+        const responseText = await response.text();
+        let payload;
+        try {
+          payload = JSON.parse(responseText);
+        } catch {
+          throw new Error(`API returned HTTP ${response.status} with a non-JSON response: ${responseText.slice(0, 300)}`);
+        }
+        responseStatus = response.status;
+        responsePayload = payload;
+        showRequestTrace({
+          method: "POST",
+          url: TRAIN_SCHEDULE_URL,
+          body: requestBody,
+          status: response.status,
+          response: payload
+        });
+
+        if (!response.ok) {
+          const apiMessage = payload?.error?.messages?.join("; ");
+          throw new Error(apiMessage || `API returned HTTP ${response.status}`);
+        }
+
+        if (!payload || !payload.data || !Array.isArray(payload.data.routes)) {
+          throw new Error("Unexpected API response: expected train details at data.");
+        }
+        if (currentRequestId !== requestId) {
+          return;
+        }
+        if (!payload.data.train_name) {
+          throw new Error(`The API did not find train ${train.number}. Check the local TRAIN_INDEX entry.`);
+        }
+
+        renderDetails(payload.data, train);
+        lookupButton.textContent = "Refresh train details";
+        setStatus(`Loaded schedule details for ${payload.data.train_name}.`, "success");
+      } catch (error) {
+        if (currentRequestId !== requestId) {
+          return;
+        }
+        console.error("Could not load train details:", error);
+        const detail = error instanceof Error ? error.message : String(error);
+        showRequestTrace({
+          method: "POST",
+          url: TRAIN_SCHEDULE_URL,
+          body: requestBody,
+          status: responseStatus,
+          response: responsePayload,
+          error: detail
+        });
+        lookupButton.textContent = "Retry train details";
+        const runHint = detail === "Failed to fetch"
+          ? "This is commonly caused by the railway API rejecting this page's origin via CORS. Frontend-only code cannot override that policy; deploy on an allowed origin or ask the API owner to allow your production domain."
+          : "";
+        setStatus(`${detail} ${runHint}`, "error");
+      } finally {
+        if (currentRequestId === requestId) {
+          lookupButton.disabled = false;
+        }
+      }
+    }
+
+    loadTrainsButton.addEventListener("click", loadTrainList);
+    searchInput.addEventListener("input", renderSuggestions);
+    searchInput.addEventListener("focus", renderSuggestions);
+    lookupButton.addEventListener("click", loadSelectedTrain);
+  </script>
+</body>
+</html>
