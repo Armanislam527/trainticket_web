@@ -1,17 +1,33 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Tabs, usePathname } from 'expo-router';
+import { Tabs, useGlobalSearchParams, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RailwaySessionBridge } from '@/components/RailwaySessionBridge';
+import { buildBookingSearchUrl } from '@/lib/bookingUrl';
 import { useRailwaySession } from '@/lib/railwaySession';
 
 function PortalHost() {
   const pathname = usePathname();
+  const params = useGlobalSearchParams<{
+    origin?: string;
+    destination?: string;
+    date?: string;
+    seatClass?: string;
+  }>();
   const insets = useSafeAreaInsets();
   const session = useRailwaySession();
   const visible = pathname.includes('ticket-booking');
+  const bookingUrl =
+    visible && params.origin && params.destination && params.date && params.seatClass
+      ? buildBookingSearchUrl({
+          origin: params.origin,
+          destination: params.destination,
+          date: params.date,
+          seatClass: params.seatClass,
+        })
+      : undefined;
 
   return (
     <View
@@ -32,7 +48,7 @@ function PortalHost() {
           </Text>
         </View>
       ) : null}
-      <RailwaySessionBridge />
+      <RailwaySessionBridge url={bookingUrl} />
     </View>
   );
 }
@@ -61,8 +77,15 @@ export default function RootLayout() {
           paddingBottom: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: '600',
+          includeFontPadding: false,
+          textAlign: 'center',
+        },
+        tabBarItemStyle: {
+          flex: 1,
+          minWidth: 0,
+          paddingHorizontal: 0,
         },
       }}
     >

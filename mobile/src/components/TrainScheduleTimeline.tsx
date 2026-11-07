@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { getStopTimings } from '@/lib/journeyTimeline';
 import { TrainDataService, TrainRouteNode } from '@/lib/train-data';
 
 interface TrainScheduleTimelineProps {
@@ -11,12 +12,12 @@ interface TrainScheduleTimelineProps {
 export function TrainScheduleTimeline({ stops, highlightFrom, highlightTo }: TrainScheduleTimelineProps) {
   const fromIndex = highlightFrom ? stops.findIndex((stop) => TrainDataService.sameStation(stop.city, highlightFrom)) : -1;
   const toIndex = highlightTo ? stops.findIndex((stop) => TrainDataService.sameStation(stop.city, highlightTo)) : -1;
+  const timings = getStopTimings(stops);
 
   return (
     <View>
       {stops.map((stop, index) => {
         const onJourney = fromIndex >= 0 && toIndex > fromIndex && index >= fromIndex && index <= toIndex;
-        const time = stop.departure_time || stop.arrival_time || '';
         return (
           <View key={`${stop.city}-${index}`} style={styles.row}>
             <View style={styles.rail}>
@@ -24,14 +25,18 @@ export function TrainScheduleTimeline({ stops, highlightFrom, highlightTo }: Tra
               {index < stops.length - 1 ? <View style={[styles.line, onJourney && styles.lineOn]} /> : null}
             </View>
             <View style={styles.copy}>
-              <Text style={[styles.city, onJourney && styles.cityOn]}>
-                {TrainDataService.formatStationDisplay(stop.city)}
-              </Text>
+              <View style={styles.stationLine}>
+                <Text style={[styles.city, onJourney && styles.cityOn]}>
+                  {TrainDataService.formatStationDisplay(stop.city)}
+                </Text>
+                {timings[index].crossesMidnight ? (
+                  <Text style={styles.dayChange}>Next day</Text>
+                ) : null}
+              </View>
               <Text style={styles.time}>
                 {stop.arrival_time ? `Arr ${stop.arrival_time}` : ''}
                 {stop.arrival_time && stop.departure_time ? '  ·  ' : ''}
                 {stop.departure_time ? `Dep ${stop.departure_time}` : ''}
-                {!stop.arrival_time && !stop.departure_time && time ? time : ''}
               </Text>
             </View>
           </View>
@@ -72,6 +77,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: 12,
   },
+  stationLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   city: {
     fontSize: 15,
     fontWeight: '600',
@@ -84,5 +95,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#52796f',
     marginTop: 2,
+  },
+  dayChange: {
+    color: '#7c5e10',
+    backgroundColor: '#fff3cd',
+    borderRadius: 8,
+    overflow: 'hidden',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

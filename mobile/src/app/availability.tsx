@@ -7,8 +7,10 @@ import {
   Text,
   View,
 } from 'react-native';
+import type { DimensionValue } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TrainScheduleTimeline } from '@/components/TrainScheduleTimeline';
+import { DateUtils } from '@/lib/dateUtils';
 import { seatClassLabel } from '@/lib/seatClasses';
 import { scanJourneyCombinations, SeatPair } from '@/lib/seatMatrix';
 import { TrainDataService, TrainScheduleItem } from '@/lib/train-data';
@@ -26,7 +28,7 @@ export default function AvailabilityScreen() {
 
   const origin = params.origin || 'Dhaka';
   const destination = params.destination || 'Rajshahi';
-  const date = params.date || '';
+  const date = params.date || DateUtils.formatApiDate(new Date());
   const seatClass = params.seatClass || 'S_CHAIR';
 
   const trains = useMemo(
@@ -207,7 +209,21 @@ export default function AvailabilityScreen() {
               {!running && pairs.length > 0 && visiblePairs.length === 0 ? (
                 <Text style={styles.empty}>No seats in this class on any station pair for this journey.</Text>
               ) : (
-                <CombinationList pairs={visiblePairs} />
+                <CombinationList
+                  pairs={visiblePairs}
+                  baseDate={date}
+                  onBook={(pair) =>
+                    router.push({
+                      pathname: '/ticket-booking',
+                      params: {
+                        origin: pair.from,
+                        destination: pair.to,
+                        date: pair.dateOfJourney,
+                        seatClass,
+                      },
+                    })
+                  }
+                />
               )}
             </View>
           ) : null}
@@ -217,7 +233,15 @@ export default function AvailabilityScreen() {
   );
 }
 
-function CombinationList({ pairs }: { pairs: SeatPair[] }) {
+function CombinationList({
+  pairs,
+  baseDate,
+  onBook,
+}: {
+  pairs: SeatPair[];
+  baseDate: string;
+  onBook: (pair: SeatPair) => void;
+}) {
   const groups = useMemo(() => {
     const map = new Map<string, SeatPair[]>();
     pairs.forEach((pair) => {
@@ -236,25 +260,76 @@ function CombinationList({ pairs }: { pairs: SeatPair[] }) {
     <View>
       {groups.map(([from, list]) => (
         <View key={from} style={styles.group}>
-          <Text style={styles.groupTitle}>From {TrainDataService.formatStationDisplay(from)}</Text>
-          {list.map((pair) => (
-            <View key={`${pair.from}-${pair.to}`} style={styles.pairRow}>
-              <View style={[styles.pairDot, pairColor(pair)]} />
-              <Text style={styles.pairTo}>{TrainDataService.formatStationDisplay(pair.to)}</Text>
-              <Text style={styles.pairCount}>{pairText(pair)}</Text>
-            </View>
-          ))}
+          <Text style={styles.groupTitle}>
+            From {TrainDataService.formatStationDisplay(from)} · {list[0].dateOfJourney}
+            {list[0].dateOfJourney !== baseDate ? ' (next day)' : ''}
+          </Text>
+          {list[0].durationMinutes !== null ? (
+            <Text style={styles.timelineHint}>Longer bars show a longer time on the train.</Text>
+          ) : null}
+          {list.map((pair) => {
+            const longest = Math.max(...list.map((item) => item.durationMinutes || 0));
+            const barWidth: DimensionValue =
+              pair.durationMinutes !== null && longest > 0
+                ? `${Math.max(5, Math.round((pair.durationMinutes / longest) * 100))}%`
+                : '0%';
+            const nextDay = pair.dateOfJourney !== baseDate;
+            return (
+              <View key={`${pair.from}-${pair.to}`} style={styles.pairRow}>
+                <View style={styles.pairHeading}>
+                  <Text style={styles.pairTo}>
+                    To {TrainDataService.formatStationDisplay(pair.to)}
+                  </Text>
+                  <Text style={[styles.pairCount, pairColor(pair)]}>{pairText(pair)}</Text>
+                </View>
+                <View style={styles.pairDetails}>
+                  <Text style={styles.pairDuration}>
+                    {formatDuration(pair.durationMinutes)}
+                    {nextDay ? ` · ${pair.dateOfJourney}` : ''}
+                  </Text>
+                  {pair.durationMinutes !== null ? (
+                    <View style={styles.pairTrack}>
+                      <View style={[styles.pairBar, { width: barWidth }]}>
+                        <View style={styles.pairDestinationDot} />
+                        <View style={styles.pairLine} />
+                      </View>
+                      <View style={styles.pairOriginDot} />
+                    </View>
+                  ) : null}
+                </View>
+                {pair.state === 'ready' && (pair.online || 0) > 0 ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Book ${pair.from} to ${pair.to}`}
+                    style={styles.bookButton}
+                    onPress={() => onBook(pair)}
+                  >
+                    <Text style={styles.bookButtonText}>Find this seat</Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            );
+          })}
         </View>
       ))}
     </View>
   );
 }
 
+function formatDuration(minutes: number | null): string {
+  if (minutes === null) return 'Duration unavailable';
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours === 0) return `${remainingMinutes} min`;
+  if (remainingMinutes === 0) return `${hours} hr`;
+  return `${hours} hr ${remainingMinutes} min`;
+}
+
 function pairColor(pair: SeatPair) {
-  if (pair.state === 'ready' && (pair.online || 0) > 0) return styles.dotYes;
-  if (pair.state === 'ready') return styles.dotNo;
-  if (pair.state === 'failed') return styles.dotFail;
-  return styles.dotWait;
+  if (pair.state === 'ready' && (pair.online || 0) > 0) return styles.countYes;
+  if (pair.state === 'ready') return styles.countNo;
+  if (pair.state === 'failed') return styles.countFail;
+  return styles.countWait;
 }
 
 function pairText(pair: SeatPair): string {
@@ -437,23 +512,79 @@ const styles = StyleSheet.create({
     color: '#1b4332',
     marginBottom: 6,
   },
+  timelineHint: {
+    fontSize: 11,
+    color: '#52796f',
+    marginBottom: 8,
+  },
   pairRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#f1f3f5',
   },
-  pairDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 8,
+  pairHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
-  dotYes: { backgroundColor: '#2d6a4f' },
-  dotNo: { backgroundColor: '#c1121f' },
-  dotFail: { backgroundColor: '#adb5bd' },
-  dotWait: { backgroundColor: '#dee2e6' },
+  pairDetails: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  pairDuration: {
+    width: 112,
+    color: '#52796f',
+    fontSize: 11,
+  },
+  pairTrack: {
+    flex: 1,
+    height: 12,
+    justifyContent: 'center',
+  },
+  pairBar: {
+    position: 'absolute',
+    right: 0,
+    height: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pairDestinationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#2d6a4f',
+  },
+  pairLine: {
+    flex: 1,
+    height: 2,
+    backgroundColor: '#95d5b2',
+  },
+  pairOriginDot: {
+    position: 'absolute',
+    right: 0,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#1b4332',
+  },
+  bookButton: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    backgroundColor: '#1b4332',
+  },
+  bookButtonText: {
+    color: '#f4fff8',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  countYes: { color: '#2d6a4f' },
+  countNo: { color: '#c1121f' },
+  countFail: { color: '#adb5bd' },
+  countWait: { color: '#52796f' },
   pairTo: {
     flex: 1,
     color: '#212529',

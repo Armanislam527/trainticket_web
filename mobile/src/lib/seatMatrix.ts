@@ -1,4 +1,6 @@
 import { fetchSeatAvailability } from '@/components/railwayApi';
+import { DateUtils } from '@/lib/dateUtils';
+import { getStopTimings, journeyDuration } from '@/lib/journeyTimeline';
 import { TrainDataService, TrainRouteNode } from '@/lib/train-data';
 
 export interface SeatPair {
@@ -6,6 +8,8 @@ export interface SeatPair {
   to: string;
   fromIndex: number;
   toIndex: number;
+  dateOfJourney: string;
+  durationMinutes: number | null;
   online: number | null;
   offline: number;
   fare: number | null;
@@ -33,21 +37,33 @@ export function tripMatchesNumber(tripNumber: string, trainNumber: string): bool
   return loose.some((digits) => String(parseInt(digits, 10)) === wanted);
 }
 
-function readPair(raw: any, trainNumber: string, seatClass: string, from: string, to: string, fromIndex: number, toIndex: number): SeatPair {
+function readPair(
+  raw: any,
+  trainNumber: string,
+  seatClass: string,
+  from: string,
+  to: string,
+  fromIndex: number,
+  toIndex: number,
+  dateOfJourney: string,
+  durationMinutes: number | null
+): SeatPair {
   const trains = raw?.data?.trains || [];
   const train = trains.find((item: any) => tripMatchesNumber(item.trip_number || item.train_number || '', trainNumber));
   if (!train) {
-    return { from, to, fromIndex, toIndex, online: null, offline: 0, fare: null, state: 'absent' };
+    return { from, to, fromIndex, toIndex, dateOfJourney, durationMinutes, online: null, offline: 0, fare: null, state: 'absent' };
   }
   const seat = (train.seat_types || []).find((item: any) => item.type === seatClass);
   if (!seat) {
-    return { from, to, fromIndex, toIndex, online: 0, offline: 0, fare: null, state: 'absent' };
+    return { from, to, fromIndex, toIndex, dateOfJourney, durationMinutes, online: 0, offline: 0, fare: null, state: 'absent' };
   }
   return {
     from,
     to,
     fromIndex,
     toIndex,
+    dateOfJourney,
+    durationMinutes,
     online: Number(seat.seat_counts?.online ?? 0),
     offline: Number(seat.seat_counts?.offline ?? 0),
     fare: seat.fare == null ? null : Number(seat.fare),
@@ -68,6 +84,7 @@ export async function scanJourneyCombinations(options: {
   onUpdate: (pairs: SeatPair[], progress: ScanProgress) => void;
 }): Promise<void> {
   const stops = options.stops;
+  const timings = getStopTimings(stops);
   const jobs: Array<[number, number]> = [];
   for (let fromIndex = 0; fromIndex < stops.length - 1; fromIndex++) {
     for (let toIndex = fromIndex + 1; toIndex < stops.length; toIndex++) {
@@ -80,6 +97,8 @@ export async function scanJourneyCombinations(options: {
     to: stops[toIndex].city,
     fromIndex,
     toIndex,
+    dateOfJourney: DateUtils.addDays(options.dateOfJourney, timings[fromIndex].dayOffset),
+    durationMinutes: journeyDuration(timings, fromIndex, toIndex),
     online: null,
     offline: 0,
     fare: null,
@@ -93,7 +112,9 @@ export async function scanJourneyCombinations(options: {
     const [fromIndex, toIndex] = jobs[index];
     const from = stops[fromIndex].city;
     const to = stops[toIndex].city;
-    const cacheKey = `${options.trainNumber}|${options.seatClass}|${options.dateOfJourney}|${from}|${to}`;
+    const dateOfJourney = DateUtils.addDays(options.dateOfJourney, timings[fromIndex].dayOffset);
+    const durationMinutes = journeyDuration(timings, fromIndex, toIndex);
+    const cacheKey = `${options.trainNumber}|${options.seatClass}|${dateOfJourney}|${from}|${to}`;
     const label = `${TrainDataService.formatStationDisplay(from)} → ${TrainDataService.formatStationDisplay(to)}`;
     const cached = pairCache.get(cacheKey);
     let next = cached;
@@ -102,14 +123,35 @@ export async function scanJourneyCombinations(options: {
         const raw = await fetchSeatAvailability({
           origin: from,
           destination: to,
-          dateOfJourney: options.dateOfJourney,
+          dateOfJourney,
           seatClass: options.seatClass,
         });
-        next = readPair(raw, options.trainNumber, options.seatClass, from, to, fromIndex, toIndex);
+        next = readPair(
+          raw,
+          options.trainNumber,
+          options.seatClass,
+          from,
+          to,
+          fromIndex,
+          toIndex,
+          dateOfJourney,
+          durationMinutes
+        );
       } catch (error) {
         const message = error instanceof Error ? error.message : '';
         if (message === 'SESSION_EXPIRED') throw error;
-        next = { from, to, fromIndex, toIndex, online: null, offline: 0, fare: null, state: 'failed' };
+        next = {
+          from,
+          to,
+          fromIndex,
+          toIndex,
+          dateOfJourney,
+          durationMinutes,
+          online: null,
+          offline: 0,
+          fare: null,
+          state: 'failed',
+        };
       }
       pairCache.set(cacheKey, next);
       if (index < jobs.length - 1) await sleep(450);

@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'Train Seat Finder'
+rootProject.name = 'Seat Combo'
 
 dependencyResolutionManagement {
   versionCatalogs {

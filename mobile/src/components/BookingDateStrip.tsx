@@ -8,13 +8,13 @@ interface BookingDateStripProps {
 }
 
 export function BookingDateStrip({ value, onChange }: BookingDateStripProps) {
-  const days = useMemo(() => DateUtils.bookingWindow(10), []);
+  const days = useMemo(() => DateUtils.bookingWindow(11), []);
   const todayKey = DateUtils.formatApiDate(days[0]);
   const tomorrowKey = DateUtils.formatApiDate(days[1]);
 
   return (
     <View>
-      <Text style={styles.caption}>Journey date · next 10 days, including today</Text>
+      <Text style={styles.caption}>Journey date · next 11 days, including today</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

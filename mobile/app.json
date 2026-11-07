@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Train Seat Finder",
-    "slug": "train-seat-finder",
+    "name": "Seat Combo",
+    "slug": "Seat Combo",
     "scheme": "trainseat",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.arman.trainseatfinder"
+      "bundleIdentifier": "trainseatchecker.tech"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +24,7 @@
         "monochromeImage": "./assets/train-seat-availability.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.arman.trainseatfinder"
+      "package": "trainseatchecker.tech"
     },
     "web": {
       "favicon": "./assets/train-seat-availability.png"

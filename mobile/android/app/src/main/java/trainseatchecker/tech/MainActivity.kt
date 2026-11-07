@@ -1,4 +1,4 @@
-package com.arman.trainseatfinder
+package trainseatchecker.tech
 
 import android.os.Build
 import android.os.Bundle

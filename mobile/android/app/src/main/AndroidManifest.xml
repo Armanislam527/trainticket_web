@@ -25,7 +25,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="trainseat"/>
-        <data android:scheme="com.arman.trainseatfinder"/>
+        <data android:scheme="trainseatchecker.tech"/>
       </intent-filter>
     </activity>
   </application>

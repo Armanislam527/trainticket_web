@@ -43,6 +43,29 @@ export class DateUtils {
     return `${day}-${month}-${year}`;
   }
 
+  public static addDays(dateInput: string | Date, days: number): string {
+    let date: Date;
+    if (dateInput instanceof Date) {
+      date = new Date(dateInput.getTime());
+    } else {
+      const ready = dateInput.trim().match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+      if (ready) {
+        const month = MONTH_NAMES.findIndex((name) => name.toLowerCase() === ready[2].toLowerCase());
+        date = month < 0
+          ? new Date(Number.NaN)
+          : new Date(Number(ready[3]), month, Number(ready[1]));
+      } else {
+        date = new Date(dateInput);
+      }
+    }
+
+    if (Number.isNaN(date.getTime())) {
+      throw new Error(`Invalid journey date: ${String(dateInput)}`);
+    }
+    date.setDate(date.getDate() + days);
+    return this.formatApiDate(date);
+  }
+
   /**
    * Formats a Date object into a standard display format (e.g., "Friday, 6 November 2026").
    */

@@ -5,10 +5,14 @@ import { railwaySession } from '@/lib/railwaySession';
 import { SESSION_HOOK_JS } from '@/lib/sessionInject';
 
 interface RailwaySessionBridgeProps {
+  url?: string;
   onSessionCaptured?: (credentials: { authToken: string; deviceId: string; deviceKey: string }) => void;
 }
 
-export const RailwaySessionBridge: React.FC<RailwaySessionBridgeProps> = ({ onSessionCaptured }) => {
+export const RailwaySessionBridge: React.FC<RailwaySessionBridgeProps> = ({
+  url = 'https://eticket.railway.gov.bd/',
+  onSessionCaptured,
+}) => {
   const webRef = useRef<WebView>(null);
 
   useEffect(() => {
@@ -79,7 +83,7 @@ export const RailwaySessionBridge: React.FC<RailwaySessionBridgeProps> = ({ onSe
     <View style={styles.container}>
       <WebView
         ref={webRef}
-        source={{ uri: 'https://eticket.railway.gov.bd/' }}
+        source={{ uri: url }}
         injectedJavaScriptBeforeContentLoaded={SESSION_HOOK_JS}
         injectedJavaScript={SESSION_HOOK_JS}
         onMessage={handleMessage}
